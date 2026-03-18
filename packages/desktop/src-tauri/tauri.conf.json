@@ -1,18 +1,18 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "OpenWork",
-  "version": "0.11.163",
-  "identifier": "com.differentai.openwork",
+  "productName": "Abel",
+  "version": "0.1.0",
+  "identifier": "com.abel.app",
   "build": {
     "beforeDevCommand": "node ./scripts/tauri-before-dev.mjs",
-    "beforeBuildCommand": "pnpm -C ../.. --filter @different-ai/openwork run prepare:sidecar && pnpm -w build:ui",
-    "devUrl": "http://localhost:5173",
-    "frontendDist": "../../app/dist"
+    "beforeBuildCommand": "node ./scripts/prepare-bundled-tools.mjs && pnpm -C ../.. --filter @different-ai/abel run prepare:sidecar && pnpm -w build:abel",
+    "devUrl": "http://localhost:5174",
+    "frontendDist": "../../abel-app/dist"
   },
   "app": {
     "windows": [
       {
-        "title": "OpenWork",
+        "title": "Abel",
         "width": 1180,
         "height": 820,
         "resizable": true
@@ -24,6 +24,9 @@
   },
   "bundle": {
     "createUpdaterArtifacts": true,
+    "resources": {
+      "bundled-tools": "bundled-tools/"
+    },
     "macOS": {
       "entitlements": "./entitlements.plist"
     },
@@ -47,14 +50,14 @@
     "deep-link": {
       "desktop": {
         "schemes": [
-          "openwork"
+          "abel"
         ]
       }
     },
     "updater": {
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDUwNDdCNTAwMTcxNUUxQTQKUldTazRSVVhBTFZIVUpNRi9OQnNRaElZY1NUWUQxS1ZJOTFUeUdPd2d6ZnFmMW5QV2xJQ1hXTTkK",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXkgNTVERTlENEU5MDM4OTQ0RQpSV1JPbERpUVRwM2VWUkVOZ0xsV1N4SzRmZEVzTlZvQ0pNOXdTMHlIUEd5UU1uWlArektIeTVzUwo=",
       "endpoints": [
-        "https://github.com/different-ai/openwork/releases/latest/download/latest.json"
+        "https://github.com/Soilverts/openwork/releases/latest/download/latest.json"
       ]
     }
   }

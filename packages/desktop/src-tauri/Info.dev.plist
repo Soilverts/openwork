@@ -3,21 +3,21 @@
 <plist version="1.0">
 <dict>
   <key>CFBundleIdentifier</key>
-  <string>com.differentai.openwork.dev</string>
+  <string>com.abel.app.dev</string>
   <key>CFBundleName</key>
-  <string>OpenWork - Dev</string>
+  <string>Abel - Dev</string>
   <key>CFBundleDisplayName</key>
-  <string>OpenWork - Dev</string>
+  <string>Abel - Dev</string>
   <key>CFBundleURLTypes</key>
   <array>
     <dict>
       <key>CFBundleTypeRole</key>
       <string>Editor</string>
       <key>CFBundleURLName</key>
-      <string>com.differentai.openwork.dev openwork-dev</string>
+      <string>com.abel.app.dev abel-dev</string>
       <key>CFBundleURLSchemes</key>
       <array>
-        <string>openwork-dev</string>
+        <string>abel-dev</string>
       </array>
     </dict>
   </array>

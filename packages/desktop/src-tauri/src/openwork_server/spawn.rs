@@ -2,9 +2,11 @@ use std::net::TcpListener;
 use std::path::Path;
 
 use tauri::async_runtime::Receiver;
-use tauri::AppHandle;
+use tauri::{AppHandle, Manager};
 use tauri_plugin_shell::process::{CommandChild, CommandEvent};
 use tauri_plugin_shell::ShellExt;
+
+use crate::paths::{prepended_path_env_with_bundled, sidecar_path_candidates};
 
 const DEFAULT_OPENWORK_PORT: u16 = 8787;
 
@@ -117,6 +119,21 @@ pub fn spawn_openwork_server(
         if !password.trim().is_empty() {
             command = command.env("OPENWORK_OPENCODE_PASSWORD", password);
         }
+    }
+
+    let resource_dir = app.path().resource_dir().ok();
+    let current_bin_dir = tauri::process::current_binary(&app.env())
+        .ok()
+        .and_then(|path| path.parent().map(|p| p.to_path_buf()));
+    let sidecar_paths =
+        sidecar_path_candidates(resource_dir.as_deref(), current_bin_dir.as_deref());
+    let bundled_paths = crate::bundled_tools::bundled_tool_paths(app);
+    if let Some(path_env) = prepended_path_env_with_bundled(&sidecar_paths, &bundled_paths) {
+        command = command.env("PATH", path_env);
+    }
+
+    for (key, value) in crate::bundled_tools::npm_env_overrides(app) {
+        command = command.env(key, value);
     }
 
     for (key, value) in crate::bun_env::bun_env_overrides() {

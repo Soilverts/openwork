@@ -1,16 +1,16 @@
 [package]
-name = "openwork"
-version = "0.11.163"
-description = "OpenWork"
-authors = ["Different AI"]
+name = "abel"
+version = "0.1.0"
+description = "Abel"
+authors = ["Abel"]
 edition = "2021"
-default-run = "OpenWork-Dev"
+default-run = "Abel-Dev"
 
 [lib]
-name = "openwork"
+name = "abel"
 
 [[bin]]
-name = "OpenWork-Dev"
+name = "Abel-Dev"
 path = "src/main.rs"
 
 [build-dependencies]

@@ -11,7 +11,7 @@ on:
         required: false
         type: string
       release_name:
-        description: "Release title (defaults to OpenWork <tag>)"
+        description: "Release title (defaults to Abel <tag>)"
         required: false
         type: string
       release_body:
@@ -112,7 +112,7 @@ jobs:
           if [ -n "$RELEASE_NAME_INPUT" ]; then
             RELEASE_NAME="$RELEASE_NAME_INPUT"
           else
-            RELEASE_NAME="OpenWork $TAG"
+            RELEASE_NAME="Abel $TAG"
           fi
 
           RELEASE_BODY_INPUT="${INPUT_RELEASE_BODY:-}"
@@ -544,7 +544,7 @@ jobs:
           retryAttempts: 3
           uploadUpdaterJson: false
           updaterJsonPreferNsis: true
-          releaseAssetNamePattern: openwork-desktop-[platform]-[arch][ext]
+          releaseAssetNamePattern: abel-desktop-[platform]-[arch][ext]
 
       - name: Build + upload
         if: matrix.os_type != 'macos' || env.MACOS_NOTARIZE != 'true'
@@ -573,7 +573,7 @@ jobs:
           retryAttempts: 3
           uploadUpdaterJson: false
           updaterJsonPreferNsis: true
-          releaseAssetNamePattern: openwork-desktop-[platform]-[arch][ext]
+          releaseAssetNamePattern: abel-desktop-[platform]-[arch][ext]
 
       - name: Verify versions.json bundled (macOS)
         if: success() && matrix.os_type == 'macos'
@@ -602,12 +602,12 @@ jobs:
 
           gh release download "${RELEASE_TAG}" \
             --repo "$GITHUB_REPOSITORY" \
-            --pattern "openwork-desktop-darwin-${asset_arch}.app.tar.gz" \
+            --pattern "abel-desktop-darwin-${asset_arch}.app.tar.gz" \
             --dir "$tmp_dir"
 
-          tar -xzf "$tmp_dir/openwork-desktop-darwin-${asset_arch}.app.tar.gz" -C "$tmp_dir"
+          tar -xzf "$tmp_dir/abel-desktop-darwin-${asset_arch}.app.tar.gz" -C "$tmp_dir"
 
-          app_path="$tmp_dir/OpenWork.app"
+          app_path="$tmp_dir/Abel.app"
           manifest_path="$app_path/Contents/MacOS/versions.json"
 
           if [ ! -f "$manifest_path" ]; then
@@ -932,7 +932,7 @@ jobs:
 
           version="${RELEASE_TAG#v}"
           git add packaging/aur/PKGBUILD packaging/aur/.SRCINFO
-          git -c user.name="OpenWork Release Bot" \
+          git -c user.name="Abel Release Bot" \
               -c user.email="release-bot@users.noreply.github.com" \
               commit -m "chore(aur): update PKGBUILD for ${version}"
           git push origin HEAD:dev

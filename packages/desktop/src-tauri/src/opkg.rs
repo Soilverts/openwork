@@ -1,7 +1,14 @@
+use std::ffi::OsString;
 use std::process::{Command, Stdio};
 
 use crate::platform::configure_hidden;
 use crate::types::ExecResult;
+
+fn apply_path_env(command: &mut Command, path_env: &Option<OsString>) {
+    if let Some(path) = path_env {
+        command.env("PATH", path);
+    }
+}
 
 pub fn run_capture_optional(command: &mut Command) -> Result<Option<ExecResult>, String> {
     match command.output() {
@@ -22,9 +29,14 @@ pub fn run_capture_optional(command: &mut Command) -> Result<Option<ExecResult>,
     }
 }
 
-pub fn opkg_install(project_dir: &str, package: &str) -> Result<ExecResult, String> {
+pub fn opkg_install(
+    project_dir: &str,
+    package: &str,
+    path_env: Option<OsString>,
+) -> Result<ExecResult, String> {
     let mut opkg = Command::new("opkg");
     configure_hidden(&mut opkg);
+    apply_path_env(&mut opkg, &path_env);
     opkg.arg("install")
         .arg(package)
         .current_dir(project_dir)
@@ -38,6 +50,7 @@ pub fn opkg_install(project_dir: &str, package: &str) -> Result<ExecResult, Stri
 
     let mut openpackage = Command::new("openpackage");
     configure_hidden(&mut openpackage);
+    apply_path_env(&mut openpackage, &path_env);
     openpackage
         .arg("install")
         .arg(package)
@@ -52,6 +65,7 @@ pub fn opkg_install(project_dir: &str, package: &str) -> Result<ExecResult, Stri
 
     let mut pnpm = Command::new("pnpm");
     configure_hidden(&mut pnpm);
+    apply_path_env(&mut pnpm, &path_env);
     pnpm.arg("dlx")
         .arg("opkg")
         .arg("install")
@@ -67,6 +81,7 @@ pub fn opkg_install(project_dir: &str, package: &str) -> Result<ExecResult, Stri
 
     let mut npx = Command::new("npx");
     configure_hidden(&mut npx);
+    apply_path_env(&mut npx, &path_env);
     npx.arg("opkg")
         .arg("install")
         .arg(package)
@@ -80,9 +95,9 @@ pub fn opkg_install(project_dir: &str, package: &str) -> Result<ExecResult, Stri
     }
 
     Ok(ExecResult {
-    ok: false,
-    status: -1,
-    stdout: String::new(),
-    stderr: "OpenPackage CLI not found. Install with `npm install -g opkg` (or `openpackage`), or ensure pnpm/npx is available.".to_string(),
-  })
+        ok: false,
+        status: -1,
+        stdout: String::new(),
+        stderr: "OpenPackage CLI not found. Install with `npm install -g opkg` (or `openpackage`), or ensure pnpm/npx is available.".to_string(),
+    })
 }

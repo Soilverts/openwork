@@ -1,9 +1,16 @@
+use tauri::{AppHandle, Manager};
+
 use crate::fs::copy_dir_recursive;
 use crate::opkg::opkg_install as opkg_install_inner;
+use crate::paths::{prepended_path_env_with_bundled, sidecar_path_candidates};
 use crate::types::ExecResult;
 
 #[tauri::command]
-pub fn opkg_install(project_dir: String, package: String) -> Result<ExecResult, String> {
+pub fn opkg_install(
+    app: AppHandle,
+    project_dir: String,
+    package: String,
+) -> Result<ExecResult, String> {
     let project_dir = project_dir.trim().to_string();
     if project_dir.is_empty() {
         return Err("projectDir is required".to_string());
@@ -14,7 +21,16 @@ pub fn opkg_install(project_dir: String, package: String) -> Result<ExecResult, 
         return Err("package is required".to_string());
     }
 
-    opkg_install_inner(&project_dir, &package)
+    let resource_dir = app.path().resource_dir().ok();
+    let current_bin_dir = tauri::process::current_binary(&app.env())
+        .ok()
+        .and_then(|path| path.parent().map(|p| p.to_path_buf()));
+    let sidecar_paths =
+        sidecar_path_candidates(resource_dir.as_deref(), current_bin_dir.as_deref());
+    let bundled_paths = crate::bundled_tools::bundled_tool_paths(&app);
+    let path_env = prepended_path_env_with_bundled(&sidecar_paths, &bundled_paths);
+
+    opkg_install_inner(&project_dir, &package, path_env)
 }
 
 #[tauri::command]

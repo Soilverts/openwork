@@ -1,4 +1,4 @@
-name: OpenWork Tests
+name: Abel Tests
 
 on:
   pull_request:

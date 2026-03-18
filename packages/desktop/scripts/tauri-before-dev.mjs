@@ -7,7 +7,7 @@ const pnpmCmd = process.platform === "win32" ? "pnpm.cmd" : "pnpm";
 
 const readPort = () => {
   const value = Number.parseInt(process.env.PORT ?? "", 10);
-  return Number.isFinite(value) && value > 0 ? value : 5173;
+  return Number.isFinite(value) && value > 0 ? value : 5174;
 };
 
 const hostOverride = process.env.OPENWORK_DEV_HOST?.trim() || null;
@@ -193,7 +193,7 @@ const ensureLinuxDesktopDependencies = () => {
 };
 
 const runUiDevServer = () => {
-  const child = spawn(pnpmCmd, ["-w", "dev:ui"], {
+  const child = spawn(pnpmCmd, ["-w", "dev:abel"], {
     stdio: "inherit",
     shell: process.platform === "win32",
     detached: process.platform !== "win32",

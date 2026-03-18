@@ -7,7 +7,7 @@ use tauri_plugin_shell::process::{CommandChild, CommandEvent};
 use tauri_plugin_shell::ShellExt;
 
 use crate::paths::{candidate_xdg_config_dirs, candidate_xdg_data_dirs, maybe_infer_xdg_home};
-use crate::paths::{prepended_path_env, sidecar_path_candidates};
+use crate::paths::{prepended_path_env_with_bundled, sidecar_path_candidates};
 
 struct DevModePaths {
     home_dir: PathBuf,
@@ -152,8 +152,14 @@ pub fn spawn_engine(
         .and_then(|path| path.parent().map(|parent| parent.to_path_buf()));
     let sidecar_paths =
         sidecar_path_candidates(resource_dir.as_deref(), current_bin_dir.as_deref());
-    if let Some(path_env) = prepended_path_env(&sidecar_paths) {
+    let bundled_paths = crate::bundled_tools::bundled_tool_paths(app);
+    if let Some(path_env) = prepended_path_env_with_bundled(&sidecar_paths, &bundled_paths) {
         command = command.env("PATH", path_env);
+    }
+
+    // Set npm config env vars for bundled Node.js
+    for (key, value) in crate::bundled_tools::npm_env_overrides(app) {
+        command = command.env(key, value);
     }
 
     if let Some(username) = opencode_username {

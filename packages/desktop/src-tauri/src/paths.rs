@@ -209,7 +209,21 @@ fn common_tool_paths() -> Vec<PathBuf> {
 }
 
 pub fn prepended_path_env(prefixes: &[PathBuf]) -> Option<std::ffi::OsString> {
+    prepended_path_env_with_bundled(prefixes, &[])
+}
+
+pub fn prepended_path_env_with_bundled(
+    prefixes: &[PathBuf],
+    bundled_paths: &[PathBuf],
+) -> Option<std::ffi::OsString> {
     let mut entries = Vec::<PathBuf>::new();
+
+    // Bundled tools get highest priority (Node.js, git, npm global)
+    for path in bundled_paths {
+        if path.is_dir() && !entries.contains(path) {
+            entries.push(path.clone());
+        }
+    }
 
     for prefix in prefixes {
         if prefix.is_dir() {

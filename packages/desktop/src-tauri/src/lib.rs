@@ -1,4 +1,5 @@
 mod bun_env;
+mod bundled_tools;
 mod commands;
 mod config;
 mod engine;
@@ -104,8 +105,11 @@ pub fn run() {
         .plugin(tauri_plugin_updater::Builder::new().build());
 
     let app = builder
-        .setup(|_| {
+        .setup(|app| {
             set_dev_app_name();
+            if let Err(e) = bundled_tools::ensure_bundled_tools(app.handle()) {
+                eprintln!("[abel] Warning: bundled tools setup failed: {e}");
+            }
             Ok(())
         })
         .manage(EngineManager::default())
@@ -175,7 +179,7 @@ pub fn run() {
             set_window_decorations
         ])
         .build(tauri::generate_context!())
-        .expect("error while building OpenWork");
+        .expect("error while building Abel");
 
     // Best-effort cleanup on app exit. Without this, background sidecars can keep
     // running after the UI quits (especially during dev), leading to multiple

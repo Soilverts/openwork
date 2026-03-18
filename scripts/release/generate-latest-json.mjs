@@ -14,7 +14,7 @@ function normalizeArch(arch) {
 function parseArgs(argv) {
   const options = {
     tag: process.env.RELEASE_TAG || "",
-    repo: process.env.GITHUB_REPOSITORY || "different-ai/openwork",
+    repo: process.env.GITHUB_REPOSITORY || "Soilverts/openwork",
     output: "latest.json",
   };
 
@@ -46,9 +46,9 @@ function parseArgs(argv) {
 }
 
 function updaterPlatformKeys(assetName) {
-  if (!assetName.startsWith("openwork-desktop-")) return [];
+  if (!assetName.startsWith("abel-desktop-")) return [];
 
-  const stem = assetName.slice("openwork-desktop-".length);
+  const stem = assetName.slice("abel-desktop-".length);
 
   if (stem.endsWith(".app.tar.gz")) {
     const match = stem.match(/^([^-]+)-([^.]+)\.app\.tar\.gz$/);

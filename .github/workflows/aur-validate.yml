@@ -47,7 +47,7 @@ on:
         description: "Artifact name in artifact_run_id"
         required: false
         type: string
-        default: openwork-desktop-linux-amd64-deb
+        default: abel-desktop-linux-amd64-deb
       asset_url_x86_64:
         description: "Optional explicit public URL for x86_64 .deb"
         required: false
@@ -93,7 +93,7 @@ on:
       artifact_name:
         required: false
         type: string
-        default: openwork-desktop-linux-amd64-deb
+        default: abel-desktop-linux-amd64-deb
       asset_url_x86_64:
         required: false
         type: string
@@ -131,7 +131,7 @@ jobs:
       INPUT_RELEASE_TAG: ${{ inputs.release_tag }}
       INPUT_ASSET_URL_X86_64: ${{ inputs.asset_url_x86_64 }}
       INPUT_ARTIFACT_RUN_ID: ${{ inputs.artifact_run_id }}
-      INPUT_ARTIFACT_NAME: ${{ inputs.artifact_name || 'openwork-desktop-linux-amd64-deb' }}
+      INPUT_ARTIFACT_NAME: ${{ inputs.artifact_name || 'abel-desktop-linux-amd64-deb' }}
       PUSH_TO_AUR: ${{ inputs.push_to_aur && 'true' || 'false' }}
       AUR_REPO: ${{ inputs.aur_repo || 'openwork' }}
     steps:
@@ -220,11 +220,11 @@ jobs:
 
           asset_url="${INPUT_ASSET_URL_X86_64:-}"
           if [ -z "$asset_url" ]; then
-            asset_url="https://github.com/${GITHUB_REPOSITORY}/releases/download/${release_tag}/openwork-desktop-linux-amd64.deb"
+            asset_url="https://github.com/${GITHUB_REPOSITORY}/releases/download/${release_tag}/abel-desktop-linux-amd64.deb"
           fi
 
           mkdir -p /tmp/aur-artifacts
-          curl -fL --retry 5 --retry-all-errors --retry-delay 2 "$asset_url" -o /tmp/aur-artifacts/openwork-desktop-linux-amd64.deb
+          curl -fL --retry 5 --retry-all-errors --retry-delay 2 "$asset_url" -o /tmp/aur-artifacts/abel-desktop-linux-amd64.deb
 
           echo "RESOLVED_RELEASE_TAG=${release_tag}" >> "$GITHUB_ENV"
           echo "RESOLVED_ASSET_URL_X86_64=${asset_url}" >> "$GITHUB_ENV"
@@ -233,7 +233,7 @@ jobs:
         if: env.ARTIFACT_SOURCE == 'local-build-artifact' && env.INPUT_ASSET_URL_X86_64 == ''
         uses: actions/download-artifact@v4
         with:
-          name: ${{ inputs.artifact_name || 'openwork-desktop-linux-amd64-deb' }}
+          name: ${{ inputs.artifact_name || 'abel-desktop-linux-amd64-deb' }}
           run-id: ${{ inputs.artifact_run_id }}
           github-token: ${{ github.token }}
           path: /tmp/aur-artifacts
@@ -244,7 +244,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p /tmp/aur-artifacts
-          curl -fL --retry 5 --retry-all-errors --retry-delay 2 "${INPUT_ASSET_URL_X86_64}" -o /tmp/aur-artifacts/openwork-desktop-linux-amd64.deb
+          curl -fL --retry 5 --retry-all-errors --retry-delay 2 "${INPUT_ASSET_URL_X86_64}" -o /tmp/aur-artifacts/abel-desktop-linux-amd64.deb
 
       - name: Resolve local artifact path
         if: env.ARTIFACT_SOURCE == 'local-build-artifact'
@@ -257,8 +257,8 @@ jobs:
             exit 1
           fi
 
-          if [ "$deb_path" != "/tmp/aur-artifacts/openwork-desktop-linux-amd64.deb" ]; then
-            cp "$deb_path" /tmp/aur-artifacts/openwork-desktop-linux-amd64.deb
+          if [ "$deb_path" != "/tmp/aur-artifacts/abel-desktop-linux-amd64.deb" ]; then
+            cp "$deb_path" /tmp/aur-artifacts/abel-desktop-linux-amd64.deb
           fi
 
       - name: Resolve version, URL, and checksum
@@ -267,7 +267,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          deb_path="/tmp/aur-artifacts/openwork-desktop-linux-amd64.deb"
+          deb_path="/tmp/aur-artifacts/abel-desktop-linux-amd64.deb"
           if [ ! -f "$deb_path" ]; then
             echo "Expected $deb_path to exist" >&2
             exit 1
@@ -293,7 +293,7 @@ jobs:
             source_url="${INPUT_ASSET_URL_X86_64}"
           fi
           if [ -z "$source_url" ]; then
-            source_url="https://github.com/${GITHUB_REPOSITORY}/releases/download/v${version}/openwork-desktop-linux-amd64.deb"
+            source_url="https://github.com/${GITHUB_REPOSITORY}/releases/download/v${version}/abel-desktop-linux-amd64.deb"
           fi
 
           echo "version=${version}" >> "$GITHUB_OUTPUT"
@@ -445,7 +445,7 @@ jobs:
           fi
 
           git add PKGBUILD .SRCINFO
-          git -c user.name="OpenWork Release Bot" \
+          git -c user.name="Abel Release Bot" \
               -c user.email="release-bot@users.noreply.github.com" \
               commit -m "chore(aur): update PKGBUILD for ${RELEASE_TAG#v}"
 

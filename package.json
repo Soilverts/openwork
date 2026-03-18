@@ -3,8 +3,10 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "dev": "OPENWORK_DEV_MODE=1 pnpm --filter @different-ai/openwork dev",
+    "dev": "OPENWORK_DEV_MODE=1 pnpm --filter @different-ai/abel dev",
     "dev:ui": "OPENWORK_DEV_MODE=1 pnpm --filter @different-ai/openwork-ui dev",
+    "dev:abel": "OPENWORK_DEV_MODE=1 pnpm --filter @different-ai/abel-app dev",
+    "build:abel": "pnpm --filter @different-ai/abel-app build",
     "dev:web": "OPENWORK_DEV_MODE=1 pnpm --filter @different-ai/openwork-web dev",
     "dev:web-local": "OPENWORK_DEV_MODE=1 bash scripts/dev-web-local.sh",
     "dev:den-docker": "bash packaging/docker/den-dev-up.sh",
@@ -33,7 +35,7 @@
     "release:prepare:dry": "node scripts/release/prepare.mjs --dry-run",
     "release:ship": "node scripts/release/ship.mjs",
     "release:ship:watch": "node scripts/release/ship.mjs --watch",
-    "tauri": "pnpm --filter @different-ai/openwork exec tauri"
+    "tauri": "pnpm --filter @different-ai/abel exec tauri"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

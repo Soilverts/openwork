@@ -3,6 +3,33 @@
 version = 4
 
 [[package]]
+name = "abel"
+version = "0.1.0"
+dependencies = [
+ "gethostname",
+ "json5",
+ "local-ip-address",
+ "notify",
+ "objc2",
+ "objc2-foundation",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-deep-link",
+ "tauri-plugin-dialog",
+ "tauri-plugin-http",
+ "tauri-plugin-opener",
+ "tauri-plugin-process",
+ "tauri-plugin-shell",
+ "tauri-plugin-updater",
+ "ureq",
+ "uuid",
+ "walkdir",
+ "zip 0.6.6",
+]
+
+[[package]]
 name = "adler2"
 version = "2.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2770,33 +2797,6 @@ name = "openssl-probe"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7c87def4c32ab89d880effc9e097653c8da5d6ef28e6b539d313baaacfbafcbe"
-
-[[package]]
-name = "openwork"
-version = "0.11.163"
-dependencies = [
- "gethostname",
- "json5",
- "local-ip-address",
- "notify",
- "objc2",
- "objc2-foundation",
- "serde",
- "serde_json",
- "tauri",
- "tauri-build",
- "tauri-plugin-deep-link",
- "tauri-plugin-dialog",
- "tauri-plugin-http",
- "tauri-plugin-opener",
- "tauri-plugin-process",
- "tauri-plugin-shell",
- "tauri-plugin-updater",
- "ureq",
- "uuid",
- "walkdir",
- "zip 0.6.6",
-]
 
 [[package]]
 name = "option-ext"

@@ -9,7 +9,7 @@ use tauri_plugin_shell::process::{CommandChild, CommandEvent};
 use tauri_plugin_shell::ShellExt;
 
 use crate::paths::home_dir;
-use crate::paths::{prepended_path_env, sidecar_path_candidates};
+use crate::paths::{prepended_path_env_with_bundled, sidecar_path_candidates};
 use crate::types::{
     OrchestratorBinaryState, OrchestratorDaemonState, OrchestratorOpencodeState,
     OrchestratorSidecarInfo, OrchestratorStatus, OrchestratorWorkspace,
@@ -270,8 +270,13 @@ pub fn spawn_orchestrator_daemon(
         .and_then(|path| path.parent().map(|parent| parent.to_path_buf()));
     let sidecar_paths =
         sidecar_path_candidates(resource_dir.as_deref(), current_bin_dir.as_deref());
-    if let Some(path_env) = prepended_path_env(&sidecar_paths) {
+    let bundled_paths = crate::bundled_tools::bundled_tool_paths(app);
+    if let Some(path_env) = prepended_path_env_with_bundled(&sidecar_paths, &bundled_paths) {
         command = command.env("PATH", path_env);
+    }
+
+    for (key, value) in crate::bundled_tools::npm_env_overrides(app) {
+        command = command.env(key, value);
     }
 
     for (key, value) in crate::bun_env::bun_env_overrides() {
