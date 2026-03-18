@@ -160,23 +160,32 @@ pub fn ensure_bundled_tools(app: &AppHandle) -> Result<(), String> {
 
     eprintln!("[abel] Extracting bundled tools (first launch)...");
 
-    // Remove old extraction
-    if data_dir.exists() {
-        let _ = fs::remove_dir_all(&data_dir);
+    // Extract to a temp directory first, then atomically rename.
+    // This avoids a race condition when two app instances launch simultaneously.
+    let tmp_dir = data_dir.with_extension("installing");
+    if tmp_dir.exists() {
+        let _ = fs::remove_dir_all(&tmp_dir);
     }
 
-    copy_dir_recursive(&resource_dir, &data_dir)?;
+    copy_dir_recursive(&resource_dir, &tmp_dir)?;
 
     // Ad-hoc codesign on macOS
     #[cfg(target_os = "macos")]
     {
         eprintln!("[abel] Codesigning bundled tools...");
-        adhoc_codesign_dir(&data_dir.join("node"));
-        adhoc_codesign_dir(&data_dir.join("git"));
+        adhoc_codesign_dir(&tmp_dir.join("node"));
+        adhoc_codesign_dir(&tmp_dir.join("git"));
     }
 
     // Create npm config for writable prefix
-    setup_npm_config(&data_dir)?;
+    setup_npm_config(&tmp_dir)?;
+
+    // Atomic swap: remove old, rename temp to final
+    if data_dir.exists() {
+        let _ = fs::remove_dir_all(&data_dir);
+    }
+    fs::rename(&tmp_dir, &data_dir)
+        .map_err(|e| format!("Failed to install bundled tools: {e}"))?;
 
     eprintln!("[abel] Bundled tools ready.");
     Ok(())

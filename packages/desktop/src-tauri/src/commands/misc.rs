@@ -712,6 +712,23 @@ pub fn opencode_db_migrate(
         resolve_opencode_program(&app, prefer_sidecar.unwrap_or(false), opencode_bin_path)?;
 
     let mut command = command_for_program(&program);
+    let resource_dir = app.path().resource_dir().ok();
+    let current_bin_dir = tauri::process::current_binary(&app.env())
+        .ok()
+        .and_then(|p| p.parent().map(|p| p.to_path_buf()));
+    let sidecar_paths = crate::paths::sidecar_path_candidates(
+        resource_dir.as_deref(),
+        current_bin_dir.as_deref(),
+    );
+    let bundled_paths = crate::bundled_tools::bundled_tool_paths(&app);
+    if let Some(path_env) =
+        crate::paths::prepended_path_env_with_bundled(&sidecar_paths, &bundled_paths)
+    {
+        command.env("PATH", path_env);
+    }
+    for (key, value) in crate::bundled_tools::npm_env_overrides(&app) {
+        command.env(key, value);
+    }
     for (key, value) in crate::bun_env::bun_env_overrides() {
         command.env(key, value);
     }
@@ -746,6 +763,23 @@ pub fn opencode_mcp_auth(
     let program = resolve_opencode_program(&app, true, None)?;
 
     let mut command = command_for_program(&program);
+    let resource_dir = app.path().resource_dir().ok();
+    let current_bin_dir = tauri::process::current_binary(&app.env())
+        .ok()
+        .and_then(|p| p.parent().map(|p| p.to_path_buf()));
+    let sidecar_paths = crate::paths::sidecar_path_candidates(
+        resource_dir.as_deref(),
+        current_bin_dir.as_deref(),
+    );
+    let bundled_paths = crate::bundled_tools::bundled_tool_paths(&app);
+    if let Some(path_env) =
+        crate::paths::prepended_path_env_with_bundled(&sidecar_paths, &bundled_paths)
+    {
+        command.env("PATH", path_env);
+    }
+    for (key, value) in crate::bundled_tools::npm_env_overrides(&app) {
+        command.env(key, value);
+    }
     for (key, value) in crate::bun_env::bun_env_overrides() {
         command.env(key, value);
     }
