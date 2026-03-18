@@ -14,7 +14,7 @@
  *   ABEL_SKIP_BUNDLED_TOOLS   - Set to "1" to skip this step entirely
  */
 
-import { createWriteStream, existsSync, mkdirSync, readFileSync, writeFileSync, chmodSync, readdirSync, statSync, copyFileSync, unlinkSync } from "fs";
+import { createWriteStream, existsSync, mkdirSync, readFileSync, writeFileSync, chmodSync, readdirSync, statSync, copyFileSync, unlinkSync, rmSync, renameSync } from "fs";
 import { dirname, join, resolve } from "path";
 import { tmpdir, platform, arch } from "os";
 import { fileURLToPath } from "url";
@@ -140,11 +140,9 @@ function flattenSingleSubdir(dir) {
     if (statSync(subdir).isDirectory()) {
       const innerEntries = readdirSync(subdir);
       for (const entry of innerEntries) {
-        const src = join(subdir, entry);
-        const dest = join(dir, entry);
-        spawnSync("mv", [src, dest], { stdio: "inherit" });
+        renameSync(join(subdir, entry), join(dir, entry));
       }
-      spawnSync("rmdir", [subdir], { stdio: "inherit" });
+      rmSync(subdir, { recursive: true, force: true });
     }
   }
 }
@@ -213,7 +211,7 @@ async function prepareNode() {
 
   // Clean existing
   if (existsSync(nodeDir)) {
-    spawnSync("rm", ["-rf", nodeDir], { stdio: "inherit" });
+    rmSync(nodeDir, { recursive: true, force: true });
   }
   mkdirSync(nodeDir, { recursive: true });
 
@@ -229,7 +227,7 @@ async function prepareNode() {
   for (const dir of stripDirs) {
     const target = join(nodeDir, dir);
     if (existsSync(target)) {
-      spawnSync("rm", ["-rf", target], { stdio: "inherit" });
+      rmSync(target, { recursive: true, force: true });
     }
   }
 
@@ -301,7 +299,7 @@ async function prepareGit() {
   }
 
   if (existsSync(gitDir)) {
-    spawnSync("rm", ["-rf", gitDir], { stdio: "inherit" });
+    rmSync(gitDir, { recursive: true, force: true });
   }
   mkdirSync(gitDir, { recursive: true });
 

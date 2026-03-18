@@ -39,7 +39,7 @@ fn needs_extraction(resource_dir: &Path, data_dir: &Path) -> bool {
 
     let bundled = match fs::read_to_string(&bundled_versions) {
         Ok(content) => content,
-        Err(_) => return false, // No bundled tools available
+        Err(_) => return true, // Read failed after exists() check; re-extract to be safe
     };
 
     let extracted = match fs::read_to_string(&extracted_versions) {

@@ -2,7 +2,7 @@
 
 use std::time::{Duration, Instant};
 
-use tauri::{AppHandle, State};
+use tauri::{AppHandle, Manager, State};
 use tauri_plugin_shell::process::CommandEvent;
 
 use crate::opencode_router::manager::OpenCodeRouterManager;
@@ -446,10 +446,25 @@ pub async fn opencodeRouter_config_set(
 ) -> Result<(), String> {
     use tauri_plugin_shell::ShellExt;
 
-    let command = match app.shell().sidecar("opencode-router") {
+    let mut command = match app.shell().sidecar("opencode-router") {
         Ok(command) => command,
         Err(_) => app.shell().command("opencode-router"),
     };
+
+    let resource_dir = app.path().resource_dir().ok();
+    let current_bin_dir = tauri::process::current_binary(&app.env())
+        .ok()
+        .and_then(|path| path.parent().map(|p| p.to_path_buf()));
+    let sidecar_paths = crate::paths::sidecar_path_candidates(
+        resource_dir.as_deref(),
+        current_bin_dir.as_deref(),
+    );
+    let bundled_paths = crate::bundled_tools::bundled_tool_paths(&app);
+    if let Some(path_env) =
+        crate::paths::prepended_path_env_with_bundled(&sidecar_paths, &bundled_paths)
+    {
+        command = command.env("PATH", path_env);
+    }
 
     let output = command
         .args(["config", "set", &key, &value])
@@ -472,10 +487,25 @@ async fn opencodeRouter_json(
 ) -> Result<serde_json::Value, String> {
     use tauri_plugin_shell::ShellExt;
 
-    let command = match app.shell().sidecar("opencode-router") {
+    let mut command = match app.shell().sidecar("opencode-router") {
         Ok(command) => command,
         Err(_) => app.shell().command("opencode-router"),
     };
+
+    let resource_dir = app.path().resource_dir().ok();
+    let current_bin_dir = tauri::process::current_binary(&app.env())
+        .ok()
+        .and_then(|path| path.parent().map(|p| p.to_path_buf()));
+    let sidecar_paths = crate::paths::sidecar_path_candidates(
+        resource_dir.as_deref(),
+        current_bin_dir.as_deref(),
+    );
+    let bundled_paths = crate::bundled_tools::bundled_tool_paths(app);
+    if let Some(path_env) =
+        crate::paths::prepended_path_env_with_bundled(&sidecar_paths, &bundled_paths)
+    {
+        command = command.env("PATH", path_env);
+    }
 
     let output = command
         .args(args)
@@ -495,10 +525,25 @@ async fn opencodeRouter_json(
 async fn opencodeRouter_version(app: &AppHandle) -> Option<String> {
     use tauri_plugin_shell::ShellExt;
 
-    let command = match app.shell().sidecar("opencode-router") {
+    let mut command = match app.shell().sidecar("opencode-router") {
         Ok(command) => command,
         Err(_) => app.shell().command("opencode-router"),
     };
+
+    let resource_dir = app.path().resource_dir().ok();
+    let current_bin_dir = tauri::process::current_binary(&app.env())
+        .ok()
+        .and_then(|path| path.parent().map(|p| p.to_path_buf()));
+    let sidecar_paths = crate::paths::sidecar_path_candidates(
+        resource_dir.as_deref(),
+        current_bin_dir.as_deref(),
+    );
+    let bundled_paths = crate::bundled_tools::bundled_tool_paths(app);
+    if let Some(path_env) =
+        crate::paths::prepended_path_env_with_bundled(&sidecar_paths, &bundled_paths)
+    {
+        command = command.env("PATH", path_env);
+    }
 
     let output = command.args(["--version"]).output().await.ok()?;
     if !output.status.success() {

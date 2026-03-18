@@ -12,6 +12,7 @@ use std::time::{Duration, Instant};
 use std::time::{SystemTime, UNIX_EPOCH};
 use tauri::AppHandle;
 use tauri::Emitter;
+use tauri::Manager;
 use tauri::State;
 use tauri_plugin_shell::ShellExt;
 use uuid::Uuid;
@@ -880,7 +881,28 @@ pub fn orchestrator_start_detached(
             }),
         );
 
-        if let Err(err) = command.args(str_args).spawn() {
+        let mut command = command.args(str_args);
+
+        // Inject bundled tools PATH
+        let resource_dir = app.path().resource_dir().ok();
+        let current_bin_dir = tauri::process::current_binary(&app.env())
+            .ok()
+            .and_then(|path| path.parent().map(|p| p.to_path_buf()));
+        let sidecar_paths = crate::paths::sidecar_path_candidates(
+            resource_dir.as_deref(),
+            current_bin_dir.as_deref(),
+        );
+        let bundled_paths = crate::bundled_tools::bundled_tool_paths(&app);
+        if let Some(path_env) =
+            crate::paths::prepended_path_env_with_bundled(&sidecar_paths, &bundled_paths)
+        {
+            command = command.env("PATH", path_env);
+        }
+        for (key, value) in crate::bundled_tools::npm_env_overrides(&app) {
+            command = command.env(key, value);
+        }
+
+        if let Err(err) = command.spawn() {
             emit_sandbox_progress(
                 &app,
                 &sandbox_run_id,
