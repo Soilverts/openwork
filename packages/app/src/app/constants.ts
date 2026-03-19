@@ -84,9 +84,7 @@ export const MCP_QUICK_CONNECT: McpDirectoryInfo[] = [
   },
   {
     id: "chrome-devtools",
-    get name() {
-      return t("mcp_desc.chrome_title", currentLocale());
-    },
+    name: "Chrome DevTools",
     get description() {
       return t("mcp_desc.chrome_desc", currentLocale());
     },
