@@ -29,6 +29,14 @@ export default defineConfig({
   plugins: [tailwindcss(), solid()],
   resolve: {
     alias: {
+      // Force ALL modules to use the same solid-js instance from packages/app.
+      // Without this, pnpm may resolve to two different versions (e.g. 1.9.9 vs 1.9.10),
+      // breaking SolidJS reactivity across cross-package imports (SSE events won't
+      // trigger UI updates because signals come from a different solid-js copy).
+      "solid-js/web": resolve(__dirname, "../app/node_modules/solid-js/web"),
+      "solid-js/store": resolve(__dirname, "../app/node_modules/solid-js/store"),
+      "solid-js": resolve(__dirname, "../app/node_modules/solid-js"),
+      "@solidjs/router": resolve(__dirname, "../app/node_modules/@solidjs/router"),
       // Redirect the original OpenWork logo component to Abel's logo
       "../../app/src/app/components/openwork-logo": resolve(__dirname, "src/abel-logo.tsx"),
       "../components/openwork-logo": resolve(__dirname, "src/abel-logo.tsx"),
