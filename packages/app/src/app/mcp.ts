@@ -1,19 +1,20 @@
 import { parse } from "jsonc-parser";
 import type { McpServerConfig, McpServerEntry } from "./types";
 import { readOpencodeConfig, writeOpencodeConfig } from "./lib/tauri";
+import { t, currentLocale } from "../i18n";
 
 type McpConfigValue = Record<string, unknown> | null | undefined;
 
 export function validateMcpServerName(name: string): string {
   const trimmed = name.trim();
   if (!trimmed) {
-    throw new Error("server_name is required");
+    throw new Error(t("mcp_validation.name_required", currentLocale()));
   }
   if (trimmed.startsWith("-")) {
-    throw new Error("server_name must not start with '-'");
+    throw new Error(t("mcp_validation.name_no_dash", currentLocale()));
   }
   if (!/^[A-Za-z0-9_-]+$/.test(trimmed)) {
-    throw new Error("server_name must be alphanumeric with '-' or '_'");
+    throw new Error(t("mcp_validation.name_alphanumeric", currentLocale()));
   }
   return trimmed;
 }
@@ -42,7 +43,7 @@ export async function removeMcpFromConfig(
     `${JSON.stringify(existingConfig, null, 2)}\n`,
   );
   if (!writeResult.ok) {
-    throw new Error(writeResult.stderr || writeResult.stdout || "Failed to write opencode.json");
+    throw new Error(writeResult.stderr || writeResult.stdout || t("mcp_validation.failed_write", currentLocale()));
   }
 }
 

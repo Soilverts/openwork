@@ -239,7 +239,7 @@ export function createExtensionsStore(options: {
             }))
           : [];
         setHubSkills(next);
-        if (!next.length) setHubSkillsStatus("No hub skills found.");
+        if (!next.length) setHubSkillsStatus(translate("extensions_ctx.no_hub_skills"));
         hubSkillsLoaded = true;
         hubSkillsLoadKey = loadKey;
         return;
@@ -253,7 +253,7 @@ export function createExtensionsStore(options: {
         },
       );
       if (!listingRes.ok) {
-        throw new Error(`Failed to fetch hub catalog (${listingRes.status})`);
+        throw new Error(`${translate("extensions_ctx.failed_hub_catalog")} (${listingRes.status})`);
       }
       const listing = (await listingRes.json()) as any;
       const dirs: string[] = Array.isArray(listing)
@@ -270,13 +270,13 @@ export function createExtensionsStore(options: {
       if (refreshHubSkillsAborted) return;
       const sorted = next.slice().sort((a, b) => a.name.localeCompare(b.name));
       setHubSkills(sorted);
-      if (!sorted.length) setHubSkillsStatus("No hub skills found.");
+      if (!sorted.length) setHubSkillsStatus(translate("extensions_ctx.no_hub_skills"));
       hubSkillsLoaded = true;
       hubSkillsLoadKey = loadKey;
     } catch (e) {
       if (refreshHubSkillsAborted) return;
       setHubSkills([]);
-      setHubSkillsStatus(e instanceof Error ? e.message : "Failed to load hub skills.");
+      setHubSkillsStatus(e instanceof Error ? e.message : translate("extensions_ctx.failed_load_hub"));
     } finally {
       refreshHubSkillsInFlight = false;
     }
@@ -300,9 +300,9 @@ export function createExtensionsStore(options: {
 
     if (!canUseOpenworkServer) {
       if (isRemoteWorkspace) {
-        return { ok: false, message: "OpenWork server unavailable. Connect to install skills." };
+        return { ok: false, message: translate("extensions_ctx.server_unavailable_install") };
       }
-      return { ok: false, message: "Hub install requires OpenWork server." };
+      return { ok: false, message: translate("extensions_ctx.hub_install_requires_server") };
     }
 
     options.setBusy(true);
@@ -323,7 +323,7 @@ export function createExtensionsStore(options: {
       await refreshSkills({ force: true });
       await refreshHubSkills({ force: true });
       if (!result?.ok) {
-        return { ok: false, message: "Install failed." };
+        return { ok: false, message: translate("extensions_ctx.install_failed") };
       }
       return { ok: true, message: `Installed ${trimmed}.` };
     } catch (e) {
@@ -461,7 +461,7 @@ export function createExtensionsStore(options: {
     const c = options.client();
     if (!c) {
       setSkills([]);
-      setSkillsStatus("OpenWork server unavailable. Connect to load skills.");
+      setSkillsStatus(translate("extensions_ctx.server_unavailable_skills"));
       return;
     }
 
@@ -552,9 +552,9 @@ export function createExtensionsStore(options: {
     const targetDir = options.projectDir().trim();
 
     if (scope !== "project" && !isLocalWorkspace) {
-      setPluginStatus("Global plugins are only available for local workers.");
+      setPluginStatus(translate("extensions_ctx.global_plugins_local_only"));
       setPluginList([]);
-      setSidebarPluginStatus("Global plugins require a local worker.");
+      setSidebarPluginStatus(translate("extensions_ctx.global_plugins_require_local"));
       setSidebarPluginList([]);
       refreshPluginsInFlight = false;
       return;
@@ -579,14 +579,14 @@ export function createExtensionsStore(options: {
         setSidebarPluginList(list);
 
         if (!list.length) {
-          setPluginStatus("No plugins configured yet.");
+          setPluginStatus(translate("extensions_ctx.no_plugins"));
         }
       } catch (e) {
         if (refreshPluginsAborted) return;
         setPluginList([]);
-        setSidebarPluginStatus("Failed to load plugins.");
+        setSidebarPluginStatus(translate("extensions_ctx.failed_load_plugins"));
         setSidebarPluginList([]);
-        setPluginStatus(e instanceof Error ? e.message : "Failed to load plugins.");
+        setPluginStatus(e instanceof Error ? e.message : translate("extensions_ctx.failed_load_plugins"));
       } finally {
         refreshPluginsInFlight = false;
       }
@@ -604,9 +604,9 @@ export function createExtensionsStore(options: {
     }
 
     if (!isLocalWorkspace && !canUseOpenworkServer) {
-      setPluginStatus("OpenWork server unavailable. Connect to manage plugins.");
+      setPluginStatus(translate("extensions_ctx.server_unavailable_plugins"));
       setPluginList([]);
-      setSidebarPluginStatus("Connect an OpenWork server to load plugins.");
+      setSidebarPluginStatus(translate("extensions_ctx.connect_server_plugins"));
       setSidebarPluginList([]);
       refreshPluginsInFlight = false;
       return;
@@ -688,7 +688,7 @@ export function createExtensionsStore(options: {
     }
 
     if (pluginScope() !== "project" && !isLocalWorkspace) {
-      setPluginStatus("Global plugins are only available for local workers.");
+      setPluginStatus(translate("extensions_ctx.global_plugins_local_only"));
       return;
     }
 
@@ -701,7 +701,7 @@ export function createExtensionsStore(options: {
         }
         await refreshPlugins("project");
       } catch (e) {
-        setPluginStatus(e instanceof Error ? e.message : "Failed to add plugin.");
+        setPluginStatus(e instanceof Error ? e.message : translate("extensions_ctx.failed_add_plugin"));
       }
       return;
     }
@@ -712,7 +712,7 @@ export function createExtensionsStore(options: {
     }
 
     if (!isLocalWorkspace && !canUseOpenworkServer) {
-      setPluginStatus("OpenWork server unavailable. Connect to manage plugins.");
+      setPluginStatus(translate("extensions_ctx.server_unavailable_plugins"));
       return;
     }
 
@@ -785,7 +785,7 @@ export function createExtensionsStore(options: {
       openworkCapabilities?.plugins?.write;
 
     if (pluginScope() !== "project" && !isLocalWorkspace) {
-      setPluginStatus("Global plugins are only available for local workers.");
+      setPluginStatus(translate("extensions_ctx.global_plugins_local_only"));
       return;
     }
 
@@ -795,7 +795,7 @@ export function createExtensionsStore(options: {
         await openworkClient.removePlugin(openworkWorkspaceId, name);
         await refreshPlugins("project");
       } catch (e) {
-        setPluginStatus(e instanceof Error ? e.message : "Failed to remove plugin.");
+        setPluginStatus(e instanceof Error ? e.message : translate("extensions_ctx.failed_remove_plugin"));
       }
       return;
     }
@@ -806,7 +806,7 @@ export function createExtensionsStore(options: {
     }
 
     if (!isLocalWorkspace && !canUseOpenworkServer) {
-      setPluginStatus("OpenWork server unavailable. Connect to manage plugins.");
+      setPluginStatus(translate("extensions_ctx.server_unavailable_plugins"));
       return;
     }
 
@@ -823,7 +823,7 @@ export function createExtensionsStore(options: {
       const config = await readOpencodeConfig(scope, targetDir);
       const raw = config.content ?? "";
       if (!raw.trim()) {
-        setPluginStatus("No plugins configured yet.");
+        setPluginStatus(translate("extensions_ctx.no_plugins"));
         return;
       }
 
@@ -831,7 +831,7 @@ export function createExtensionsStore(options: {
       const desired = stripPluginVersion(name).toLowerCase();
       const next = plugins.filter((entry) => stripPluginVersion(entry).toLowerCase() !== desired);
       if (next.length === plugins.length) {
-        setPluginStatus("Plugin not found.");
+        setPluginStatus(translate("extensions_ctx.plugin_not_found"));
         return;
       }
 
@@ -856,7 +856,7 @@ export function createExtensionsStore(options: {
     }
 
     if (!isLocalWorkspace) {
-      options.setError("Local workers are required to import skills.");
+      options.setError(translate("extensions_ctx.local_required_import"));
       return;
     }
 
@@ -942,7 +942,7 @@ export function createExtensionsStore(options: {
 
     // Remote workspace without server
     if (isRemoteWorkspace) {
-      const message = "OpenWork server unavailable. Connect to install skills.";
+      const message = translate("extensions_ctx.server_unavailable_install");
       setSkillsStatus(message);
       return { ok: false, message };
     }
@@ -954,7 +954,7 @@ export function createExtensionsStore(options: {
     }
 
     if (!isLocalWorkspace) {
-      const message = "Local workers are required to install skills.";
+      const message = translate("extensions_ctx.local_required_install");
       options.setError(message);
       setSkillsStatus(message);
       return { ok: false, message };
@@ -1049,7 +1049,7 @@ export function createExtensionsStore(options: {
     }
 
     if (options.workspaceType() !== "local") {
-      options.setError("Local workers are required to uninstall skills.");
+      options.setError(translate("extensions_ctx.local_required_uninstall"));
       return;
     }
 
@@ -1128,7 +1128,7 @@ export function createExtensionsStore(options: {
     }
 
     if (isRemoteWorkspace) {
-      setSkillsStatus("OpenWork server unavailable. Connect to view skills.");
+      setSkillsStatus(translate("extensions_ctx.server_unavailable_view"));
       return null;
     }
 
@@ -1138,7 +1138,7 @@ export function createExtensionsStore(options: {
     }
 
     if (!isLocalWorkspace) {
-      setSkillsStatus("Local workers are required to view skills.");
+      setSkillsStatus(translate("extensions_ctx.local_required_view"));
       return null;
     }
 
@@ -1196,7 +1196,7 @@ export function createExtensionsStore(options: {
     }
 
     if (isRemoteWorkspace) {
-      setSkillsStatus("OpenWork server unavailable. Connect to edit skills.");
+      setSkillsStatus(translate("extensions_ctx.server_unavailable_edit"));
       return;
     }
 

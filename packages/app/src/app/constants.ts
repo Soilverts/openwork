@@ -1,4 +1,5 @@
 import type { ModelRef, SuggestedPlugin } from "./types";
+import { t, currentLocale } from "../i18n";
 
 export const MODEL_PREF_KEY = "openwork.defaultModel";
 export const SESSION_MODEL_PREF_KEY = "openwork.sessionModels";
@@ -17,7 +18,9 @@ export const SUGGESTED_PLUGINS: SuggestedPlugin[] = [
   {
     name: "opencode-scheduler",
     packageName: "opencode-scheduler",
-    description: "Run scheduled jobs with the OpenCode scheduler plugin.",
+    get description() {
+      return t("mcp_desc.scheduler", currentLocale());
+    },
     tags: ["automation", "jobs"],
     installMode: "simple",
   },
@@ -36,43 +39,57 @@ export type McpDirectoryInfo = {
 export const MCP_QUICK_CONNECT: McpDirectoryInfo[] = [
   {
     name: "Notion",
-    description: "Pages, databases, and project docs in sync.",
+    get description() {
+      return t("mcp_desc.notion", currentLocale());
+    },
     url: "https://mcp.notion.com/mcp",
     type: "remote",
     oauth: true,
   },
   {
     name: "Linear",
-    description: "Plan sprints and ship tickets faster.",
+    get description() {
+      return t("mcp_desc.linear", currentLocale());
+    },
     url: "https://mcp.linear.app/mcp",
     type: "remote",
     oauth: true,
   },
   {
     name: "Sentry",
-    description: "Track releases and resolve production errors.",
+    get description() {
+      return t("mcp_desc.sentry", currentLocale());
+    },
     url: "https://mcp.sentry.dev/mcp",
     type: "remote",
     oauth: true,
   },
   {
     name: "Stripe",
-    description: "Inspect payments, invoices, and subscriptions.",
+    get description() {
+      return t("mcp_desc.stripe", currentLocale());
+    },
     url: "https://mcp.stripe.com",
     type: "remote",
     oauth: true,
   },
   {
     name: "Context7",
-    description: "Search product docs with richer context.",
+    get description() {
+      return t("mcp_desc.context7", currentLocale());
+    },
     url: "https://mcp.context7.com/mcp",
     type: "remote",
     oauth: false,
   },
   {
     id: "chrome-devtools",
-    name: "Control Chrome",
-    description: "Drive Chrome tabs with browser automation.",
+    get name() {
+      return t("mcp_desc.chrome_title", currentLocale());
+    },
+    get description() {
+      return t("mcp_desc.chrome_desc", currentLocale());
+    },
     type: "local",
     command: ["npx", "-y", "chrome-devtools-mcp@latest"],
     oauth: false,

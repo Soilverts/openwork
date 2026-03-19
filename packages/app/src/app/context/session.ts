@@ -2,6 +2,7 @@ import { batch, createEffect, createMemo, createSignal, onCleanup } from "solid-
 import { createStore, produce, reconcile } from "solid-js/store";
 
 import type { Message, Part, Session } from "@opencode-ai/sdk/v2/client";
+import { t, currentLocale } from "../../i18n";
 
 import type {
   Client,
@@ -843,7 +844,7 @@ export function createSessionStore(options: {
         mark("health FAILED", {
           error: error instanceof Error ? error.message : safeStringify(error),
         });
-        throw new Error("Server connection lost. Please reload.");
+        throw new Error(t("session_ctx.connection_lost", currentLocale()));
       }
       if (abortIfStale("selection changed after health")) return;
 

@@ -1,6 +1,7 @@
 import { createContext, createEffect, useContext, type ParentProps } from "solid-js";
 import { createStore, type SetStoreFunction, type Store } from "solid-js/store";
 
+import { t, currentLocale } from "../../i18n";
 import type {
   Config,
   ConfigProvidersResponse,
@@ -184,7 +185,7 @@ export function GlobalSyncProvider(props: ParentProps) {
     try {
       const health = unwrap(await globalSDK.client().global.health()) as GlobalHealthResponse;
       if (!health?.healthy) {
-        setGlobalStore("error", "Server reported unhealthy status.");
+        setGlobalStore("error", t("global_sync.server_unhealthy", currentLocale()));
         return;
       }
 
