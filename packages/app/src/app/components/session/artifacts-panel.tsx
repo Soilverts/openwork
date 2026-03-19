@@ -1,5 +1,6 @@
 import { For, Show, createMemo, createSignal } from "solid-js";
 import { Paperclip } from "lucide-solid";
+import { t } from "../../../i18n";
 
 export type ArtifactsPanelProps = {
   files: string[];
@@ -98,7 +99,7 @@ export default function ArtifactsPanel(props: ArtifactsPanelProps) {
   return (
     <div id={props.id}>
       <div class="flex items-center justify-between px-2 mb-3">
-        <span class="text-[11px] font-semibold uppercase tracking-wider text-gray-10">Artifacts</span>
+        <span class="text-[11px] font-semibold uppercase tracking-wider text-gray-10">{t("artifacts.title")}</span>
         <Show when={normalizedArtifacts().length > 0}>
           <span class="text-[11px] font-medium bg-gray-4/60 text-gray-10 px-1.5 rounded">
             {normalizedArtifacts().length}
@@ -109,7 +110,7 @@ export default function ArtifactsPanel(props: ArtifactsPanelProps) {
       <div class="space-y-1">
         <Show
           when={visibleArtifacts().length > 0}
-          fallback={<div class="text-xs text-gray-10 px-2 py-1">No artifacts yet.</div>}
+          fallback={<div class="text-xs text-gray-10 px-2 py-1">{t("artifacts.empty")}</div>}
         >
           <For each={visibleArtifacts()}>
             {(artifact) => {
@@ -131,12 +132,12 @@ export default function ArtifactsPanel(props: ArtifactsPanelProps) {
                       <div class="truncate text-xs font-medium text-gray-11">{base()}</div>
                       <Show when={md()}>
                         <span class="shrink-0 rounded-md border border-gray-6 bg-gray-2 px-1.5 py-0.5 text-[10px] font-mono text-gray-10">
-                          MD
+                          {t("artifacts.badge_md")}
                         </span>
                       </Show>
                       <Show when={img()}>
                         <span class="shrink-0 rounded-md border border-gray-6 bg-gray-2 px-1.5 py-0.5 text-[10px] font-mono text-gray-10">
-                          IMG
+                          {t("artifacts.badge_img")}
                         </span>
                       </Show>
                     </div>
@@ -178,7 +179,7 @@ export default function ArtifactsPanel(props: ArtifactsPanelProps) {
             class="w-full mt-1 rounded-lg px-2 py-1.5 text-xs text-gray-10 hover:text-gray-11 hover:bg-gray-3 transition-colors"
             onClick={() => setShowAll((prev) => !prev)}
           >
-            {showAll() ? "Show fewer" : `Show ${hiddenCount()} more`}
+            {showAll() ? t("artifacts.show_fewer") : t("artifacts.show_more").replace("{count}", String(hiddenCount()))}
           </button>
         </Show>
       </div>

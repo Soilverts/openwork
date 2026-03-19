@@ -1,4 +1,5 @@
 import os from "node:os";
+import { resolve } from "node:path";
 import { defineConfig } from "vite";
 import tailwindcss from "@tailwindcss/vite";
 import solid from "vite-plugin-solid";
@@ -26,6 +27,28 @@ if (shortHostname && shortHostname !== hostname) {
 
 export default defineConfig({
   plugins: [tailwindcss(), solid()],
+  resolve: {
+    alias: {
+      // Redirect the original OpenWork logo component to Abel's logo
+      "../../app/src/app/components/openwork-logo": resolve(__dirname, "src/abel-logo.tsx"),
+      "../components/openwork-logo": resolve(__dirname, "src/abel-logo.tsx"),
+      "./openwork-logo": resolve(__dirname, "src/abel-logo.tsx"),
+    },
+    dedupe: [
+      "solid-js",
+      "solid-js/web",
+      "solid-js/store",
+      "@solidjs/router",
+      "@tauri-apps/api",
+      "@tauri-apps/plugin-opener",
+      "@tauri-apps/plugin-process",
+      "@tauri-apps/plugin-dialog",
+      "@tauri-apps/plugin-http",
+      "@tauri-apps/plugin-updater",
+      "@tauri-apps/plugin-deep-link",
+      "@opencode-ai/sdk",
+    ],
+  },
   server: {
     port: devPort,
     strictPort: true,

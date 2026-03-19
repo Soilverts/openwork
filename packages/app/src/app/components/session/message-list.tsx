@@ -38,6 +38,7 @@ import {
 } from "../../utils";
 import PartView from "../part-view";
 import { perfNow, recordPerfLog } from "../../lib/perf-log";
+import { t } from "../../../i18n";
 
 export type MessageListProps = {
   messages: MessageWithParts[];
@@ -174,14 +175,18 @@ function summarizeExploration(parts: Part[]): ExplorationSummary {
 function formatExplorationSummary(summary: ExplorationSummary) {
   const items: string[] = [];
   if (summary.files > 0)
-    items.push(`${summary.files} file${summary.files === 1 ? "" : "s"}`);
+    items.push(
+      t(summary.files === 1 ? "message_list.file" : "message_list.files").replace("{count}", String(summary.files)),
+    );
   if (summary.searches > 0)
     items.push(
-      `${summary.searches} search${summary.searches === 1 ? "" : "es"}`,
+      t(summary.searches === 1 ? "message_list.search" : "message_list.searches").replace("{count}", String(summary.searches)),
     );
   if (summary.lists > 0)
-    items.push(`${summary.lists} list${summary.lists === 1 ? "" : "s"}`);
-  return items.length > 0 ? items.join(" · ") : "context activity";
+    items.push(
+      t(summary.lists === 1 ? "message_list.list" : "message_list.lists").replace("{count}", String(summary.lists)),
+    );
+  return items.length > 0 ? items.join(" · ") : t("message_list.context_activity");
 }
 
 function explorationStatus(parts: Part[]) {
@@ -356,49 +361,49 @@ function toolHeadline(part: Part) {
     const description = pick("description");
     if (description) return compactText(description);
     const command = pick("command", "cmd");
-    return command ? compactText(`Run ${command}`, 48) : "Run command";
+    return command ? compactText(t("message_list.run_command_with_name").replace("{command}", command), 48) : t("message_list.run_command");
   }
 
   if (tool === "read") {
     const file = target("filePath", "path", "file");
-    return file ? `Read ${file}` : "Read file";
+    return file ? t("message_list.read_file_with_name").replace("{file}", file) : t("message_list.read_file");
   }
 
   if (tool === "edit") {
     const file = target("filePath", "path", "file");
-    return file ? `Edit ${file}` : "Edit file";
+    return file ? t("message_list.edit_file_with_name").replace("{file}", file) : t("message_list.edit_file");
   }
 
   if (tool === "write" || tool === "apply_patch") {
     const file = target("filePath", "path", "file");
-    return file ? `Update ${file}` : "Update file";
+    return file ? t("message_list.update_file_with_name").replace("{file}", file) : t("message_list.update_file");
   }
 
   if (tool === "grep" || tool === "glob" || tool === "search") {
     const pattern = pick("pattern", "query");
-    return pattern ? `Search ${compactText(pattern, 36)}` : "Search code";
+    return pattern ? t("message_list.search_code_with_pattern").replace("{pattern}", compactText(pattern, 36)) : t("message_list.search_code");
   }
 
   if (tool === "list" || tool === "list_files") {
     const path = target("path");
-    return path ? `List ${path}` : "List files";
+    return path ? t("message_list.list_files_with_path").replace("{path}", path) : t("message_list.list_files");
   }
 
   if (tool === "task") {
     const description = pick("description");
     if (description) return compactText(description);
     const agent = pick("subagent_type");
-    return agent ? `Delegate ${agent}` : "Delegate task";
+    return agent ? t("message_list.delegate_task_with_agent").replace("{agent}", agent) : t("message_list.delegate_task");
   }
 
   if (tool === "webfetch") {
     const url = pick("url");
-    return url ? `Fetch ${compactText(url, 36)}` : "Fetch web page";
+    return url ? t("message_list.fetch_web_page_with_url").replace("{url}", compactText(url, 36)) : t("message_list.fetch_web_page");
   }
 
   if (tool === "skill") {
     const name = pick("name");
-    return name ? `Load skill ${name}` : "Load skill";
+    return name ? t("message_list.load_skill_with_name").replace("{name}", name) : t("message_list.load_skill");
   }
 
   return "";
@@ -812,17 +817,17 @@ export default function MessageList(props: MessageListProps) {
       const title = session()?.title?.trim();
       if (title) return title;
       if (task().description) return task().description!;
-      if (task().agentType) return `${task().agentType} task`;
-      return "Subagent session";
+      if (task().agentType) return t("message_list.task_suffix").replace("{agent}", task().agentType!);
+      return t("message_list.subagent_session");
     });
     const statusLabel = createMemo(() => {
-      if (loading()) return "Loading transcript";
-      if (streaming()) return "Running";
+      if (loading()) return t("message_list.loading_transcript");
+      if (streaming()) return t("message_list.running");
       if (childMessages().length > 0) {
         const count = childMessages().length;
-        return `${count} message${count === 1 ? "" : "s"}`;
+        return t(count === 1 ? "message_list.message_count" : "message_list.messages_count").replace("{count}", String(count));
       }
-      return "Waiting for transcript";
+      return t("message_list.waiting_transcript");
     });
 
     createEffect(() => {
@@ -862,7 +867,7 @@ export default function MessageList(props: MessageListProps) {
                   props.openSessionById?.(id);
                 }}
               >
-                Open session
+                {t("message_list.open_session")}
               </button>
             </Show>
           </div>
@@ -870,7 +875,7 @@ export default function MessageList(props: MessageListProps) {
             <div class="mt-3 rounded-[18px] border border-dls-border/70 bg-dls-surface px-3 py-3">
               <Show
                 when={childMessages().length > 0}
-                fallback={<div class="text-[12px] leading-5 text-gray-9">Waiting for the subagent transcript to arrive.</div>}
+                fallback={<div class="text-[12px] leading-5 text-gray-9">{t("message_list.waiting_subagent")}</div>}
               >
                 <MessageList
                   messages={childMessages()}
@@ -1203,7 +1208,7 @@ export default function MessageList(props: MessageListProps) {
             <div class="absolute bottom-2 right-2 flex justify-end opacity-100 pointer-events-auto md:opacity-0 md:pointer-events-none md:group-hover:opacity-100 md:group-hover:pointer-events-auto md:group-focus-within:opacity-100 md:group-focus-within:pointer-events-auto transition-opacity select-none">
               <button
                 class="text-dls-secondary hover:text-dls-text p-1 rounded hover:bg-dls-hover transition-colors"
-                title="Copy message"
+                title={t("message_list.copy_message")}
                 onClick={() => {
                   const text = block.renderableParts
                     .map((part) => partToText(part))

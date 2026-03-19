@@ -1,6 +1,7 @@
 import { Show, createMemo } from "solid-js";
 import { MessageCircle, Settings } from "lucide-solid";
 
+import { t } from "../../i18n";
 import type { OpenworkServerStatus } from "../lib/openwork-server";
 import type { McpStatusMap } from "../types";
 
@@ -46,19 +47,19 @@ export default function StatusBar(props: StatusBarProps) {
     if (props.clientConnected) {
       const detailBits: string[] = [];
       if (providers > 0) {
-        detailBits.push(`${providers} provider${providers === 1 ? "" : "s"} connected`);
+        detailBits.push(t("status_bar.providers_connected").replace("{count}", String(providers)));
       }
       if (mcp > 0) {
-        detailBits.push(`${mcp} MCP connected`);
+        detailBits.push(t("status_bar.mcp_connected").replace("{count}", String(mcp)));
       }
       if (!detailBits.length) {
-        detailBits.push("Ready for new tasks");
+        detailBits.push(t("status_bar.ready"));
       }
       if (props.developerMode) {
-        detailBits.push("Developer mode");
+        detailBits.push(t("status_bar.developer_mode"));
       }
       return {
-        label: "OpenWork Ready",
+        label: t("status_bar.abel_ready"),
         detail: detailBits.join(" · "),
         dotClass: "bg-green-9",
         pingClass: "bg-green-9/45 animate-ping",
@@ -68,11 +69,11 @@ export default function StatusBar(props: StatusBarProps) {
 
     if (props.openworkServerStatus === "limited") {
       return {
-        label: "Limited Mode",
+        label: t("status_bar.limited_mode"),
         detail:
           mcp > 0
-            ? `${mcp} MCP connected · reconnect for full features`
-            : "Reconnect to restore full OpenWork features",
+            ? t("status_bar.mcp_connected_reconnect").replace("{count}", String(mcp))
+            : t("status_bar.reconnect_full_features"),
         dotClass: "bg-amber-9",
         pingClass: "bg-amber-9/35",
         pulse: false,
@@ -80,8 +81,8 @@ export default function StatusBar(props: StatusBarProps) {
     }
 
     return {
-      label: "Disconnected",
-      detail: "Open settings to reconnect",
+      label: t("status_bar.disconnected"),
+      detail: t("status_bar.open_settings_reconnect"),
       dotClass: "bg-red-9",
       pingClass: "bg-red-9/35",
       pulse: false,
@@ -107,18 +108,18 @@ export default function StatusBar(props: StatusBarProps) {
             type="button"
             class="inline-flex h-8 items-center gap-1.5 rounded-md px-2 text-dls-secondary transition-colors hover:bg-dls-hover hover:text-dls-text"
             onClick={props.onSendFeedback}
-            title="Send feedback"
-            aria-label="Send feedback"
+            title={t("status_bar.send_feedback")}
+            aria-label={t("status_bar.send_feedback")}
           >
             <MessageCircle class="h-4 w-4" />
-            <span class="text-[11px] font-medium">Feedback</span>
+            <span class="text-[11px] font-medium">{t("status_bar.feedback")}</span>
           </button>
           <button
             type="button"
             class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-dls-secondary transition-colors hover:bg-dls-hover hover:text-dls-text"
             onClick={props.onOpenSettings}
-            title={props.settingsOpen ? "Back to previous screen" : "Settings"}
-            aria-label={props.settingsOpen ? "Back to previous screen" : "Settings"}
+            title={props.settingsOpen ? t("status_bar.back_to_previous") : t("status_bar.settings")}
+            aria-label={props.settingsOpen ? t("status_bar.back_to_previous") : t("status_bar.settings")}
           >
             <Settings class="h-4 w-4" />
           </button>

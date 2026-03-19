@@ -3,6 +3,7 @@ import { Check, ChevronDown, GripVertical, Loader2, Plus, RefreshCcw, Settings, 
 
 import type { TodoItem, WorkspaceConnectionState } from "../../types";
 import type { WorkspaceInfo } from "../../lib/tauri";
+import { t } from "../../../i18n";
 
 type SessionSummary = {
   id: string;
@@ -89,7 +90,7 @@ export default function SessionSidebar(props: SidebarProps) {
     workspace.openworkWorkspaceName?.trim() ||
     workspace.name?.trim() ||
     workspace.path?.trim() ||
-    "Worker";
+    t("sidebar.worker_fallback");
 
   const workspacePathLabel = (workspace: WorkspaceInfo) => {
     if (workspace.workspaceType === "remote") {

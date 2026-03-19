@@ -1,6 +1,7 @@
 import { For, Show, createMemo, createSignal } from "solid-js";
 
 import { CheckCircle2, ChevronRight, Circle, RefreshCcw, X, Zap } from "lucide-solid";
+import { t } from "../../i18n";
 
 export type ThinkingStep = {
   status: "pending" | "running" | "completed" | "error";
@@ -29,7 +30,7 @@ export default function ThinkingBlock(props: {
           <div class="p-1 rounded bg-gray-2 border border-gray-6 text-gray-10">
             <Zap size={12} />
           </div>
-          <span class="truncate">{activeStep()?.text ?? "Working…"}</span>
+          <span class="truncate">{activeStep()?.text ?? t("thinking.working")}</span>
           <ChevronRight
             size={12}
             class={`text-gray-7 transition-transform ${expanded() ? "rotate-90" : ""}`}

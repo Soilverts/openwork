@@ -4,6 +4,7 @@ import { ChevronDown, Circle, File, Folder, Package } from "lucide-solid";
 import { SUGGESTED_PLUGINS } from "../../constants";
 import type { McpServerEntry, McpStatus, McpStatusMap, SkillCard } from "../../types";
 import { stripPluginVersion } from "../../utils/plugins";
+import { t } from "../../../i18n";
 
 export type ContextPanelProps = {
   activePlugins: string[];
@@ -108,19 +109,19 @@ const getSmartFileName = (files: string[], file: string): string => {
 };
 
 const mcpStatusLabel = (status?: McpStatus, disabled?: boolean) => {
-  if (disabled) return "Disabled";
-  if (!status) return "Disconnected";
+  if (disabled) return t("context_panel.disabled");
+  if (!status) return t("context_panel.disconnected");
   switch (status.status) {
     case "connected":
-      return "Connected";
+      return t("context_panel.connected");
     case "needs_auth":
-      return "Needs auth";
+      return t("context_panel.needs_auth");
     case "needs_client_registration":
-      return "Register client";
+      return t("context_panel.register_client");
     case "failed":
-      return "Failed";
+      return t("context_panel.failed");
     default:
-      return "Disconnected";
+      return t("context_panel.disconnected");
   }
 };
 

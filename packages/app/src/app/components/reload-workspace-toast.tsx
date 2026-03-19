@@ -3,6 +3,7 @@ import { AlertTriangle, RefreshCcw, X } from "lucide-solid";
 
 import Button from "./button";
 import type { ReloadTrigger } from "../types";
+import { t } from "../../i18n";
 
 export type ReloadWorkspaceToastProps = {
   open: boolean;
@@ -28,50 +29,50 @@ export default function ReloadWorkspaceToast(props: ReloadWorkspaceToastProps) {
     const trimmedName = name?.trim();
     const verb =
       action === "removed"
-        ? "was removed"
+        ? t("reload_toast.was_removed")
         : action === "added"
-        ? "was added"
+        ? t("reload_toast.was_added")
         : action === "updated"
-        ? "was updated"
-        : "changed";
+        ? t("reload_toast.was_updated")
+        : t("reload_toast.changed");
 
     if (type === "skill") {
       return trimmedName
-        ? `Skill '${trimmedName}' ${verb}. Reload to use it.`
-        : "Skills changed. Reload to apply.";
+        ? t("reload_toast.skill_named").replace("{name}", trimmedName).replace("{verb}", verb)
+        : t("reload_toast.skills_changed");
     }
 
     if (type === "plugin") {
       return trimmedName
-        ? `Plugin '${trimmedName}' ${verb}. Reload to activate.`
-        : "Plugins changed. Reload to apply.";
+        ? t("reload_toast.plugin_named").replace("{name}", trimmedName).replace("{verb}", verb)
+        : t("reload_toast.plugins_changed");
     }
 
     if (type === "mcp") {
       return trimmedName
-        ? `MCP '${trimmedName}' ${verb}. Reload to connect.`
-        : "MCP config changed. Reload to apply.";
+        ? t("reload_toast.mcp_named").replace("{name}", trimmedName).replace("{verb}", verb)
+        : t("reload_toast.mcp_changed");
     }
 
     if (type === "config") {
       return trimmedName
-        ? `Config '${trimmedName}' ${verb}. Reload to apply.`
-        : "Config changed. Reload to apply.";
+        ? t("reload_toast.config_named").replace("{name}", trimmedName).replace("{verb}", verb)
+        : t("reload_toast.config_changed");
     }
 
     if (type === "agent") {
       return trimmedName
-        ? `Agent '${trimmedName}' ${verb}. Reload to use it.`
-        : "Agents changed. Reload to apply.";
+        ? t("reload_toast.agent_named").replace("{name}", trimmedName).replace("{verb}", verb)
+        : t("reload_toast.agents_changed");
     }
 
     if (type === "command") {
       return trimmedName
-        ? `Command '${trimmedName}' ${verb}. Reload to use it.`
-        : "Commands changed. Reload to apply.";
+        ? t("reload_toast.command_named").replace("{name}", trimmedName).replace("{verb}", verb)
+        : t("reload_toast.commands_changed");
     }
 
-    return "Config changed. Reload to apply.";
+    return t("reload_toast.default_changed");
   };
 
   return (
@@ -95,7 +96,7 @@ export default function ReloadWorkspaceToast(props: ReloadWorkspaceToastProps) {
                   <span class="text-sm font-semibold text-gray-12 truncate">{props.title}</span>
                   <Show when={props.hasActiveRuns}>
                     <span class="inline-flex items-center gap-1 rounded-full bg-amber-4 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-amber-11">
-                      Active tasks
+                      {t("reload_toast.active_tasks")}
                     </span>
                   </Show>
                 </div>
@@ -104,7 +105,7 @@ export default function ReloadWorkspaceToast(props: ReloadWorkspaceToastProps) {
                   <div class="mt-1 space-y-1 text-sm leading-relaxed text-gray-10">
                     <div>
                       {props.hasActiveRuns ? (
-                        <span class="font-medium text-amber-11">Reloading will stop active tasks.</span>
+                        <span class="font-medium text-amber-11">{t("reload_toast.reloading_will_stop")}</span>
                       ) : props.error ? (
                         <span class="font-medium text-red-11">{props.error}</span>
                       ) : (
@@ -118,7 +119,7 @@ export default function ReloadWorkspaceToast(props: ReloadWorkspaceToastProps) {
                       </div>
                     </Show>
                     <Show when={props.blockedReason}>
-                      <div class="text-xs text-gray-9">Blocked: {props.blockedReason}</div>
+                      <div class="text-xs text-gray-9">{t("reload_toast.blocked_prefix")}{props.blockedReason}</div>
                     </Show>
                   </div>
                 </Show>

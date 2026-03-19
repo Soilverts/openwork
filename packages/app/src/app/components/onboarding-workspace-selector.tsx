@@ -3,6 +3,7 @@ import { For, Show, createEffect, createSignal } from "solid-js";
 import { CheckCircle2, FolderPlus, Loader2 } from "lucide-solid";
 
 import Button from "./button";
+import { t } from "../../i18n";
 
 export default function OnboardingWorkspaceSelector(props: {
   defaultPath: string;
@@ -16,13 +17,13 @@ export default function OnboardingWorkspaceSelector(props: {
   const options = () => [
     {
       id: "starter" as const,
-      name: "Starter worker",
-      desc: "Preconfigured to show you how to use plugins, commands, and skills.",
+      name: t("onboarding_workspace.starter_worker"),
+      desc: t("onboarding_workspace.starter_desc"),
     },
     {
       id: "minimal" as const,
-      name: "Empty worker",
-      desc: "Start with a blank folder and add what you need.",
+      name: t("onboarding_workspace.empty_worker"),
+      desc: t("onboarding_workspace.empty_desc"),
     },
   ];
 
@@ -54,7 +55,7 @@ export default function OnboardingWorkspaceSelector(props: {
         <div class="space-y-4">
           <div class="flex items-center gap-3 text-sm font-medium text-gray-12">
             <div class="w-6 h-6 rounded-full bg-gray-4 flex items-center justify-center text-xs">1</div>
-            Select Folder
+            {t("onboarding_workspace.select_folder")}
           </div>
           <div class="ml-9">
             <div
@@ -78,11 +79,11 @@ export default function OnboardingWorkspaceSelector(props: {
                 >
                   <Show
                     when={pickingFolder()}
-                    fallback={<span>Choose</span>}
+                    fallback={<span>{t("onboarding_workspace.choose")}</span>}
                   >
                     <span class="inline-flex items-center gap-2">
                       <Loader2 size={12} class="animate-spin" />
-                      Opening...
+                      {t("onboarding_workspace.opening")}
                     </span>
                   </Show>
                 </button>
@@ -94,7 +95,7 @@ export default function OnboardingWorkspaceSelector(props: {
         <div class="space-y-4">
           <div class="flex items-center gap-3 text-sm font-medium text-gray-12">
             <div class="w-6 h-6 rounded-full bg-gray-4 flex items-center justify-center text-xs">2</div>
-            Choose Preset
+            {t("onboarding_workspace.choose_preset")}
           </div>
           <div class={`ml-9 grid gap-3 ${!canContinue() ? "opacity-50" : ""}`.trim()}>
             <For each={options()}>

@@ -3,6 +3,7 @@ import { Download, RefreshCw, UploadCloud } from "lucide-solid";
 
 import type { OpenworkInboxItem, OpenworkServerClient } from "../../lib/openwork-server";
 import { formatBytes, formatRelativeTime } from "../../utils";
+import { t } from "../../../i18n";
 
 export type InboxPanelProps = {
   id?: string;
@@ -45,7 +46,7 @@ export default function InboxPanel(props: InboxPanelProps) {
   });
 
   const connected = createMemo(() => Boolean(props.client && (props.workspaceId ?? "").trim()));
-  const helperText = "Share files with your remote worker.";
+  const helperText = t("inbox.helper_text");
 
   const visibleItems = createMemo(() => (items() ?? []).slice(0, maxPreview()));
   const hiddenCount = createMemo(() => Math.max(0, (items() ?? []).length - visibleItems().length));
@@ -80,7 +81,7 @@ export default function InboxPanel(props: InboxPanelProps) {
     const client = props.client;
     const workspaceId = (props.workspaceId ?? "").trim();
     if (!client || !workspaceId) {
-      toast("Connect to a worker to upload inbox files.");
+      toast(t("inbox.connect_to_upload"));
       return;
     }
     if (!files.length) return;
@@ -89,11 +90,11 @@ export default function InboxPanel(props: InboxPanelProps) {
     setError(null);
     try {
       const label = files.length === 1 ? files[0]?.name ?? "file" : `${files.length} files`;
-      toast(`Uploading ${label}...`);
+      toast(t("inbox.uploading").replace("{label}", label));
       for (const file of files) {
         await client.uploadInbox(workspaceId, file);
       }
-      toast("Uploaded to worker inbox.");
+      toast(t("inbox.uploaded"));
       await refresh();
     } catch (err) {
       const message = err instanceof Error ? err.message : "Inbox upload failed";
@@ -110,7 +111,7 @@ export default function InboxPanel(props: InboxPanelProps) {
       await navigator.clipboard.writeText(path);
       toast(`Copied: ${path}`);
     } catch {
-      toast("Copy failed. Your browser may block clipboard access.");
+      toast(t("inbox.copy_failed"));
     }
   };
 
@@ -118,7 +119,7 @@ export default function InboxPanel(props: InboxPanelProps) {
     const client = props.client;
     const workspaceId = (props.workspaceId ?? "").trim();
     if (!client || !workspaceId) {
-      toast("Connect to a worker to download inbox files.");
+      toast(t("inbox.connect_to_download"));
       return;
     }
     const id = String(item.id ?? "").trim();
@@ -213,7 +214,7 @@ export default function InboxPanel(props: InboxPanelProps) {
         <div class="flex flex-col items-center justify-center text-center">
           <UploadCloud size={18} class="text-gray-9 mb-2" />
           <span class="text-[13px] font-medium text-gray-11">
-            {uploading() ? "Uploading..." : "Drop files or click to upload"}
+            {uploading() ? t("inbox.uploading_status") : t("inbox.drop_or_click")}
           </span>
           <span class="mt-0.5 text-[11px] text-gray-9">{helperText}</span>
         </div>
@@ -228,8 +229,8 @@ export default function InboxPanel(props: InboxPanelProps) {
           when={visibleItems().length > 0}
           fallback={
             <div class="text-xs text-gray-10 px-1 py-1">
-              <Show when={connected()} fallback={"Connect to see inbox files."}>
-                No inbox files yet.
+              <Show when={connected()} fallback={t("inbox.connect_to_see")}>
+                {t("inbox.no_files")}
               </Show>
             </div>
           }
@@ -282,7 +283,7 @@ export default function InboxPanel(props: InboxPanelProps) {
         </Show>
 
         <Show when={hiddenCount() > 0}>
-          <div class="text-[11px] text-gray-10 px-1 py-1">Showing first {maxPreview()}.</div>
+          <div class="text-[11px] text-gray-10 px-1 py-1">{t("inbox.showing_first").replace("{count}", String(maxPreview()))}</div>
         </Show>
       </div>
     </div>

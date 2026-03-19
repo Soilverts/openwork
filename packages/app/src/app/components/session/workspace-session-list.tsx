@@ -4,6 +4,7 @@ import { ChevronDown, ChevronRight, Loader2, MoreHorizontal, Plus } from "lucide
 import type { WorkspaceInfo } from "../../lib/tauri";
 import type { WorkspaceConnectionState, WorkspaceSessionGroup } from "../../types";
 import { formatRelativeTime, getWorkspaceTaskLoadErrorDisplay, isWindowsPlatform } from "../../utils";
+import { t } from "../../../i18n";
 
 type Props = {
   workspaceSessionGroups: WorkspaceSessionGroup[];
@@ -82,7 +83,7 @@ const workspaceLabel = (workspace: WorkspaceInfo) =>
   workspace.openworkWorkspaceName?.trim() ||
   workspace.name?.trim() ||
   workspace.path?.trim() ||
-  "Worker";
+  t("sidebar.worker_fallback");
 
 const workspaceKindLabel = (workspace: WorkspaceInfo) =>
   workspace.workspaceType === "remote"
@@ -106,7 +107,7 @@ const workspaceSwatchColor = (seed: string) => {
 };
 
 export default function WorkspaceSessionList(props: Props) {
-  const revealLabel = isWindowsPlatform() ? "Reveal in Explorer" : "Reveal in Finder";
+  const revealLabel = isWindowsPlatform() ? t("workspace_session_list.reveal_in_explorer") : t("workspace_session_list.reveal_in_finder");
   const [expandedWorkspaceIds, setExpandedWorkspaceIds] = createSignal<Set<string>>(new Set());
   const [previewCountByWorkspaceId, setPreviewCountByWorkspaceId] = createSignal<Record<string, number>>({});
   const [workspaceMenuId, setWorkspaceMenuId] = createSignal<string | null>(null);
