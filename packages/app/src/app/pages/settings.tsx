@@ -176,10 +176,10 @@ export function OpenCodeRouterSettings(_props: {
     <div class="bg-gray-2/30 border border-gray-6/50 rounded-2xl p-5 space-y-2">
       <div class="flex items-center gap-2">
         <MessageCircle size={16} class="text-gray-11" />
-        <div class="text-sm font-medium text-gray-12">Messaging</div>
+        <div class="text-sm font-medium text-gray-12">{t("settings.messaging_title", currentLocale())}</div>
       </div>
       <div class="text-xs text-gray-10">
-        Manage Telegram/Slack identities and bindings in the <span class="font-medium text-gray-12">Identities</span> tab.
+        {t("settings.messaging_hint", currentLocale())}
       </div>
     </div>
   );
@@ -189,7 +189,7 @@ export function OpenCodeRouterSettings(_props: {
 export default function SettingsView(props: SettingsViewProps) {
   const platform = usePlatform();
   const translate = (key: string) => t(key, currentLocale());
-  const engineCustomBinPathLabel = () => props.engineCustomBinPath.trim() || "No binary selected.";
+  const engineCustomBinPathLabel = () => props.engineCustomBinPath.trim() || translate("settings.no_binary_selected");
 
   const openExternalLink = (url: string) => {
     const resolved = url.trim();
@@ -200,7 +200,7 @@ export default function SettingsView(props: SettingsViewProps) {
   const handlePickEngineBinary = async () => {
     if (!isTauriRuntime()) return;
     try {
-      const selected = await pickFile({ title: "Select OpenCode binary" });
+      const selected = await pickFile({ title: translate("settings.select_opencode_binary") });
       const path = Array.isArray(selected) ? selected[0] : selected;
       const trimmed = (path ?? "").trim();
       if (!trimmed) return;
@@ -269,24 +269,24 @@ export default function SettingsView(props: SettingsViewProps) {
     const state = updateState();
     const version = updateVersion();
     if (state === "available") {
-      return `Update available${version ? ` · v${version}` : ""}`;
+      return `${translate("settings.toolbar_update_available")}${version ? ` · v${version}` : ""}`;
     }
     if (state === "ready") {
-      return `Ready to install${version ? ` · v${version}` : ""}`;
+      return `${translate("settings.toolbar_ready_to_install")}${version ? ` · v${version}` : ""}`;
     }
     if (state === "downloading") {
       const downloaded = updateDownloadedBytes() ?? 0;
       const percent = updateDownloadPercent();
-      if (percent != null) return `Downloading ${percent}%`;
-      return `Downloading ${formatBytes(downloaded)}`;
+      if (percent != null) return `${translate("settings.toolbar_downloading")} ${percent}%`;
+      return `${translate("settings.toolbar_downloading")} ${formatBytes(downloaded)}`;
     }
     if (state === "checking") {
-      return "Checking for updates";
+      return translate("settings.toolbar_checking");
     }
     if (state === "error") {
-      return "Update check failed";
+      return translate("settings.toolbar_check_failed");
     }
-    return "Up to date";
+    return translate("settings.toolbar_up_to_date");
   });
 
   const updateToolbarTitle = createMemo(() => {
@@ -299,18 +299,18 @@ export default function SettingsView(props: SettingsViewProps) {
     const percent = updateDownloadPercent();
 
     if (total != null && percent != null) {
-      return `Downloading ${formatBytes(downloaded)} / ${formatBytes(total)} (${percent}%)${version ? ` · v${version}` : ""}`;
+      return `${translate("settings.toolbar_downloading")} ${formatBytes(downloaded)} / ${formatBytes(total)} (${percent}%)${version ? ` · v${version}` : ""}`;
     }
 
-    return `Downloading ${formatBytes(downloaded)}${version ? ` · v${version}` : ""}`;
+    return `${translate("settings.toolbar_downloading")} ${formatBytes(downloaded)}${version ? ` · v${version}` : ""}`;
   });
 
   const updateToolbarActionLabel = createMemo(() => {
     const state = updateState();
-    if (state === "available") return "Download";
-    if (state === "ready") return "Install";
-    if (state === "error") return "Retry";
-    if (state === "idle") return "Check";
+    if (state === "available") return translate("settings.toolbar_action_download");
+    if (state === "ready") return translate("settings.toolbar_action_install");
+    if (state === "error") return translate("settings.toolbar_action_retry");
+    if (state === "idle") return translate("settings.toolbar_action_check");
     return null;
   });
 
@@ -338,13 +338,13 @@ export default function SettingsView(props: SettingsViewProps) {
   const notionStatusLabel = () => {
     switch (props.notionStatus) {
       case "connected":
-        return "Connected";
+        return translate("settings.notion_connected");
       case "connecting":
-        return "Reload required";
+        return translate("settings.reload_required");
       case "error":
-        return "Connection failed";
+        return translate("settings.connection_failed");
       default:
-        return "Not connected";
+        return translate("settings.notion_not_connected");
     }
   };
 
@@ -385,9 +385,9 @@ export default function SettingsView(props: SettingsViewProps) {
       .filter((entry) => entry.id.trim());
   });
   const providerStatusLabel = createMemo(() => {
-    if (!providerAvailableCount()) return "Unavailable";
-    if (!providerConnectedCount()) return "Not connected";
-    return `${providerConnectedCount()} connected`;
+    if (!providerAvailableCount()) return translate("settings.provider_unavailable");
+    if (!providerConnectedCount()) return translate("settings.provider_not_connected");
+    return `${providerConnectedCount()} ${translate("settings.provider_connected_suffix")}`;
   });
   const providerStatusStyle = createMemo(() => {
     if (!providerAvailableCount()) return "bg-gray-4/60 text-gray-11 border-gray-7/50";
@@ -395,11 +395,11 @@ export default function SettingsView(props: SettingsViewProps) {
     return "bg-green-7/10 text-green-11 border-green-7/20";
   });
   const providerSummary = createMemo(() => {
-    if (!providerAvailableCount()) return "Connect to OpenCode to load providers.";
+    if (!providerAvailableCount()) return translate("settings.provider_connect_to_load");
     const connected = providerConnectedCount();
     const available = providerAvailableCount();
-    if (!connected) return `${available} available`;
-    return `${connected} connected · ${available} available`;
+    if (!connected) return `${available} ${translate("settings.provider_available_suffix")}`;
+    return `${connected} ${translate("settings.provider_connected_suffix")} · ${available} ${translate("settings.provider_available_suffix")}`;
   });
 
   const handleOpenProviderAuth = async () => {
@@ -410,7 +410,7 @@ export default function SettingsView(props: SettingsViewProps) {
     try {
       await props.openProviderAuthModal();
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to open providers";
+      const message = error instanceof Error ? error.message : translate("settings.failed_open_providers");
       setProviderConnectError(message);
     }
   };
@@ -421,16 +421,16 @@ export default function SettingsView(props: SettingsViewProps) {
     const confirmed =
       typeof window === "undefined"
         ? true
-        : window.confirm(`Disconnect ${resolved}? This removes the stored credentials.`);
+        : window.confirm(translate("settings.disconnect_confirm").replace("{provider}", resolved));
     if (!confirmed) return;
     setProviderDisconnectError(null);
     setProviderDisconnectStatus(null);
     setProviderDisconnectingId(resolved);
     try {
       const result = await props.disconnectProvider(resolved);
-      setProviderDisconnectStatus(result || `Disconnected ${resolved}.`);
+      setProviderDisconnectStatus(result || translate("settings.disconnected_provider").replace("{provider}", resolved));
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to disconnect provider";
+      const message = error instanceof Error ? error.message : translate("settings.failed_disconnect_provider");
       setProviderDisconnectError(message);
     } finally {
       setProviderDisconnectingId(null);
@@ -445,13 +445,13 @@ export default function SettingsView(props: SettingsViewProps) {
     try {
       const ok = await props.reconnectOpenworkServer();
       if (!ok) {
-        setOpenworkReconnectError("Reconnect failed. Check server URL/token and try again.");
+        setOpenworkReconnectError(translate("settings.reconnect_failed"));
         return;
       }
-      setOpenworkReconnectStatus("Reconnected to OpenWork server.");
+      setOpenworkReconnectStatus(translate("settings.reconnected_server"));
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      setOpenworkReconnectError(message || "Failed to reconnect OpenWork server.");
+      setOpenworkReconnectError(message || translate("settings.failed_reconnect_server"));
     }
   };
 
@@ -463,13 +463,13 @@ export default function SettingsView(props: SettingsViewProps) {
     try {
       const ok = await props.restartLocalServer();
       if (!ok) {
-        setOpenworkRestartError("Restart failed. Check logs and try again.");
+        setOpenworkRestartError(translate("settings.restart_failed"));
         return;
       }
-      setOpenworkRestartStatus("Restarted local server.");
+      setOpenworkRestartStatus(translate("settings.restarted_local_server"));
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      setOpenworkRestartError(message || "Failed to restart local server.");
+      setOpenworkRestartError(message || translate("settings.failed_restart_local_server"));
     } finally {
       setOpenworkRestartBusy(false);
     }
@@ -478,11 +478,11 @@ export default function SettingsView(props: SettingsViewProps) {
   const openworkStatusLabel = createMemo(() => {
     switch (props.openworkServerStatus) {
       case "connected":
-        return "Connected";
+        return translate("settings.status_connected");
       case "limited":
-        return "Limited";
+        return translate("settings.status_limited");
       default:
-        return "Not connected";
+        return translate("settings.status_not_connected");
     }
   });
 
@@ -510,9 +510,9 @@ export default function SettingsView(props: SettingsViewProps) {
 
   const clientStatusLabel = createMemo(() => {
     const status = props.opencodeConnectStatus?.status;
-    if (status === "connecting") return "Connecting";
-    if (status === "error") return "Connection failed";
-    return props.clientConnected ? "Connected" : "Not connected";
+    if (status === "connecting") return translate("settings.status_connecting");
+    if (status === "error") return translate("settings.status_connection_failed");
+    return props.clientConnected ? translate("settings.status_connected") : translate("settings.status_not_connected");
   });
 
   const clientStatusStyle = createMemo(() => {
@@ -532,8 +532,8 @@ export default function SettingsView(props: SettingsViewProps) {
   });
 
   const engineStatusLabel = createMemo(() => {
-    if (!isTauriRuntime()) return "Unavailable";
-    return props.engineInfo?.running ? "Running" : "Offline";
+    if (!isTauriRuntime()) return translate("settings.status_unavailable");
+    return props.engineInfo?.running ? translate("settings.status_running") : translate("settings.status_offline");
   });
 
   const engineStatusStyle = createMemo(() => {
@@ -545,10 +545,10 @@ export default function SettingsView(props: SettingsViewProps) {
 
   const opencodeConnectStatusLabel = createMemo(() => {
     const status = props.opencodeConnectStatus?.status;
-    if (!status) return "Idle";
-    if (status === "connected") return "Connected";
-    if (status === "connecting") return "Connecting";
-    return "Failed";
+    if (!status) return translate("settings.status_idle");
+    if (status === "connected") return translate("settings.status_connected");
+    if (status === "connecting") return translate("settings.status_connecting");
+    return translate("settings.status_failed");
   });
 
   const opencodeConnectStatusStyle = createMemo(() => {
@@ -566,8 +566,8 @@ export default function SettingsView(props: SettingsViewProps) {
   });
 
   const opencodeRouterStatusLabel = createMemo(() => {
-    if (!isTauriRuntime()) return "Unavailable";
-    return props.opencodeRouterInfo?.running ? "Running" : "Offline";
+    if (!isTauriRuntime()) return translate("settings.status_unavailable");
+    return props.opencodeRouterInfo?.running ? translate("settings.status_running") : translate("settings.status_offline");
   });
 
   const opencodeRouterStatusStyle = createMemo(() => {
@@ -591,7 +591,7 @@ export default function SettingsView(props: SettingsViewProps) {
     const opencodeUsername = props.engineInfo?.opencodeUsername?.trim() || undefined;
     const opencodePassword = props.engineInfo?.opencodePassword?.trim() || undefined;
     if (!workspacePath) {
-      setOpenCodeRouterRestartError("No worker path available");
+      setOpenCodeRouterRestartError(translate("settings.no_worker_path"));
       return;
     }
     setOpenCodeRouterRestarting(true);
@@ -652,8 +652,8 @@ export default function SettingsView(props: SettingsViewProps) {
   };
 
   const orchestratorStatusLabel = createMemo(() => {
-    if (!props.orchestratorStatus) return "Unavailable";
-    return props.orchestratorStatus.running ? "Running" : "Offline";
+    if (!props.orchestratorStatus) return translate("settings.status_unavailable");
+    return props.orchestratorStatus.running ? translate("settings.status_running") : translate("settings.status_offline");
   });
 
   const orchestratorStatusStyle = createMemo(() => {
@@ -664,10 +664,10 @@ export default function SettingsView(props: SettingsViewProps) {
   });
 
   const openworkAuditStatusLabel = createMemo(() => {
-    if (!props.openworkServerWorkspaceId) return "Unavailable";
-    if (props.openworkAuditStatus === "loading") return "Loading";
-    if (props.openworkAuditStatus === "error") return "Error";
-    return "Ready";
+    if (!props.openworkServerWorkspaceId) return translate("settings.status_unavailable");
+    if (props.openworkAuditStatus === "loading") return translate("settings.status_loading");
+    if (props.openworkAuditStatus === "error") return translate("settings.status_error");
+    return translate("settings.status_ready");
   });
 
   const openworkAuditStatusStyle = createMemo(() => {
@@ -680,21 +680,21 @@ export default function SettingsView(props: SettingsViewProps) {
   const isLocalEngineRunning = createMemo(() => Boolean(props.engineInfo?.running));
   const isLocalPreference = createMemo(() => props.startupPreference === "local");
   const startupLabel = createMemo(() => {
-    if (props.startupPreference === "local") return "Start local server";
-    if (props.startupPreference === "server") return "Connect to server";
-    return "Not set";
+    if (props.startupPreference === "local") return translate("settings.startup_local");
+    if (props.startupPreference === "server") return translate("settings.startup_server");
+    return translate("settings.startup_not_set");
   });
 
   const tabLabel = (tab: SettingsTab) => {
     switch (tab) {
       case "model":
-        return "Model";
+        return translate("settings.tab_model");
       case "advanced":
-        return "Advanced";
+        return translate("settings.tab_advanced");
       case "debug":
-        return "Debug";
+        return translate("settings.tab_debug");
       default:
-        return "General";
+        return translate("settings.tab_general");
     }
   };
 
@@ -726,44 +726,44 @@ export default function SettingsView(props: SettingsViewProps) {
   };
 
   const formatCapability = (cap?: { read?: boolean; write?: boolean; source?: string }) => {
-    if (!cap) return "Unavailable";
-    const parts = [cap.read ? "read" : null, cap.write ? "write" : null].filter(Boolean).join(" / ");
-    const label = parts || "no access";
+    if (!cap) return translate("settings.status_unavailable");
+    const parts = [cap.read ? translate("settings.cap_read") : null, cap.write ? translate("settings.cap_write") : null].filter(Boolean).join(" / ");
+    const label = parts || translate("settings.cap_no_access");
     return cap.source ? `${label} · ${cap.source}` : label;
   };
 
   const engineStdout = () => {
-    if (!isTauriRuntime()) return "Available in the desktop app.";
-    return props.engineInfo?.lastStdout?.trim() || "No stdout captured yet.";
+    if (!isTauriRuntime()) return translate("settings.available_in_desktop");
+    return props.engineInfo?.lastStdout?.trim() || translate("settings.no_stdout_yet");
   };
 
   const engineStderr = () => {
-    if (!isTauriRuntime()) return "Available in the desktop app.";
-    return props.engineInfo?.lastStderr?.trim() || "No stderr captured yet.";
+    if (!isTauriRuntime()) return translate("settings.available_in_desktop");
+    return props.engineInfo?.lastStderr?.trim() || translate("settings.no_stderr_yet");
   };
 
   const openworkStdout = () => {
-    if (!props.openworkServerHostInfo) return "Logs are available on the host.";
-    return props.openworkServerHostInfo.lastStdout?.trim() || "No stdout captured yet.";
+    if (!props.openworkServerHostInfo) return translate("settings.logs_on_host");
+    return props.openworkServerHostInfo.lastStdout?.trim() || translate("settings.no_stdout_yet");
   };
 
   const openworkStderr = () => {
-    if (!props.openworkServerHostInfo) return "Logs are available on the host.";
-    return props.openworkServerHostInfo.lastStderr?.trim() || "No stderr captured yet.";
+    if (!props.openworkServerHostInfo) return translate("settings.logs_on_host");
+    return props.openworkServerHostInfo.lastStderr?.trim() || translate("settings.no_stderr_yet");
   };
 
   const opencodeRouterStdout = () => {
-    if (!isTauriRuntime()) return "Available in the desktop app.";
-    return props.opencodeRouterInfo?.lastStdout?.trim() || "No stdout captured yet.";
+    if (!isTauriRuntime()) return translate("settings.available_in_desktop");
+    return props.opencodeRouterInfo?.lastStdout?.trim() || translate("settings.no_stdout_yet");
   };
 
   const opencodeRouterStderr = () => {
-    if (!isTauriRuntime()) return "Available in the desktop app.";
-    return props.opencodeRouterInfo?.lastStderr?.trim() || "No stderr captured yet.";
+    if (!isTauriRuntime()) return translate("settings.available_in_desktop");
+    return props.opencodeRouterInfo?.lastStderr?.trim() || translate("settings.no_stderr_yet");
   };
 
   const formatOrchestratorBinary = (binary?: OrchestratorBinaryInfo | null) => {
-    if (!binary) return "Binary unavailable";
+    if (!binary) return translate("settings.binary_unavailable");
     const version = binary.actualVersion || binary.expectedVersion || "unknown";
     return `${binary.source} · ${version}`;
   };
@@ -776,7 +776,7 @@ export default function SettingsView(props: SettingsViewProps) {
   const orchestratorBinaryPath = () => props.orchestratorStatus?.binaries?.opencode?.path ?? "—";
   const orchestratorSidecarSummary = () => {
     const info = props.orchestratorStatus?.sidecar;
-    if (!info) return "Sidecar config unavailable";
+    if (!info) return translate("settings.sidecar_config_unavailable");
     const source = info.source ?? "auto";
     const target = info.target ?? "unknown";
     return `${source} · ${target}`;
@@ -909,20 +909,20 @@ export default function SettingsView(props: SettingsViewProps) {
 
   const copyRuntimeDebugReport = async () => {
     if (typeof navigator === "undefined" || !navigator.clipboard?.writeText) {
-      setDebugReportStatus("Clipboard is unavailable in this environment.");
+      setDebugReportStatus(translate("settings.clipboard_unavailable"));
       return;
     }
     try {
       await navigator.clipboard.writeText(runtimeDebugReportJson());
-      setDebugReportStatus("Copied runtime report JSON.");
+      setDebugReportStatus(translate("settings.copied_runtime_report"));
     } catch (error) {
-      setDebugReportStatus(error instanceof Error ? error.message : "Failed to copy runtime report.");
+      setDebugReportStatus(error instanceof Error ? error.message : translate("settings.failed_copy_report"));
     }
   };
 
   const exportRuntimeDebugReport = () => {
     if (typeof window === "undefined" || typeof document === "undefined") {
-      setDebugReportStatus("Export is unavailable in this environment.");
+      setDebugReportStatus(translate("settings.export_unavailable"));
       return;
     }
     try {
@@ -934,9 +934,9 @@ export default function SettingsView(props: SettingsViewProps) {
       anchor.download = `openwork-debug-report-${stamp}.json`;
       anchor.click();
       window.URL.revokeObjectURL(url);
-      setDebugReportStatus("Exported runtime report JSON.");
+      setDebugReportStatus(translate("settings.exported_runtime_report"));
     } catch (error) {
-      setDebugReportStatus(error instanceof Error ? error.message : "Failed to export runtime report.");
+      setDebugReportStatus(error instanceof Error ? error.message : translate("settings.failed_export_report"));
     }
   };
 
@@ -944,7 +944,7 @@ export default function SettingsView(props: SettingsViewProps) {
     if (!isTauriRuntime() || revealConfigBusy()) return;
     const path = workspaceConfigPath();
     if (!path) {
-      setConfigActionStatus("Select a local workspace before revealing config.");
+      setConfigActionStatus(translate("settings.select_workspace_before_reveal"));
       return;
     }
     setRevealConfigBusy(true);
@@ -956,9 +956,9 @@ export default function SettingsView(props: SettingsViewProps) {
       } else {
         await revealItemInDir(path);
       }
-      setConfigActionStatus("Revealed workspace config.");
+      setConfigActionStatus(translate("settings.revealed_workspace_config"));
     } catch (error) {
-      setConfigActionStatus(error instanceof Error ? error.message : "Failed to reveal workspace config.");
+      setConfigActionStatus(error instanceof Error ? error.message : translate("settings.failed_reveal_config"));
     } finally {
       setRevealConfigBusy(false);
     }
@@ -972,7 +972,7 @@ export default function SettingsView(props: SettingsViewProps) {
       const result = await props.resetAppConfigDefaults();
       setConfigActionStatus(result.message);
     } catch (error) {
-      setConfigActionStatus(error instanceof Error ? error.message : "Failed to reset app config.");
+      setConfigActionStatus(error instanceof Error ? error.message : translate("settings.failed_reset_config"));
     } finally {
       setResetConfigBusy(false);
     }
@@ -983,17 +983,15 @@ export default function SettingsView(props: SettingsViewProps) {
     const confirmed =
       typeof window === "undefined"
         ? true
-        : window.confirm(
-            "Delete the isolated OpenCode dev config and auth/data state, then quit OpenWork? This only affects dev-mode state."
-          );
+        : window.confirm(translate("settings.nuke_dev_config_confirm"));
     if (!confirmed) return;
     setNukeDevConfigBusy(true);
     setNukeDevConfigStatus(null);
     try {
       await nukeOpencodeDevConfigAndExit();
-      setNukeDevConfigStatus("Removed OpenCode dev state. OpenWork is closing...");
+      setNukeDevConfigStatus(translate("settings.nuke_dev_config_success"));
     } catch (error) {
-      setNukeDevConfigStatus(error instanceof Error ? error.message : "Failed to nuke OpenCode dev config.");
+      setNukeDevConfigStatus(error instanceof Error ? error.message : translate("settings.nuke_dev_config_failed"));
       setNukeDevConfigBusy(false);
     }
   };
@@ -1006,12 +1004,12 @@ export default function SettingsView(props: SettingsViewProps) {
       const report = await sandboxDebugProbe();
       setSandboxProbeResult(report);
       if (report.ready) {
-        setSandboxProbeStatus("Sandbox probe succeeded. Export the debug report for support.");
+        setSandboxProbeStatus(translate("settings.sandbox_probe_success"));
       } else {
-        setSandboxProbeStatus(report.error?.trim() || "Sandbox probe completed with errors.");
+        setSandboxProbeStatus(report.error?.trim() || translate("settings.sandbox_probe_errors"));
       }
     } catch (error) {
-      setSandboxProbeStatus(error instanceof Error ? error.message : "Sandbox probe failed.");
+      setSandboxProbeStatus(error instanceof Error ? error.message : translate("settings.sandbox_probe_failed"));
     } finally {
       setSandboxProbeBusy(false);
     }
@@ -1072,7 +1070,7 @@ export default function SettingsView(props: SettingsViewProps) {
                 class="text-xs h-8 py-0 px-3 rounded-full border-gray-6/60 bg-gray-1/70 hover:bg-gray-2/70"
                 onClick={handleUpdateToolbarAction}
                 disabled={updateToolbarDisabled()}
-                title={updateState() === "ready" && props.anyActiveRuns ? "Stop active runs to update" : ""}
+                title={updateState() === "ready" && props.anyActiveRuns ? translate("settings.stop_active_runs_hint") : ""}
               >
                 {updateToolbarActionLabel()}
               </Button>
@@ -1089,9 +1087,9 @@ export default function SettingsView(props: SettingsViewProps) {
                 <div>
                   <div class="flex items-center gap-2">
                     <PlugZap size={16} class="text-gray-11" />
-                    <div class="text-sm font-medium text-gray-12">Providers</div>
+                    <div class="text-sm font-medium text-gray-12">{translate("settings.providers_title")}</div>
                   </div>
-                  <div class="text-xs text-gray-9 mt-1">Connect services for models and tools.</div>
+                  <div class="text-xs text-gray-9 mt-1">{translate("settings.providers_hint")}</div>
                 </div>
                 <div class={`text-xs px-2 py-1 rounded-full border ${providerStatusStyle()}`}>
                   {providerStatusLabel()}
@@ -1104,7 +1102,7 @@ export default function SettingsView(props: SettingsViewProps) {
                   onClick={handleOpenProviderAuth}
                   disabled={props.busy || props.providerAuthBusy}
                 >
-                  {props.providerAuthBusy ? "Loading providers..." : "Connect provider"}
+                  {props.providerAuthBusy ? translate("settings.loading_providers") : translate("settings.connect_provider")}
                 </Button>
                 <div class="text-xs text-gray-10">{providerSummary()}</div>
               </div>
@@ -1126,7 +1124,7 @@ export default function SettingsView(props: SettingsViewProps) {
                             props.busy || props.providerAuthBusy || providerDisconnectingId() !== null
                           }
                         >
-                          {providerDisconnectingId() === provider.id ? "Disconnecting..." : "Disconnect"}
+                          {providerDisconnectingId() === provider.id ? translate("settings.disconnecting") : translate("settings.disconnect")}
                         </Button>
                       </div>
                     )}
@@ -1151,14 +1149,14 @@ export default function SettingsView(props: SettingsViewProps) {
               </Show>
 
               <div class="text-[11px] text-gray-9">
-                API keys are stored locally by OpenCode. Set your default model in the <span class="font-medium">Model</span> tab.
+                {translate("settings.api_keys_stored_locally")}
               </div>
             </div>
 
             <div class="bg-gray-2/30 border border-gray-7/60 rounded-2xl p-5 space-y-4">
               <div>
-                <div class="text-sm font-medium text-gray-12">Appearance</div>
-                <div class="text-xs text-gray-9">Match the system or force light/dark mode.</div>
+                <div class="text-sm font-medium text-gray-12">{translate("settings.appearance_title")}</div>
+                <div class="text-xs text-gray-9">{translate("settings.appearance_hint")}</div>
               </div>
 
               <div class="flex flex-wrap gap-2">
@@ -1168,7 +1166,7 @@ export default function SettingsView(props: SettingsViewProps) {
                   onClick={() => props.setThemeMode("system")}
                   disabled={props.busy}
                 >
-                  System
+                  {translate("settings.theme_system")}
                 </Button>
                 <Button
                   variant={props.themeMode === "light" ? "secondary" : "outline"}
@@ -1176,7 +1174,7 @@ export default function SettingsView(props: SettingsViewProps) {
                   onClick={() => props.setThemeMode("light")}
                   disabled={props.busy}
                 >
-                  Light
+                  {translate("settings.theme_light")}
                 </Button>
                 <Button
                   variant={props.themeMode === "dark" ? "secondary" : "outline"}
@@ -1184,7 +1182,7 @@ export default function SettingsView(props: SettingsViewProps) {
                   onClick={() => props.setThemeMode("dark")}
                   disabled={props.busy}
                 >
-                  Dark
+                  {translate("settings.theme_dark")}
                 </Button>
               </div>
 
@@ -1208,7 +1206,7 @@ export default function SettingsView(props: SettingsViewProps) {
               </div>
 
               <div class="text-xs text-gray-8">
-                System mode follows your OS preference automatically.
+                {translate("settings.theme_system_hint")}
               </div>
             </div>
 
@@ -1220,12 +1218,11 @@ export default function SettingsView(props: SettingsViewProps) {
                 <div class="space-y-2">
                   <div class="inline-flex items-center gap-1.5 rounded-full border border-blue-7/35 bg-blue-4/25 px-2.5 py-1 text-[11px] font-medium text-blue-11">
                     <LifeBuoy size={12} />
-                    We read every message
+                    {translate("settings.feedback_badge")}
                   </div>
-                  <div class="text-sm font-semibold text-gray-12">Help shape OpenWork</div>
+                  <div class="text-sm font-semibold text-gray-12">{translate("settings.feedback_title")}</div>
                   <div class="max-w-[58ch] text-xs text-gray-10">
-                    Tell us what feels great and what feels rough. Feedback goes straight to the team and helps
-                    us prioritize what ships next.
+                    {translate("settings.feedback_description")}
                   </div>
                 </div>
 
@@ -1236,7 +1233,7 @@ export default function SettingsView(props: SettingsViewProps) {
                     onClick={() => openExternalLink(FEEDBACK_EMAIL_URL)}
                   >
                     <MessageCircle size={14} />
-                    Send feedback
+                    {translate("settings.send_feedback")}
                     <ArrowUpRight size={13} />
                   </Button>
 
@@ -1245,7 +1242,7 @@ export default function SettingsView(props: SettingsViewProps) {
                     class="inline-flex h-9 items-center gap-1.5 rounded-xl border border-blue-7/35 bg-gray-1/70 px-3 text-xs font-medium text-gray-11 transition-colors hover:border-blue-7/50 hover:text-gray-12 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-7/30"
                     onClick={() => openExternalLink(DISCORD_INVITE_URL)}
                   >
-                    Join Discord
+                    {translate("settings.join_discord")}
                     <ArrowUpRight size={13} />
                   </button>
 
@@ -1254,7 +1251,7 @@ export default function SettingsView(props: SettingsViewProps) {
                     class="inline-flex h-9 items-center gap-1.5 rounded-xl border border-gray-7/60 bg-gray-1/70 px-3 text-xs font-medium text-gray-10 transition-colors hover:border-gray-7/80 hover:text-gray-12 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-7/40"
                     onClick={() => openExternalLink(BUG_REPORT_URL)}
                   >
-                    Report an issue
+                    {translate("settings.report_issue")}
                     <ArrowUpRight size={13} />
                   </button>
                 </div>
@@ -1267,8 +1264,8 @@ export default function SettingsView(props: SettingsViewProps) {
           <div class="space-y-6">
             <div class="bg-gray-2/30 border border-gray-6/50 rounded-2xl p-5 space-y-4">
               <div>
-                <div class="text-sm font-medium text-gray-12">Model</div>
-                <div class="text-xs text-gray-10">Defaults + thinking controls for runs.</div>
+                <div class="text-sm font-medium text-gray-12">{translate("settings.model_title")}</div>
+                <div class="text-xs text-gray-10">{translate("settings.model_hint")}</div>
               </div>
 
               <div class="flex items-center justify-between bg-gray-1 p-3 rounded-xl border border-gray-6 gap-3">
@@ -1282,14 +1279,14 @@ export default function SettingsView(props: SettingsViewProps) {
                   onClick={props.openDefaultModelPicker}
                   disabled={props.busy}
                 >
-                  Change
+                  {translate("settings.change")}
                 </Button>
               </div>
 
               <div class="flex items-center justify-between bg-gray-1 p-3 rounded-xl border border-gray-6 gap-3">
                 <div class="min-w-0">
-                  <div class="text-sm text-gray-12">Thinking</div>
-                  <div class="text-xs text-gray-7">Show thinking parts (Developer mode only).</div>
+                  <div class="text-sm text-gray-12">{translate("settings.thinking_label")}</div>
+                  <div class="text-xs text-gray-7">{translate("settings.thinking_hint")}</div>
                 </div>
                 <Button
                   variant="outline"
@@ -1297,14 +1294,14 @@ export default function SettingsView(props: SettingsViewProps) {
                   onClick={props.toggleShowThinking}
                   disabled={props.busy}
                 >
-                  {props.showThinking ? "On" : "Off"}
+                  {props.showThinking ? translate("settings.on") : translate("settings.off")}
                 </Button>
               </div>
 
               <div class="flex items-center justify-between bg-gray-1 p-3 rounded-xl border border-gray-6 gap-3">
                 <div class="min-w-0">
-                  <div class="text-sm text-gray-12">Auto context compaction</div>
-                  <div class="text-xs text-gray-7">Automatically compact after a run completes.</div>
+                  <div class="text-sm text-gray-12">{translate("settings.auto_compact_label")}</div>
+                  <div class="text-xs text-gray-7">{translate("settings.auto_compact_hint")}</div>
                 </div>
                 <Button
                   variant="outline"
@@ -1312,13 +1309,13 @@ export default function SettingsView(props: SettingsViewProps) {
                   onClick={props.toggleAutoCompactContext}
                   disabled={props.busy}
                 >
-                  {props.autoCompactContext ? "On" : "Off"}
+                  {props.autoCompactContext ? translate("settings.on") : translate("settings.off")}
                 </Button>
               </div>
 
               <div class="flex items-center justify-between bg-gray-1 p-3 rounded-xl border border-gray-6 gap-3">
                 <div class="min-w-0">
-                  <div class="text-sm text-gray-12">Model variant</div>
+                  <div class="text-sm text-gray-12">{translate("settings.model_variant_label")}</div>
                   <div class="text-xs text-gray-7 font-mono truncate">{props.modelVariantLabel}</div>
                 </div>
                 <Button
@@ -1327,7 +1324,7 @@ export default function SettingsView(props: SettingsViewProps) {
                   onClick={props.editModelVariant}
                   disabled={props.busy}
                 >
-                  Edit
+                  {translate("settings.edit")}
                 </Button>
               </div>
             </div>
@@ -1338,8 +1335,8 @@ export default function SettingsView(props: SettingsViewProps) {
           <div class="space-y-6">
             <div class="bg-gray-2/30 border border-gray-7/60 rounded-2xl p-5 space-y-4">
               <div>
-                <div class="text-sm font-medium text-gray-12">Runtime</div>
-                <div class="text-xs text-gray-9">Status for your local engine and OpenWork server.</div>
+                <div class="text-sm font-medium text-gray-12">{translate("settings.runtime_title")}</div>
+                <div class="text-xs text-gray-9">{translate("settings.runtime_hint")}</div>
               </div>
 
               <div class="grid gap-3 sm:grid-cols-2">
@@ -1349,8 +1346,8 @@ export default function SettingsView(props: SettingsViewProps) {
                       <Cpu size={18} />
                     </div>
                     <div>
-                      <div class="text-sm font-medium text-gray-12">OpenCode engine</div>
-                      <div class="text-xs text-gray-9">Local runtime for agents, tools, and model providers.</div>
+                      <div class="text-sm font-medium text-gray-12">{translate("settings.opencode_engine_title")}</div>
+                      <div class="text-xs text-gray-9">{translate("settings.opencode_engine_hint")}</div>
                     </div>
                   </div>
                   <div class={`inline-flex items-center gap-2 rounded-full border px-2.5 py-1 text-[11px] font-medium ${clientStatusStyle()}`}>
@@ -1365,8 +1362,8 @@ export default function SettingsView(props: SettingsViewProps) {
                       <Server size={18} />
                     </div>
                     <div>
-                      <div class="text-sm font-medium text-gray-12">OpenWork server</div>
-                      <div class="text-xs text-gray-9">Session control plane for app sync, workers, and remote access.</div>
+                      <div class="text-sm font-medium text-gray-12">{translate("settings.openwork_server_title")}</div>
+                      <div class="text-xs text-gray-9">{translate("settings.openwork_server_hint")}</div>
                     </div>
                   </div>
                   <div class={`inline-flex items-center gap-2 rounded-full border px-2.5 py-1 text-[11px] font-medium ${openworkStatusStyle()}`}>
@@ -1378,9 +1375,9 @@ export default function SettingsView(props: SettingsViewProps) {
             </div>
 
             <div class="bg-gray-2/30 border border-gray-7/60 rounded-2xl p-5 space-y-3">
-              <div class="text-sm font-medium text-gray-12">Developer mode</div>
+              <div class="text-sm font-medium text-gray-12">{translate("settings.developer_mode_title")}</div>
               <div class="text-xs text-gray-9">
-                Enables debug tools, diagnostics, and the Developer tab.
+                {translate("settings.developer_mode_hint")}
               </div>
               <div class="pt-1 flex flex-wrap items-center gap-3">
                 <button
@@ -1393,10 +1390,10 @@ export default function SettingsView(props: SettingsViewProps) {
                   onClick={props.toggleDeveloperMode}
                 >
                   <Zap size={14} class={props.developerMode ? "text-blue-10" : "text-dls-secondary"} />
-                  {props.developerMode ? "Disable Developer Mode" : "Enable Developer Mode"}
+                  {props.developerMode ? translate("settings.disable_developer_mode") : translate("settings.enable_developer_mode")}
                 </button>
                 <div class="text-xs text-gray-10">
-                  {props.developerMode ? "Developer panel enabled." : "Enable this to access the Developer panel."}
+                  {props.developerMode ? translate("settings.developer_panel_enabled") : translate("settings.developer_panel_enable_hint")}
                 </div>
               </div>
               <Show when={isTauriRuntime() && opencodeDevModeEnabled()}>
@@ -1408,10 +1405,10 @@ export default function SettingsView(props: SettingsViewProps) {
                     disabled={props.busy || nukeDevConfigBusy()}
                   >
                     <CircleAlert size={14} />
-                    {nukeDevConfigBusy() ? "Nuking OpenCode Dev Config..." : "Nuke Opencode Dev Config"}
+                    {nukeDevConfigBusy() ? translate("settings.nuking_dev_config") : translate("settings.nuke_dev_config")}
                   </button>
                   <div class="text-xs text-gray-10">
-                    Deletes isolated OpenCode dev state and then quits OpenWork.
+                    {translate("settings.nuke_dev_config_description")}
                   </div>
                 </div>
                 <Show when={nukeDevConfigStatus()}>
@@ -1422,9 +1419,9 @@ export default function SettingsView(props: SettingsViewProps) {
                   <div class="rounded-xl border border-gray-6/60 bg-gray-1/40 p-4 space-y-3">
                     <div class="flex items-start justify-between gap-3">
                       <div>
-                        <div class="text-sm font-medium text-gray-12">Open share link</div>
+                        <div class="text-sm font-medium text-gray-12">{translate("settings.open_share_link_title")}</div>
                         <div class="text-xs text-gray-9">
-                          Paste an existing <span class="font-mono">openwork://</span> share link and route it through the dev app.
+                          {translate("settings.open_share_link_hint")}
                         </div>
                       </div>
                       <button
@@ -1436,7 +1433,7 @@ export default function SettingsView(props: SettingsViewProps) {
                         }}
                         disabled={props.busy || debugShareLinkBusy()}
                       >
-                        {debugShareLinkOpen() ? "Hide" : "Open share link"}
+                        {debugShareLinkOpen() ? translate("settings.hide") : translate("settings.open_share_link_action")}
                       </button>
                     </div>
 
@@ -1456,7 +1453,7 @@ export default function SettingsView(props: SettingsViewProps) {
                             onClick={() => void submitDebugShareLink()}
                             disabled={props.busy || debugShareLinkBusy() || !debugShareLinkInput().trim()}
                           >
-                            {debugShareLinkBusy() ? "Opening..." : "Open link"}
+                            {debugShareLinkBusy() ? translate("settings.opening") : translate("settings.open_link")}
                           </Button>
                           <div class="text-[11px] text-gray-8">
                             Accepts <span class="font-mono">openwork://</span>, <span class="font-mono">openwork-dev://</span>, or a raw <span class="font-mono">https://share.openwork.software/b/...</span> URL.
@@ -1474,7 +1471,7 @@ export default function SettingsView(props: SettingsViewProps) {
             </div>
 
             <div class="bg-gray-2/30 border border-gray-7/60 rounded-2xl p-5 space-y-3">
-              <div class="text-sm font-medium text-gray-12">Connection</div>
+              <div class="text-sm font-medium text-gray-12">{translate("settings.connection_title")}</div>
               <div class="text-xs text-gray-9">{props.headerStatus}</div>
               <div class="text-xs text-gray-8 font-mono break-all">{props.baseUrl}</div>
               <div class="pt-2 flex flex-wrap gap-2">
@@ -1485,7 +1482,7 @@ export default function SettingsView(props: SettingsViewProps) {
                   disabled={props.busy || props.openworkReconnectBusy || !props.openworkServerUrl.trim()}
                 >
                   <RefreshCcw size={14} class={`text-dls-secondary ${props.openworkReconnectBusy ? "animate-spin" : ""}`} />
-                  {props.openworkReconnectBusy ? "Reconnecting..." : "Reconnect server"}
+                  {props.openworkReconnectBusy ? translate("settings.reconnecting") : translate("settings.reconnect_server")}
                 </button>
                 <Show when={isLocalEngineRunning()}>
                   <button
@@ -1495,7 +1492,7 @@ export default function SettingsView(props: SettingsViewProps) {
                     disabled={props.busy || openworkRestartBusy()}
                   >
                     <RefreshCcw size={14} class={`text-dls-secondary ${openworkRestartBusy() ? "animate-spin" : ""}`} />
-                    {openworkRestartBusy() ? "Restarting..." : "Restart local server"}
+                    {openworkRestartBusy() ? translate("settings.restarting") : translate("settings.restart_local_server")}
                   </button>
                 </Show>
                 <Show when={isLocalEngineRunning()}>
@@ -1506,7 +1503,7 @@ export default function SettingsView(props: SettingsViewProps) {
                     disabled={props.busy}
                   >
                     <CircleAlert size={14} />
-                    Stop local server
+                    {translate("settings.stop_local_server")}
                   </button>
                 </Show>
                 <Show when={!isLocalEngineRunning() && props.openworkServerStatus === "connected"}>
@@ -1516,7 +1513,7 @@ export default function SettingsView(props: SettingsViewProps) {
                     onClick={props.stopHost}
                     disabled={props.busy}
                   >
-                    Disconnect server
+                    {translate("settings.disconnect_server")}
                   </button>
                 </Show>
               </div>
@@ -1576,8 +1573,8 @@ export default function SettingsView(props: SettingsViewProps) {
             <div class="bg-gray-2/30 border border-gray-6/50 rounded-2xl p-5 space-y-3">
               <div class="flex items-start justify-between gap-4">
                 <div>
-                  <div class="text-sm font-medium text-gray-12">Updates</div>
-                  <div class="text-xs text-gray-10">Keep OpenWork up to date.</div>
+                  <div class="text-sm font-medium text-gray-12">{translate("settings.updates_title")}</div>
+                  <div class="text-xs text-gray-10">{translate("settings.updates_hint")}</div>
                 </div>
                 <div class="text-xs text-gray-7 font-mono">{props.appVersion ? `v${props.appVersion}` : ""}</div>
               </div>
@@ -1591,8 +1588,8 @@ export default function SettingsView(props: SettingsViewProps) {
                       <>
                         <div class="flex items-center justify-between bg-gray-1 p-3 rounded-xl border border-gray-6">
                           <div class="space-y-0.5">
-                            <div class="text-sm text-gray-12">Background checks</div>
-                            <div class="text-xs text-gray-7">OpenWork always checks on launch. Also checks once per day (quiet).</div>
+                            <div class="text-sm text-gray-12">{translate("settings.background_checks")}</div>
+                            <div class="text-xs text-gray-7">{translate("settings.background_checks_hint")}</div>
                           </div>
                           <button
                             class={`min-w-[70px] px-4 py-1.5 rounded-full text-xs font-medium border shadow-[inset_0_1px_0_rgba(255,255,255,0.5)] transition-colors ${
@@ -1602,14 +1599,14 @@ export default function SettingsView(props: SettingsViewProps) {
                             }`}
                             onClick={props.toggleUpdateAutoCheck}
                           >
-                            {props.updateAutoCheck ? "On" : "Off"}
+                            {props.updateAutoCheck ? translate("settings.on") : translate("settings.off")}
                           </button>
                         </div>
 
                         <div class="flex items-center justify-between bg-gray-1 p-3 rounded-xl border border-gray-6">
                           <div class="space-y-0.5">
-                            <div class="text-sm text-gray-12">Auto-update</div>
-                            <div class="text-xs text-gray-7">Download updates automatically (prompts to restart)</div>
+                            <div class="text-sm text-gray-12">{translate("settings.auto_update")}</div>
+                            <div class="text-xs text-gray-7">{translate("settings.auto_update_hint")}</div>
                           </div>
                           <button
                             class={`min-w-[70px] px-4 py-1.5 rounded-full text-xs font-medium border shadow-[inset_0_1px_0_rgba(255,255,255,0.5)] transition-colors ${
@@ -1619,7 +1616,7 @@ export default function SettingsView(props: SettingsViewProps) {
                             }`}
                             onClick={props.toggleUpdateAutoDownload}
                           >
-                            {props.updateAutoDownload ? "On" : "Off"}
+                            {props.updateAutoDownload ? translate("settings.on") : translate("settings.off")}
                           </button>
                         </div>
 
@@ -1627,21 +1624,21 @@ export default function SettingsView(props: SettingsViewProps) {
                           <div class="space-y-0.5">
                             <div class="text-sm text-gray-12">
                               <Switch>
-                                <Match when={updateState() === "checking"}>Checking...</Match>
-                                <Match when={updateState() === "available"}>Update available: v{updateVersion()}</Match>
-                                <Match when={updateState() === "downloading"}>Downloading...</Match>
-                                <Match when={updateState() === "ready"}>Ready to install: v{updateVersion()}</Match>
-                                <Match when={updateState() === "error"}>Update check failed</Match>
-                                <Match when={true}>Up to date</Match>
+                                <Match when={updateState() === "checking"}>{translate("settings.update_checking")}</Match>
+                                <Match when={updateState() === "available"}>{translate("settings.update_available")}v{updateVersion()}</Match>
+                                <Match when={updateState() === "downloading"}>{translate("settings.update_downloading")}</Match>
+                                <Match when={updateState() === "ready"}>{translate("settings.update_ready")}v{updateVersion()}</Match>
+                                <Match when={updateState() === "error"}>{translate("settings.update_error")}</Match>
+                                <Match when={true}>{translate("settings.update_uptodate")}</Match>
                               </Switch>
                             </div>
                             <Show when={updateState() === "idle" && updateLastCheckedAt()}>
                               <div class="text-xs text-gray-7">
-                                Last checked {formatRelativeTime(updateLastCheckedAt() as number)}
+                                {translate("settings.last_checked_time").replace("{time}", formatRelativeTime(updateLastCheckedAt() as number))}
                               </div>
                             </Show>
                             <Show when={updateState() === "available" && updateDate()}>
-                              <div class="text-xs text-gray-7">Published {updateDate()}</div>
+                              <div class="text-xs text-gray-7">{translate("settings.published_date").replace("{date}", updateDate() as string)}</div>
                             </Show>
                             <Show when={updateState() === "downloading"}>
                               <div class="text-xs text-gray-7">
@@ -1663,7 +1660,7 @@ export default function SettingsView(props: SettingsViewProps) {
                               onClick={props.checkForUpdates}
                               disabled={props.busy || updateState() === "checking" || updateState() === "downloading"}
                             >
-                              Check
+                              {translate("settings.check_update")}
                             </Button>
 
                             <Show when={updateState() === "available"}>
@@ -1673,7 +1670,7 @@ export default function SettingsView(props: SettingsViewProps) {
                                 onClick={props.downloadUpdate}
                                 disabled={props.busy || updateState() === "downloading"}
                               >
-                                Download
+                                {translate("settings.download_update")}
                               </Button>
                             </Show>
 
@@ -1683,9 +1680,9 @@ export default function SettingsView(props: SettingsViewProps) {
                                 class="text-xs h-9 py-0 px-4 rounded-full"
                                 onClick={props.installUpdateAndRestart}
                                 disabled={props.busy || props.anyActiveRuns}
-                                title={props.anyActiveRuns ? "Stop active runs to update" : ""}
+                                title={props.anyActiveRuns ? translate("settings.stop_active_runs_hint") : ""}
                               >
-                                Install & Restart
+                                {translate("settings.install_restart")}
                               </Button>
                             </Show>
                           </div>
@@ -1700,13 +1697,13 @@ export default function SettingsView(props: SettingsViewProps) {
                     }
                   >
                     <div class="rounded-xl bg-gray-1/20 border border-gray-6 p-3 text-sm text-gray-11">
-                      {props.updateEnv?.reason ?? "Updates are not supported in this environment."}
+                      {props.updateEnv?.reason ?? translate("settings.update_not_supported_hint")}
                     </div>
                   </Show>
                 }
               >
                 <div class="rounded-xl bg-gray-1/20 border border-gray-6 p-3 text-sm text-gray-11">
-                  Updates are only available in the desktop app.
+                  {translate("settings.update_desktop_only_hint")}
                 </div>
               </Show>
             </div>
@@ -1714,15 +1711,15 @@ export default function SettingsView(props: SettingsViewProps) {
             <Show when={isTauriRuntime()}>
               <div class="bg-gray-2/30 border border-gray-6/50 rounded-2xl p-5 space-y-3">
                 <div>
-                  <div class="text-sm font-medium text-gray-12">Appearance</div>
-                  <div class="text-xs text-gray-10">Customize window appearance.</div>
+                  <div class="text-sm font-medium text-gray-12">{translate("settings.appearance_title")}</div>
+                  <div class="text-xs text-gray-10">{translate("settings.window_appearance_hint")}</div>
                 </div>
 
                 <div class="flex items-center justify-between bg-gray-1 p-3 rounded-xl border border-gray-6 gap-3">
                   <div class="min-w-0">
-                    <div class="text-sm text-gray-12">Hide titlebar</div>
+                    <div class="text-sm text-gray-12">{translate("settings.hide_titlebar")}</div>
                     <div class="text-xs text-gray-7">
-                      Hide the window titlebar. Useful for tiling window managers on Linux (Hyprland, i3, sway).
+                      {translate("settings.hide_titlebar_hint")}
                     </div>
                   </div>
                   <Button
@@ -1731,7 +1728,7 @@ export default function SettingsView(props: SettingsViewProps) {
                     onClick={props.toggleHideTitlebar}
                     disabled={props.busy}
                   >
-                    {props.hideTitlebar ? "On" : "Off"}
+                    {props.hideTitlebar ? translate("settings.on") : translate("settings.off")}
                   </Button>
                 </div>
               </div>
@@ -1743,32 +1740,32 @@ export default function SettingsView(props: SettingsViewProps) {
         <Match when={activeTab() === "debug"}>
           <Show when={props.developerMode}>
             <section>
-              <h3 class="text-sm font-medium text-gray-11 uppercase tracking-wider mb-4">Developer</h3>
+              <h3 class="text-sm font-medium text-gray-11 uppercase tracking-wider mb-4">{translate("settings.developer_title")}</h3>
 
               <div class="space-y-4">
                 <div class="bg-gray-2/30 border border-gray-6/50 rounded-2xl p-5 space-y-3">
                   <div class="flex items-start justify-between gap-3">
                     <div>
-                      <div class="text-sm font-medium text-gray-12">Runtime debug report</div>
-                      <div class="text-xs text-gray-10">Readable diagnostics snapshot with one-click export.</div>
+                      <div class="text-sm font-medium text-gray-12">{translate("settings.debug_report_title")}</div>
+                      <div class="text-xs text-gray-10">{translate("settings.debug_report_hint")}</div>
                     </div>
                     <div class="flex items-center gap-2 shrink-0">
                       <Button variant="outline" class="text-xs h-8 py-0 px-3" onClick={copyRuntimeDebugReport}>
                         <Copy size={13} class="mr-1.5" />
-                        Copy JSON
+                        {translate("settings.copy_json")}
                       </Button>
                       <Button variant="secondary" class="text-xs h-8 py-0 px-3" onClick={exportRuntimeDebugReport}>
                         <Download size={13} class="mr-1.5" />
-                        Export
+                        {translate("settings.export")}
                       </Button>
                     </div>
                   </div>
                   <div class="grid gap-2 md:grid-cols-2 text-xs text-gray-11">
-                    <div>Desktop app: {appVersionLabel()}</div>
-                    <div>Commit: {appCommitLabel()}</div>
-                    <div>Orchestrator: {orchestratorVersionLabel()}</div>
+                    <div>{translate("settings.label_desktop_app")}: {appVersionLabel()}</div>
+                    <div>{translate("settings.label_commit")}: {appCommitLabel()}</div>
+                    <div>{translate("settings.label_orchestrator")}: {orchestratorVersionLabel()}</div>
                     <div>OpenCode: {opencodeVersionLabel()}</div>
-                    <div>OpenWork server: {openworkServerVersionLabel()}</div>
+                    <div>{translate("settings.label_openwork_server")}: {openworkServerVersionLabel()}</div>
                     <div>OpenCodeRouter: {opencodeRouterVersionLabel()}</div>
                   </div>
                   <pre class="text-xs text-gray-12 whitespace-pre-wrap break-words max-h-64 overflow-auto bg-gray-1 border border-gray-6 rounded-lg p-3">
@@ -1782,9 +1779,9 @@ export default function SettingsView(props: SettingsViewProps) {
                 <div class="bg-gray-2/30 border border-gray-6/50 rounded-2xl p-5 space-y-3">
                   <div class="flex items-start justify-between gap-3">
                     <div>
-                      <div class="text-sm font-medium text-gray-12">Sandbox probe</div>
+                      <div class="text-sm font-medium text-gray-12">{translate("settings.sandbox_probe_title")}</div>
                       <div class="text-xs text-gray-10">
-                        Runs a temporary Docker sandbox startup check and captures inspect/log output.
+                        {translate("settings.sandbox_probe_hint")}
                       </div>
                     </div>
                     <Button
@@ -1794,13 +1791,13 @@ export default function SettingsView(props: SettingsViewProps) {
                       disabled={!isTauriRuntime() || sandboxProbeBusy() || props.anyActiveRuns}
                       title={
                         !isTauriRuntime()
-                          ? "Sandbox probe requires desktop app"
+                          ? translate("settings.sandbox_requires_desktop")
                           : props.anyActiveRuns
-                            ? "Stop active runs before probing"
+                            ? translate("settings.stop_runs_before_probe")
                             : ""
                       }
                     >
-                      {sandboxProbeBusy() ? "Running probe..." : "Run sandbox probe"}
+                      {sandboxProbeBusy() ? translate("settings.running_probe") : translate("settings.run_sandbox_probe")}
                     </Button>
                   </div>
                   <Show when={sandboxProbeResult()}>
@@ -1818,33 +1815,33 @@ export default function SettingsView(props: SettingsViewProps) {
                     {(status) => <div class="text-xs text-gray-10">{status()}</div>}
                   </Show>
                   <div class="text-[11px] text-gray-7">
-                    Use <strong>Export</strong> in Runtime debug report above to save this probe output with logs.
+                    {translate("settings.sandbox_probe_export_hint")}
                   </div>
                 </div>
 
                 <div class="bg-gray-2/30 border border-gray-6/50 rounded-2xl p-5 space-y-3">
-                  <div class="text-sm font-medium text-gray-12">Workspace config</div>
-                  <div class="text-xs text-gray-10">Reveal or reset `.opencode/openwork.json` defaults for this app workspace.</div>
-                  <div class="text-[11px] text-gray-7 font-mono break-all">{workspaceConfigPath() || "No active local workspace."}</div>
+                  <div class="text-sm font-medium text-gray-12">{translate("settings.workspace_config_title")}</div>
+                  <div class="text-xs text-gray-10">{translate("settings.workspace_config_hint")}</div>
+                  <div class="text-[11px] text-gray-7 font-mono break-all">{workspaceConfigPath() || translate("settings.no_active_workspace")}</div>
                   <div class="flex flex-wrap items-center gap-2">
                     <Button
                       variant="outline"
                       class="text-xs h-8 py-0 px-3"
                       onClick={revealWorkspaceConfig}
                       disabled={!isTauriRuntime() || revealConfigBusy() || !workspaceConfigPath()}
-                      title={!isTauriRuntime() ? "Reveal config requires the desktop app" : ""}
+                      title={!isTauriRuntime() ? translate("settings.reveal_requires_desktop") : ""}
                     >
                       <FolderOpen size={13} class="mr-1.5" />
-                      {revealConfigBusy() ? "Opening..." : "Reveal config"}
+                      {revealConfigBusy() ? translate("settings.opening") : translate("settings.reveal_config")}
                     </Button>
                     <Button
                       variant="danger"
                       class="text-xs h-8 py-0 px-3"
                       onClick={resetAppConfigDefaults}
                       disabled={resetConfigBusy() || props.anyActiveRuns}
-                      title={props.anyActiveRuns ? "Stop active runs before resetting config" : ""}
+                      title={props.anyActiveRuns ? translate("settings.stop_runs_before_reset") : ""}
                     >
-                      {resetConfigBusy() ? "Resetting..." : "Reset config defaults"}
+                      {resetConfigBusy() ? translate("settings.resetting") : translate("settings.reset_config_defaults")}
                     </Button>
                   </div>
                   <Show when={configActionStatus()}>
@@ -1854,9 +1851,9 @@ export default function SettingsView(props: SettingsViewProps) {
 
                 <div class="bg-gray-2/30 border border-gray-6/50 rounded-2xl p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                   <div class="min-w-0">
-                    <div class="text-sm text-gray-12">OpenCode cache</div>
+                    <div class="text-sm text-gray-12">{translate("settings.opencode_cache_label")}</div>
                     <div class="text-xs text-gray-7">
-                      Repairs cached data used to start the engine. Safe to run.
+                      {translate("settings.opencode_cache_hint")}
                     </div>
                     <Show when={props.cacheRepairResult}>
                       <div class="text-xs text-gray-11 mt-2">{props.cacheRepairResult}</div>
@@ -1867,17 +1864,17 @@ export default function SettingsView(props: SettingsViewProps) {
                     class="text-xs h-8 py-0 px-3 shrink-0"
                     onClick={props.repairOpencodeCache}
                     disabled={props.cacheRepairBusy || !isTauriRuntime()}
-                    title={isTauriRuntime() ? "" : "Cache repair requires the desktop app"}
+                    title={isTauriRuntime() ? "" : translate("settings.cache_repair_requires_desktop")}
                   >
-                    {props.cacheRepairBusy ? "Repairing cache" : "Repair cache"}
+                    {props.cacheRepairBusy ? translate("settings.repairing_cache") : translate("settings.repair_cache")}
                   </Button>
                 </div>
 
                 <div class="bg-gray-2/30 border border-gray-6/50 rounded-2xl p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                   <div class="min-w-0">
-                    <div class="text-sm text-gray-12">OpenWork Docker containers</div>
+                    <div class="text-sm text-gray-12">{translate("settings.docker_containers_title")}</div>
                     <div class="text-xs text-gray-7">
-                      Force-remove Docker containers launched by OpenWork (sandbox + local dev stacks).
+                      {translate("settings.docker_containers_hint")}
                     </div>
                     <Show when={props.dockerCleanupResult}>
                       <div class="text-xs text-gray-11 mt-2">{props.dockerCleanupResult}</div>
@@ -1890,18 +1887,18 @@ export default function SettingsView(props: SettingsViewProps) {
                     disabled={props.dockerCleanupBusy || props.anyActiveRuns || !isTauriRuntime()}
                     title={
                       !isTauriRuntime()
-                        ? "Docker cleanup requires the desktop app"
+                        ? translate("settings.docker_requires_desktop")
                         : props.anyActiveRuns
-                          ? "Stop active runs before cleanup"
+                          ? translate("settings.stop_runs_before_cleanup")
                           : ""
                     }
                   >
-                    {props.dockerCleanupBusy ? "Removing containers..." : "Delete containers"}
+                    {props.dockerCleanupBusy ? translate("settings.removing_containers") : translate("settings.delete_containers")}
                   </Button>
                 </div>
 
                 <div class="bg-gray-2/30 border border-gray-6/50 rounded-2xl p-5 space-y-3">
-                  <div class="text-sm font-medium text-gray-12">Startup</div>
+                  <div class="text-sm font-medium text-gray-12">{translate("settings.startup_title")}</div>
 
                   <div class="flex items-center justify-between bg-gray-1 p-3 rounded-xl border border-gray-6">
                     <div class="flex items-center gap-3">
@@ -1922,7 +1919,7 @@ export default function SettingsView(props: SettingsViewProps) {
                       onClick={props.stopHost}
                       disabled={props.busy}
                     >
-                      Switch
+                      {translate("settings.switch_mode")}
                     </Button>
                   </div>
 
@@ -1931,45 +1928,44 @@ export default function SettingsView(props: SettingsViewProps) {
                     class="w-full justify-between group"
                     onClick={props.onResetStartupPreference}
                   >
-                    <span>Reset startup preference</span>
+                    <span>{translate("settings.reset_startup_label")}</span>
                     <RefreshCcw size={14} class="opacity-80 group-hover:rotate-180 transition-transform" />
                   </Button>
 
                   <p class="text-xs text-gray-7">
-                    This clears your saved preference and shows the connection choice on next launch.
+                    {translate("settings.reset_startup_hint")}
                   </p>
                 </div>
 
                 <Show when={isTauriRuntime() && (isLocalPreference() || props.developerMode)}>
                   <div class="bg-gray-2/30 border border-gray-6/50 rounded-2xl p-5 space-y-4">
                     <div>
-                      <div class="text-sm font-medium text-gray-12">Engine</div>
-                      <div class="text-xs text-gray-10">Choose how OpenCode runs locally.</div>
+                      <div class="text-sm font-medium text-gray-12">{translate("settings.engine_title")}</div>
+                      <div class="text-xs text-gray-10">{translate("settings.engine_hint")}</div>
                     </div>
 
                     <Show when={!isLocalPreference()}>
                       <div class="text-[11px] text-amber-11 bg-amber-3/40 border border-amber-7/40 rounded-lg px-3 py-2">
-                        Startup preference is currently remote. Engine settings are saved now and apply the next time you
-                        run locally.
+                        {translate("settings.engine_remote_notice")}
                       </div>
                     </Show>
 
                     <div class="space-y-3">
-                      <div class="text-xs text-gray-10">Engine source</div>
+                      <div class="text-xs text-gray-10">{translate("settings.engine_source_label")}</div>
                       <div class={props.developerMode ? "grid grid-cols-3 gap-2" : "grid grid-cols-2 gap-2"}>
                         <Button
                           variant={props.engineSource === "sidecar" ? "secondary" : "outline"}
                           onClick={() => props.setEngineSource("sidecar")}
                           disabled={props.busy}
                         >
-                          Bundled (recommended)
+                          {translate("settings.engine_bundled")}
                         </Button>
                         <Button
                           variant={props.engineSource === "path" ? "secondary" : "outline"}
                           onClick={() => props.setEngineSource("path")}
                           disabled={props.busy}
                         >
-                          System install (PATH)
+                          {translate("settings.engine_system_path")}
                         </Button>
                         <Show when={props.developerMode}>
                           <Button
@@ -1977,18 +1973,18 @@ export default function SettingsView(props: SettingsViewProps) {
                             onClick={() => props.setEngineSource("custom")}
                             disabled={props.busy}
                           >
-                            Custom binary
+                            {translate("settings.engine_custom_binary")}
                           </Button>
                         </Show>
                       </div>
                       <div class="text-[11px] text-gray-7">
-                        Bundled engine is the most reliable option. Use System install only if you manage OpenCode yourself.
+                        {translate("settings.engine_source_hint")}
                       </div>
                     </div>
 
                     <Show when={props.developerMode && props.engineSource === "custom"}>
                       <div class="space-y-2">
-                        <div class="text-xs text-gray-10">Custom OpenCode binary</div>
+                        <div class="text-xs text-gray-10">{translate("settings.custom_binary_label")}</div>
                         <div class="flex items-center gap-2">
                           <div
                             class="flex-1 min-w-0 text-[11px] text-gray-7 font-mono truncate bg-gray-1 p-3 rounded-xl border border-gray-6"
@@ -2002,27 +1998,27 @@ export default function SettingsView(props: SettingsViewProps) {
                             onClick={handlePickEngineBinary}
                             disabled={props.busy}
                           >
-                            Choose
+                            {translate("settings.choose")}
                           </Button>
                           <Button
                             variant="outline"
                             class="text-xs h-10 px-3 shrink-0"
                             onClick={() => props.setEngineCustomBinPath("")}
                             disabled={props.busy || !props.engineCustomBinPath.trim()}
-                            title={!props.engineCustomBinPath.trim() ? "No custom path set" : "Clear"}
+                            title={!props.engineCustomBinPath.trim() ? translate("settings.no_custom_path") : translate("settings.clear")}
                           >
-                            Clear
+                            {translate("settings.clear")}
                           </Button>
                         </div>
                         <div class="text-[11px] text-gray-7">
-                          Use this to point OpenWork at a local OpenCode build (e.g. your fork). Applies next time the engine starts or reloads.
+                          {translate("settings.custom_binary_hint")}
                         </div>
                       </div>
                     </Show>
 
                     <Show when={props.developerMode}>
                       <div class="space-y-3">
-                        <div class="text-xs text-gray-10">Engine runtime</div>
+                        <div class="text-xs text-gray-10">{translate("settings.engine_runtime_label")}</div>
                         <div class="grid grid-cols-2 gap-2">
                           <Button
                             variant={props.engineRuntime === "direct" ? "secondary" : "outline"}
@@ -2039,7 +2035,7 @@ export default function SettingsView(props: SettingsViewProps) {
                             OpenWork Orchestrator
                           </Button>
                         </div>
-                        <div class="text-[11px] text-gray-7">Applies the next time the engine starts or reloads.</div>
+                        <div class="text-[11px] text-gray-7">{translate("settings.engine_runtime_hint")}</div>
                       </div>
                     </Show>
                   </div>
@@ -2047,57 +2043,57 @@ export default function SettingsView(props: SettingsViewProps) {
 
                 <div class="bg-gray-2/30 border border-gray-6/50 rounded-2xl p-5 space-y-4">
                   <div>
-                    <div class="text-sm font-medium text-gray-12">Reset & Recovery</div>
-                    <div class="text-xs text-gray-10">Clear data or restart the setup flow.</div>
+                    <div class="text-sm font-medium text-gray-12">{translate("settings.reset_recovery_title")}</div>
+                    <div class="text-xs text-gray-10">{translate("settings.reset_recovery_hint")}</div>
                   </div>
 
                   <div class="flex items-center justify-between bg-gray-1 p-3 rounded-xl border border-gray-6 gap-3">
                     <div class="min-w-0">
-                      <div class="text-sm text-gray-12">Reset onboarding</div>
-                      <div class="text-xs text-gray-7">Clears OpenWork preferences and restarts the app.</div>
+                      <div class="text-sm text-gray-12">{translate("settings.reset_onboarding_label")}</div>
+                      <div class="text-xs text-gray-7">{translate("settings.reset_onboarding_hint")}</div>
                     </div>
                     <Button
                       variant="outline"
                       class="text-xs h-8 py-0 px-3 shrink-0"
                       onClick={() => props.openResetModal("onboarding")}
                       disabled={props.busy || props.resetModalBusy || props.anyActiveRuns}
-                      title={props.anyActiveRuns ? "Stop active runs to reset" : ""}
+                      title={props.anyActiveRuns ? translate("settings.stop_active_runs_reset_hint") : ""}
                     >
-                      Reset
+                      {translate("settings.reset")}
                     </Button>
                   </div>
 
                   <div class="flex items-center justify-between bg-gray-1 p-3 rounded-xl border border-gray-6 gap-3">
                     <div class="min-w-0">
-                      <div class="text-sm text-gray-12">Reset app data</div>
-                      <div class="text-xs text-gray-7">More aggressive. Clears OpenWork cache + app data.</div>
+                      <div class="text-sm text-gray-12">{translate("settings.reset_app_data_label")}</div>
+                      <div class="text-xs text-gray-7">{translate("settings.reset_app_data_hint")}</div>
                     </div>
                     <Button
                       variant="danger"
                       class="text-xs h-8 py-0 px-3 shrink-0"
                       onClick={() => props.openResetModal("all")}
                       disabled={props.busy || props.resetModalBusy || props.anyActiveRuns}
-                      title={props.anyActiveRuns ? "Stop active runs to reset" : ""}
+                      title={props.anyActiveRuns ? translate("settings.stop_active_runs_reset_hint") : ""}
                     >
-                      Reset
+                      {translate("settings.reset")}
                     </Button>
                   </div>
 
                   <div class="text-xs text-gray-7">
-                    Requires typing <span class="font-mono text-gray-11">RESET</span> and will restart the app.
+                    {translate("settings.reset_requires_hint")}
                   </div>
                 </div>
 
                 <div class="bg-gray-2/30 border border-gray-6/50 rounded-2xl p-5 space-y-4">
                   <div>
-                    <div class="text-sm font-medium text-gray-12">Devtools</div>
-                    <div class="text-xs text-gray-10">Sidecar health, capabilities, and audit trail.</div>
+                    <div class="text-sm font-medium text-gray-12">{translate("settings.devtools_title")}</div>
+                    <div class="text-xs text-gray-10">{translate("settings.devtools_hint")}</div>
                   </div>
 
                   <div class="bg-gray-1 p-4 rounded-xl border border-gray-6 space-y-3">
                     <div>
-                      <div class="text-sm font-medium text-gray-12">Service restarts</div>
-                      <div class="text-xs text-gray-10">Restart specific host services without leaving this screen.</div>
+                      <div class="text-sm font-medium text-gray-12">{translate("settings.service_restarts_title")}</div>
+                      <div class="text-xs text-gray-10">{translate("settings.service_restarts_hint")}</div>
                     </div>
                     <div class="grid gap-2 md:grid-cols-2 xl:grid-cols-4">
                       <Button
@@ -2107,7 +2103,7 @@ export default function SettingsView(props: SettingsViewProps) {
                         class="text-xs px-3 py-1.5 justify-center"
                       >
                         <RefreshCcw class={`w-3.5 h-3.5 mr-1.5 ${openworkRestartBusy() ? "animate-spin" : ""}`} />
-                        {openworkRestartBusy() ? "Restarting..." : "Restart orchestrator"}
+                        {openworkRestartBusy() ? translate("settings.restarting") : translate("settings.restart_orchestrator")}
                       </Button>
                       <Button
                         variant="secondary"
@@ -2116,7 +2112,7 @@ export default function SettingsView(props: SettingsViewProps) {
                         class="text-xs px-3 py-1.5 justify-center"
                       >
                         <RefreshCcw class={`w-3.5 h-3.5 mr-1.5 ${opencodeRestarting() ? "animate-spin" : ""}`} />
-                        {opencodeRestarting() ? "Restarting..." : "Restart OpenCode"}
+                        {opencodeRestarting() ? translate("settings.restarting") : translate("settings.restart_opencode")}
                       </Button>
                       <Button
                         variant="secondary"
@@ -2125,7 +2121,7 @@ export default function SettingsView(props: SettingsViewProps) {
                         class="text-xs px-3 py-1.5 justify-center"
                       >
                         <RefreshCcw class={`w-3.5 h-3.5 mr-1.5 ${openworkServerRestarting() ? "animate-spin" : ""}`} />
-                        {openworkServerRestarting() ? "Restarting..." : "Restart OpenWork server"}
+                        {openworkServerRestarting() ? translate("settings.restarting") : translate("settings.restart_openwork_server")}
                       </Button>
                       <Button
                         variant="secondary"
@@ -2134,7 +2130,7 @@ export default function SettingsView(props: SettingsViewProps) {
                         class="text-xs px-3 py-1.5 justify-center"
                       >
                         <RefreshCcw class={`w-3.5 h-3.5 mr-1.5 ${opencodeRouterRestarting() ? "animate-spin" : ""}`} />
-                        {opencodeRouterRestarting() ? "Restarting..." : "Restart OpenCodeRouter"}
+                        {opencodeRouterRestarting() ? translate("settings.restarting") : translate("settings.restart_opencode_router")}
                       </Button>
                     </div>
                     <Show when={openworkRestartStatus()}>
@@ -2150,16 +2146,16 @@ export default function SettingsView(props: SettingsViewProps) {
                   <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                     <div class="bg-gray-1 p-4 rounded-xl border border-gray-6 space-y-3">
                       <div>
-                        <div class="text-sm font-medium text-gray-12">Versions</div>
-                        <div class="text-xs text-gray-10">Sidecar + desktop build info.</div>
+                        <div class="text-sm font-medium text-gray-12">{translate("settings.versions_title")}</div>
+                        <div class="text-xs text-gray-10">{translate("settings.versions_hint")}</div>
                       </div>
                         <div class="space-y-1">
-                          <div class="text-[11px] text-gray-7 font-mono truncate">Desktop app: {appVersionLabel()}</div>
-                          <div class="text-[11px] text-gray-7 font-mono truncate">Commit: {appCommitLabel()}</div>
-                          <div class="text-[11px] text-gray-7 font-mono truncate">Orchestrator: {orchestratorVersionLabel()}</div>
+                          <div class="text-[11px] text-gray-7 font-mono truncate">{translate("settings.label_desktop_app")}: {appVersionLabel()}</div>
+                          <div class="text-[11px] text-gray-7 font-mono truncate">{translate("settings.label_commit")}: {appCommitLabel()}</div>
+                          <div class="text-[11px] text-gray-7 font-mono truncate">{translate("settings.label_orchestrator")}: {orchestratorVersionLabel()}</div>
                           <div class="text-[11px] text-gray-7 font-mono truncate">OpenCode: {opencodeVersionLabel()}</div>
                           <div class="text-[11px] text-gray-7 font-mono truncate">
-                            OpenWork server: {openworkServerVersionLabel()}
+                            {translate("settings.label_openwork_server")}: {openworkServerVersionLabel()}
                           </div>
                           <div class="text-[11px] text-gray-7 font-mono truncate">OpenCodeRouter: {opencodeRouterVersionLabel()}</div>
                         </div>
@@ -2168,8 +2164,8 @@ export default function SettingsView(props: SettingsViewProps) {
                     <div class="bg-gray-1 p-4 rounded-xl border border-gray-6 space-y-3">
                       <div class="flex items-center justify-between gap-3">
                         <div>
-                          <div class="text-sm font-medium text-gray-12">OpenCode engine</div>
-                          <div class="text-xs text-gray-10">Local execution sidecar.</div>
+                          <div class="text-sm font-medium text-gray-12">{translate("settings.opencode_engine_title")}</div>
+                          <div class="text-xs text-gray-10">{translate("settings.local_execution_sidecar")}</div>
                         </div>
                         <div class={`text-xs px-2 py-1 rounded-full border ${engineStatusStyle()}`}>
                           {engineStatusLabel()}
@@ -2203,8 +2199,8 @@ export default function SettingsView(props: SettingsViewProps) {
                     <div class="bg-gray-1 p-4 rounded-xl border border-gray-6 space-y-3">
                       <div class="flex items-center justify-between gap-3">
                         <div>
-                          <div class="text-sm font-medium text-gray-12">Orchestrator daemon</div>
-                          <div class="text-xs text-gray-10">Workspace orchestration layer.</div>
+                          <div class="text-sm font-medium text-gray-12">{translate("settings.orchestrator_daemon_title")}</div>
+                          <div class="text-xs text-gray-10">{translate("settings.orchestrator_daemon_hint")}</div>
                         </div>
                         <div class={`text-xs px-2 py-1 rounded-full border ${orchestratorStatusStyle()}`}>
                           {orchestratorStatusLabel()}
@@ -2247,7 +2243,7 @@ export default function SettingsView(props: SettingsViewProps) {
                       <div class="flex items-center justify-between gap-3">
                         <div>
                           <div class="text-sm font-medium text-gray-12">OpenCode SDK</div>
-                          <div class="text-xs text-gray-10">UI connection diagnostics.</div>
+                          <div class="text-xs text-gray-10">{translate("settings.sdk_diagnostics_hint")}</div>
                         </div>
                         <div class={`text-xs px-2 py-1 rounded-full border ${opencodeConnectStatusStyle()}`}>
                           {opencodeConnectStatusLabel()}
@@ -2303,8 +2299,8 @@ export default function SettingsView(props: SettingsViewProps) {
                     <div class="bg-gray-1 p-4 rounded-xl border border-gray-6 space-y-3">
                       <div class="flex items-center justify-between gap-3">
                         <div>
-                          <div class="text-sm font-medium text-gray-12">OpenWork server</div>
-                          <div class="text-xs text-gray-10">Config and approvals sidecar.</div>
+                          <div class="text-sm font-medium text-gray-12">{translate("settings.openwork_server_title")}</div>
+                          <div class="text-xs text-gray-10">{translate("settings.config_approvals_sidecar")}</div>
                         </div>
                         <div class={`text-xs px-2 py-1 rounded-full border ${openworkStatusStyle()}`}>
                           {openworkStatusLabel()}
@@ -2335,8 +2331,8 @@ export default function SettingsView(props: SettingsViewProps) {
                     <div class="bg-gray-1 p-4 rounded-xl border border-gray-6 space-y-3">
                       <div class="flex items-center justify-between gap-3">
                         <div>
-                          <div class="text-sm font-medium text-gray-12">OpenCodeRouter sidecar</div>
-                          <div class="text-xs text-gray-10">Messaging bridge service.</div>
+                          <div class="text-sm font-medium text-gray-12">{translate("settings.opencode_router_title")}</div>
+                          <div class="text-xs text-gray-10">{translate("settings.messaging_bridge_hint")}</div>
                         </div>
                         <div class={`text-xs px-2 py-1 rounded-full border ${opencodeRouterStatusStyle()}`}>
                           {opencodeRouterStatusLabel()}
@@ -2362,7 +2358,7 @@ export default function SettingsView(props: SettingsViewProps) {
                           class="text-xs px-3 py-1.5"
                         >
                           <RefreshCcw class={`w-3.5 h-3.5 mr-1.5 ${opencodeRouterRestarting() ? "animate-spin" : ""}`} />
-                          {opencodeRouterRestarting() ? "Restarting..." : "Restart"}
+                          {opencodeRouterRestarting() ? translate("settings.restarting") : translate("settings.restart")}
                         </Button>
                         <Show when={props.opencodeRouterInfo?.running}>
                           <Button
@@ -2371,7 +2367,7 @@ export default function SettingsView(props: SettingsViewProps) {
                             disabled={opencodeRouterRestarting()}
                             class="text-xs px-3 py-1.5"
                           >
-                            Stop
+                            {translate("settings.stop")}
                           </Button>
                         </Show>
                       </div>
@@ -2399,14 +2395,14 @@ export default function SettingsView(props: SettingsViewProps) {
 
                   <div class="bg-gray-1 p-4 rounded-xl border border-gray-6 space-y-3">
                     <div class="flex items-center justify-between gap-3">
-                      <div class="text-sm font-medium text-gray-12">OpenWork server diagnostics</div>
+                      <div class="text-sm font-medium text-gray-12">{translate("settings.server_diagnostics_title")}</div>
                       <div class="text-[11px] text-gray-8 font-mono truncate">
                         {props.openworkServerDiagnostics?.version ?? "—"}
                       </div>
                     </div>
                     <Show
                       when={props.openworkServerDiagnostics}
-                      fallback={<div class="text-xs text-gray-9">Diagnostics unavailable.</div>}
+                      fallback={<div class="text-xs text-gray-9">{translate("settings.diagnostics_unavailable")}</div>}
                     >
                       {(diag) => (
                         <div class="grid md:grid-cols-2 gap-2 text-xs text-gray-11">
@@ -2427,14 +2423,14 @@ export default function SettingsView(props: SettingsViewProps) {
 
                   <div class="bg-gray-1 p-4 rounded-xl border border-gray-6 space-y-3">
                     <div class="flex items-center justify-between gap-3">
-                      <div class="text-sm font-medium text-gray-12">OpenWork server capabilities</div>
+                      <div class="text-sm font-medium text-gray-12">{translate("settings.server_capabilities_title")}</div>
                       <div class="text-[11px] text-gray-8 font-mono truncate">
-                        {props.openworkServerWorkspaceId ? `Worker ${props.openworkServerWorkspaceId}` : "Worker unresolved"}
+                        {props.openworkServerWorkspaceId ? `Worker ${props.openworkServerWorkspaceId}` : translate("settings.worker_unresolved")}
                       </div>
                     </div>
                     <Show
                       when={props.openworkServerCapabilities}
-                      fallback={<div class="text-xs text-gray-9">Capabilities unavailable. Connect with a client token.</div>}
+                      fallback={<div class="text-xs text-gray-9">{translate("settings.capabilities_unavailable")}</div>}
                     >
                       {(caps) => (
                         <div class="grid md:grid-cols-2 gap-2 text-xs text-gray-11">
@@ -2474,13 +2470,13 @@ export default function SettingsView(props: SettingsViewProps) {
 
                   <div class="grid md:grid-cols-2 gap-4">
                     <div class="bg-gray-1 border border-gray-6 rounded-xl p-4">
-                      <div class="text-xs text-gray-10 mb-2">Pending permissions</div>
+                      <div class="text-xs text-gray-10 mb-2">{translate("settings.pending_permissions_label")}</div>
                       <pre class="text-xs text-gray-12 whitespace-pre-wrap break-words max-h-64 overflow-auto">
                         {props.safeStringify(props.pendingPermissions)}
                       </pre>
                     </div>
                     <div class="bg-gray-1 border border-gray-6 rounded-xl p-4">
-                      <div class="text-xs text-gray-10 mb-2">Recent events</div>
+                      <div class="text-xs text-gray-10 mb-2">{translate("settings.recent_events_label")}</div>
                       <pre class="text-xs text-gray-12 whitespace-pre-wrap break-words max-h-64 overflow-auto">
                         {props.safeStringify(props.events)}
                       </pre>
@@ -2489,14 +2485,14 @@ export default function SettingsView(props: SettingsViewProps) {
 
                   <div class="bg-gray-1 border border-gray-6 rounded-xl p-4">
                     <div class="flex items-center justify-between gap-3 mb-2">
-                      <div class="text-xs text-gray-10">Workspace debug events</div>
+                      <div class="text-xs text-gray-10">{translate("settings.workspace_debug_events")}</div>
                       <Button
                         variant="outline"
                         class="text-xs h-7 py-0 px-2 shrink-0"
                         onClick={props.clearWorkspaceDebugEvents}
                         disabled={props.busy}
                       >
-                        Clear
+                        {translate("settings.clear")}
                       </Button>
                     </div>
                     <pre class="text-xs text-gray-12 whitespace-pre-wrap break-words max-h-64 overflow-auto">
@@ -2506,7 +2502,7 @@ export default function SettingsView(props: SettingsViewProps) {
 
                   <div class="bg-gray-1 p-4 rounded-xl border border-gray-6 space-y-3">
                     <div class="flex items-center justify-between gap-3">
-                      <div class="text-sm font-medium text-gray-12">Audit log</div>
+                      <div class="text-sm font-medium text-gray-12">{translate("settings.audit_log_title")}</div>
                       <div class={`text-xs px-2 py-1 rounded-full border ${openworkAuditStatusStyle()}`}>
                         {openworkAuditStatusLabel()}
                       </div>
@@ -2516,7 +2512,7 @@ export default function SettingsView(props: SettingsViewProps) {
                     </Show>
                     <Show
                       when={props.openworkAuditEntries.length > 0}
-                      fallback={<div class="text-xs text-gray-9">No audit entries yet.</div>}
+                      fallback={<div class="text-xs text-gray-9">{translate("settings.no_audit_entries")}</div>}
                     >
                       <div class="divide-y divide-gray-6/50">
                         <For each={props.openworkAuditEntries}>

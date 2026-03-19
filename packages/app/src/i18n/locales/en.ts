@@ -960,6 +960,249 @@ export default {
   "settings.updates_not_supported": "Updates are not supported in this environment.",
   "settings.updates_desktop_only": "Updates are only available in the desktop app.",
 
+  // Settings page (settings.tsx) — tabs, sections, and labels
+  "settings.tab_general": "General",
+  "settings.tab_model": "Model",
+  "settings.tab_advanced": "Advanced",
+  "settings.tab_debug": "Debug",
+
+  // Toolbar update
+  "settings.toolbar_update_available": "Update available",
+  "settings.toolbar_ready_to_install": "Ready to install",
+  "settings.toolbar_downloading": "Downloading",
+  "settings.toolbar_checking": "Checking for updates",
+  "settings.toolbar_check_failed": "Update check failed",
+  "settings.toolbar_up_to_date": "Up to date",
+  "settings.toolbar_action_download": "Download",
+  "settings.toolbar_action_install": "Install",
+  "settings.toolbar_action_retry": "Retry",
+  "settings.toolbar_action_check": "Check",
+
+  // Messaging
+  "settings.messaging_title": "Messaging",
+  "settings.messaging_hint": "Manage Telegram/Slack identities and bindings in the Identities tab.",
+
+  // Providers
+  "settings.providers_title": "Providers",
+  "settings.providers_hint": "Connect services for models and tools.",
+  "settings.provider_unavailable": "Unavailable",
+  "settings.provider_not_connected": "Not connected",
+  "settings.provider_connected_suffix": "connected",
+  "settings.provider_available_suffix": "available",
+  "settings.provider_connect_to_load": "Connect to OpenCode to load providers.",
+  "settings.loading_providers": "Loading providers...",
+  "settings.connect_provider": "Connect provider",
+  "settings.disconnecting": "Disconnecting...",
+  "settings.disconnect_confirm": "Disconnect {provider}? This removes the stored credentials.",
+  "settings.disconnected_provider": "Disconnected {provider}.",
+  "settings.failed_disconnect_provider": "Failed to disconnect provider",
+  "settings.failed_open_providers": "Failed to open providers",
+  "settings.api_keys_stored_locally": "API keys are stored locally by OpenCode. Set your default model in the Model tab.",
+
+  // Status labels
+  "settings.status_connected": "Connected",
+  "settings.status_limited": "Limited",
+  "settings.status_not_connected": "Not connected",
+  "settings.status_connecting": "Connecting",
+  "settings.status_connection_failed": "Connection failed",
+  "settings.status_unavailable": "Unavailable",
+  "settings.status_running": "Running",
+  "settings.status_offline": "Offline",
+  "settings.status_idle": "Idle",
+  "settings.status_failed": "Failed",
+  "settings.status_loading": "Loading",
+  "settings.status_error": "Error",
+  "settings.status_ready": "Ready",
+
+  // Connection
+  "settings.reconnecting": "Reconnecting...",
+  "settings.reconnect_server": "Reconnect server",
+  "settings.reconnect_failed": "Reconnect failed. Check server URL/token and try again.",
+  "settings.reconnected_server": "Reconnected to OpenWork server.",
+  "settings.failed_reconnect_server": "Failed to reconnect OpenWork server.",
+  "settings.restarting": "Restarting...",
+  "settings.restart_local_server": "Restart local server",
+  "settings.restart_failed": "Restart failed. Check logs and try again.",
+  "settings.restarted_local_server": "Restarted local server.",
+  "settings.failed_restart_local_server": "Failed to restart local server.",
+  "settings.stop_local_server": "Stop local server",
+  "settings.disconnect_server": "Disconnect server",
+
+  // Model tab
+  "settings.auto_compact_label": "Auto context compaction",
+  "settings.auto_compact_hint": "Automatically compact after a run completes.",
+
+  // Runtime
+  "settings.runtime_title": "Runtime",
+  "settings.runtime_hint": "Status for your local engine and OpenWork server.",
+  "settings.opencode_engine_title": "OpenCode engine",
+  "settings.opencode_engine_hint": "Local runtime for agents, tools, and model providers.",
+  "settings.openwork_server_title": "OpenWork server",
+  "settings.openwork_server_hint": "Session control plane for app sync, workers, and remote access.",
+
+  // Developer mode
+  "settings.developer_mode_title": "Developer mode",
+  "settings.developer_mode_hint": "Enables debug tools, diagnostics, and the Developer tab.",
+  "settings.developer_panel_enabled": "Developer panel enabled.",
+  "settings.developer_panel_enable_hint": "Enable this to access the Developer panel.",
+  "settings.nuking_dev_config": "Nuking OpenCode Dev Config...",
+  "settings.nuke_dev_config": "Nuke OpenCode Dev Config",
+  "settings.nuke_dev_config_description": "Deletes isolated OpenCode dev state and then quits OpenWork.",
+  "settings.nuke_dev_config_confirm": "Delete the isolated OpenCode dev config and auth/data state, then quit OpenWork? This only affects dev-mode state.",
+  "settings.nuke_dev_config_success": "Removed OpenCode dev state. OpenWork is closing...",
+  "settings.nuke_dev_config_failed": "Failed to nuke OpenCode dev config.",
+
+  // Open share link
+  "settings.open_share_link_title": "Open share link",
+  "settings.open_share_link_hint": "Paste an existing openwork:// share link and route it through the dev app.",
+  "settings.open_share_link_action": "Open share link",
+  "settings.hide": "Hide",
+  "settings.opening": "Opening...",
+  "settings.open_link": "Open link",
+
+  // Updates
+  "settings.background_checks": "Background checks",
+  "settings.background_checks_hint": "OpenWork always checks on launch. Also checks once per day (quiet).",
+  "settings.auto_update": "Auto-update",
+  "settings.auto_update_hint": "Download updates automatically (prompts to restart)",
+
+  // Appearance (advanced)
+  "settings.window_appearance_hint": "Customize window appearance.",
+  "settings.hide_titlebar": "Hide titlebar",
+  "settings.hide_titlebar_hint": "Hide the window titlebar. Useful for tiling window managers on Linux (Hyprland, i3, sway).",
+
+  // Feedback
+  "settings.feedback_badge": "We read every message",
+  "settings.feedback_title": "Help shape OpenWork",
+  "settings.feedback_description": "Tell us what feels great and what feels rough. Feedback goes straight to the team and helps us prioritize what ships next.",
+  "settings.send_feedback": "Send feedback",
+  "settings.join_discord": "Join Discord",
+  "settings.report_issue": "Report an issue",
+
+  // Startup
+  "settings.startup_local": "Start local server",
+  "settings.startup_server": "Connect to server",
+  "settings.startup_not_set": "Not set",
+
+  // Engine
+  "settings.engine_title": "Engine",
+  "settings.engine_hint": "Choose how OpenCode runs locally.",
+  "settings.engine_remote_notice": "Startup preference is currently remote. Engine settings are saved now and apply the next time you run locally.",
+  "settings.engine_bundled": "Bundled (recommended)",
+  "settings.engine_system_path": "System install (PATH)",
+  "settings.engine_custom_binary": "Custom binary",
+  "settings.engine_source_hint": "Bundled engine is the most reliable option. Use System install only if you manage OpenCode yourself.",
+  "settings.custom_binary_label": "Custom OpenCode binary",
+  "settings.custom_binary_hint": "Use this to point OpenWork at a local OpenCode build (e.g. your fork). Applies next time the engine starts or reloads.",
+  "settings.engine_runtime_label": "Engine runtime",
+  "settings.engine_runtime_hint": "Applies the next time the engine starts or reloads.",
+  "settings.no_binary_selected": "No binary selected.",
+  "settings.select_opencode_binary": "Select OpenCode binary",
+  "settings.no_custom_path": "No custom path set",
+  "settings.choose": "Choose",
+  "settings.clear": "Clear",
+  "settings.stop": "Stop",
+  "settings.restart": "Restart",
+
+  // Reset & Recovery
+  "settings.reset_recovery_title": "Reset & Recovery",
+  "settings.reset_recovery_hint": "Clear data or restart the setup flow.",
+
+  // Debug tab
+  "settings.debug_report_title": "Runtime debug report",
+  "settings.debug_report_hint": "Readable diagnostics snapshot with one-click export.",
+  "settings.copy_json": "Copy JSON",
+  "settings.export": "Export",
+  "settings.label_desktop_app": "Desktop app",
+  "settings.label_commit": "Commit",
+  "settings.label_orchestrator": "Orchestrator",
+  "settings.label_openwork_server": "OpenWork server",
+
+  // Sandbox probe
+  "settings.sandbox_probe_title": "Sandbox probe",
+  "settings.sandbox_probe_hint": "Runs a temporary Docker sandbox startup check and captures inspect/log output.",
+  "settings.sandbox_requires_desktop": "Sandbox probe requires desktop app",
+  "settings.stop_runs_before_probe": "Stop active runs before probing",
+  "settings.running_probe": "Running probe...",
+  "settings.run_sandbox_probe": "Run sandbox probe",
+  "settings.sandbox_probe_success": "Sandbox probe succeeded. Export the debug report for support.",
+  "settings.sandbox_probe_errors": "Sandbox probe completed with errors.",
+  "settings.sandbox_probe_failed": "Sandbox probe failed.",
+  "settings.sandbox_probe_export_hint": "Use Export in Runtime debug report above to save this probe output with logs.",
+
+  // Workspace config
+  "settings.workspace_config_title": "Workspace config",
+  "settings.workspace_config_hint": "Reveal or reset `.opencode/openwork.json` defaults for this app workspace.",
+  "settings.no_active_workspace": "No active local workspace.",
+  "settings.reveal_requires_desktop": "Reveal config requires the desktop app",
+  "settings.reveal_config": "Reveal config",
+  "settings.resetting": "Resetting...",
+  "settings.reset_config_defaults": "Reset config defaults",
+  "settings.stop_runs_before_reset": "Stop active runs before resetting config",
+  "settings.select_workspace_before_reveal": "Select a local workspace before revealing config.",
+  "settings.revealed_workspace_config": "Revealed workspace config.",
+  "settings.failed_reveal_config": "Failed to reveal workspace config.",
+  "settings.failed_reset_config": "Failed to reset app config.",
+
+  // Clipboard/export
+  "settings.clipboard_unavailable": "Clipboard is unavailable in this environment.",
+  "settings.copied_runtime_report": "Copied runtime report JSON.",
+  "settings.failed_copy_report": "Failed to copy runtime report.",
+  "settings.export_unavailable": "Export is unavailable in this environment.",
+  "settings.exported_runtime_report": "Exported runtime report JSON.",
+  "settings.failed_export_report": "Failed to export runtime report.",
+
+  // Debug logs
+  "settings.available_in_desktop": "Available in the desktop app.",
+  "settings.no_stdout_yet": "No stdout captured yet.",
+  "settings.no_stderr_yet": "No stderr captured yet.",
+  "settings.logs_on_host": "Logs are available on the host.",
+  "settings.binary_unavailable": "Binary unavailable",
+  "settings.sidecar_config_unavailable": "Sidecar config unavailable",
+  "settings.no_worker_path": "No worker path available",
+
+  // Docker
+  "settings.docker_containers_title": "OpenWork Docker containers",
+  "settings.docker_containers_hint": "Force-remove Docker containers launched by OpenWork (sandbox + local dev stacks).",
+  "settings.docker_requires_desktop": "Docker cleanup requires the desktop app",
+  "settings.stop_runs_before_cleanup": "Stop active runs before cleanup",
+  "settings.removing_containers": "Removing containers...",
+  "settings.delete_containers": "Delete containers",
+
+  // Devtools
+  "settings.devtools_title": "Devtools",
+  "settings.devtools_hint": "Sidecar health, capabilities, and audit trail.",
+  "settings.service_restarts_title": "Service restarts",
+  "settings.service_restarts_hint": "Restart specific host services without leaving this screen.",
+  "settings.restart_orchestrator": "Restart orchestrator",
+  "settings.restart_opencode": "Restart OpenCode",
+  "settings.restart_openwork_server": "Restart OpenWork server",
+  "settings.restart_opencode_router": "Restart OpenCodeRouter",
+
+  // Versions
+  "settings.versions_title": "Versions",
+  "settings.versions_hint": "Sidecar + desktop build info.",
+  "settings.local_execution_sidecar": "Local execution sidecar.",
+  "settings.orchestrator_daemon_title": "Orchestrator daemon",
+  "settings.orchestrator_daemon_hint": "Workspace orchestration layer.",
+  "settings.sdk_diagnostics_hint": "UI connection diagnostics.",
+  "settings.config_approvals_sidecar": "Config and approvals sidecar.",
+  "settings.opencode_router_title": "OpenCodeRouter sidecar",
+  "settings.messaging_bridge_hint": "Messaging bridge service.",
+
+  // Diagnostics
+  "settings.server_diagnostics_title": "OpenWork server diagnostics",
+  "settings.diagnostics_unavailable": "Diagnostics unavailable.",
+  "settings.server_capabilities_title": "OpenWork server capabilities",
+  "settings.worker_unresolved": "Worker unresolved",
+  "settings.capabilities_unavailable": "Capabilities unavailable. Connect with a client token.",
+  "settings.cap_read": "read",
+  "settings.cap_write": "write",
+  "settings.cap_no_access": "no access",
+  "settings.workspace_debug_events": "Workspace debug events",
+  "settings.audit_log_title": "Audit log",
+  "settings.no_audit_entries": "No audit entries yet.",
+
   // ==================== Reload ====================
   "reload.toast_title": "Updates available",
   "reload.toast_description": "Reload worker to apply config changes.",
@@ -1850,4 +2093,44 @@ export default {
   "minimap.user": "User",
   "minimap.agent": "Agent",
   "minimap.message": "message",
+
+  // ==================== Dashboard Page ====================
+  "dashboard_page.tab_automations": "Automations",
+  "dashboard_page.tab_skills": "Skills",
+  "dashboard_page.tab_extensions": "Extensions",
+  "dashboard_page.tab_messaging": "Messaging",
+  "dashboard_page.tab_advanced": "Advanced",
+  "dashboard_page.tab_settings": "Settings",
+  "dashboard_page.tab_ids": "IDs",
+  "dashboard_page.worker_fallback": "Worker",
+  "dashboard_page.workspace_kind_sandbox": "Sandbox",
+  "dashboard_page.workspace_kind_remote": "Remote",
+  "dashboard_page.workspace_kind_local": "Local",
+  "dashboard_page.update_ready": "Update ready",
+  "dashboard_page.install_update": "Install update",
+  "dashboard_page.downloading": "Downloading",
+  "dashboard_page.downloading_percent": "Downloading {percent}%",
+  "dashboard_page.update_available": "Update available",
+  "dashboard_page.update_ready_stop": "Update ready {version}. Stop active runs to restart.",
+  "dashboard_page.update_restart": "Restart to apply update {version}",
+  "dashboard_page.downloading_update": "Downloading update {version}",
+  "dashboard_page.update_available_version": "Update available {version}",
+  "dashboard_page.resize_workspace_column": "Resize workspace column",
+  "dashboard_page.remote_worker_badge": "Remote worker",
+  "dashboard_page.worker_badge": "Worker",
+  "dashboard_page.menu": "Menu",
+  "dashboard_page.more": "More",
+  "dashboard_page.repairing_cache": "Repairing cache",
+  "dashboard_page.repair_cache": "Repair cache",
+  "dashboard_page.retry": "Retry",
+  "dashboard_page.collapse_sidebar": "Collapse sidebar",
+  "dashboard_page.expand_sidebar": "Expand sidebar",
+
+  // ==================== Create Workspace Modal ====================
+  "create_workspace.sandbox_setup": "Sandbox setup",
+  "create_workspace.hide_logs": "Hide logs",
+  "create_workspace.show_logs": "Show logs",
+  "create_workspace.live_logs": "Live Logs",
+  "create_workspace.docker_debug_details": "Docker debug details",
+  "create_workspace.creating": "Creating...",
 } as const;

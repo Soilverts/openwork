@@ -70,6 +70,7 @@ import {
   SlidersHorizontal,
   Zap,
 } from "lucide-solid";
+import { t, currentLocale } from "../../i18n";
 import type { Language } from "../../i18n";
 
 export type DashboardViewProps = {
@@ -344,24 +345,25 @@ type SkillsSetBundleV1 = {
 
 export default function DashboardView(props: DashboardViewProps) {
   const platform = usePlatform();
+  const translate = (key: string) => t(key, currentLocale());
   const title = createMemo(() => {
     switch (props.tab) {
       case "scheduled":
-        return "Automations";
+        return translate("dashboard_page.tab_automations");
       case "skills":
-        return "Skills";
+        return translate("dashboard_page.tab_skills");
       case "plugins":
-        return "Extensions";
+        return translate("dashboard_page.tab_extensions");
       case "mcp":
-        return "Extensions";
+        return translate("dashboard_page.tab_extensions");
       case "identities":
-        return "Messaging";
+        return translate("dashboard_page.tab_messaging");
       case "config":
-        return "Advanced";
+        return translate("dashboard_page.tab_advanced");
       case "settings":
-        return "Settings";
+        return translate("dashboard_page.tab_settings");
       default:
-        return "Automations";
+        return translate("dashboard_page.tab_automations");
     }
   });
 
@@ -370,15 +372,15 @@ export default function DashboardView(props: DashboardViewProps) {
     workspace.openworkWorkspaceName?.trim() ||
     workspace.name?.trim() ||
     workspace.path?.trim() ||
-    "Worker";
+    translate("dashboard_page.worker_fallback");
   const workspaceKindLabel = (workspace: WorkspaceInfo) =>
     workspace.workspaceType === "remote"
       ? workspace.sandboxBackend === "docker" ||
         Boolean(workspace.sandboxRunId?.trim()) ||
         Boolean(workspace.sandboxContainerName?.trim())
-        ? "Sandbox"
-        : "Remote"
-      : "Local";
+        ? translate("dashboard_page.workspace_kind_sandbox")
+        : translate("dashboard_page.workspace_kind_remote")
+      : translate("dashboard_page.workspace_kind_local");
 
   const openSessionFromList = (workspaceId: string, sessionId: string) => {
     // Route-driven selection: navigate first and let the route effect own selectSession.
@@ -969,13 +971,13 @@ export default function DashboardView(props: DashboardViewProps) {
   const updatePillLabel = createMemo(() => {
     const state = props.updateStatus?.state;
     if (state === "ready") {
-      return props.anyActiveRuns ? "Update ready" : "Install update";
+      return props.anyActiveRuns ? translate("dashboard_page.update_ready") : translate("dashboard_page.install_update");
     }
     if (state === "downloading") {
       const percent = updateDownloadPercent();
-      return percent == null ? "Downloading" : `Downloading ${percent}%`;
+      return percent == null ? translate("dashboard_page.downloading") : translate("dashboard_page.downloading_percent").replace("{percent}", String(percent));
     }
-    return "Update available";
+    return translate("dashboard_page.update_available");
   });
 
   const updatePillButtonTone = createMemo(() => {
@@ -1029,11 +1031,11 @@ export default function DashboardView(props: DashboardViewProps) {
     const state = props.updateStatus?.state;
     if (state === "ready") {
       return props.anyActiveRuns
-        ? `Update ready ${version}. Stop active runs to restart.`
-        : `Restart to apply update ${version}`;
+        ? translate("dashboard_page.update_ready_stop").replace("{version}", version)
+        : translate("dashboard_page.update_restart").replace("{version}", version);
     }
-    if (state === "downloading") return `Downloading update ${version}`;
-    return `Update available ${version}`;
+    if (state === "downloading") return translate("dashboard_page.downloading_update").replace("{version}", version);
+    return translate("dashboard_page.update_available_version").replace("{version}", version);
   });
 
   const handleUpdatePillClick = () => {
@@ -1109,8 +1111,8 @@ export default function DashboardView(props: DashboardViewProps) {
         <div
           class="absolute right-0 top-3 hidden h-[calc(100%-24px)] w-2 translate-x-1/2 cursor-col-resize rounded-full bg-transparent transition-colors hover:bg-gray-6/40 md:block"
           onPointerDown={startLeftSidebarResize}
-          title="Resize workspace column"
-          aria-label="Resize workspace column"
+          title={translate("dashboard_page.resize_workspace_column")}
+          aria-label={translate("dashboard_page.resize_workspace_column")}
         />
 
       </aside>
@@ -1147,7 +1149,7 @@ export default function DashboardView(props: DashboardViewProps) {
               </button>
             </Show>
             <span class="shrink-0 rounded-md bg-dls-hover px-2 py-1 text-[11px] font-medium text-dls-secondary">
-              {props.activeWorkspaceDisplay.workspaceType === "remote" ? "Remote worker" : "Worker"}
+              {props.activeWorkspaceDisplay.workspaceType === "remote" ? translate("dashboard_page.remote_worker_badge") : translate("dashboard_page.worker_badge")}
             </span>
             <h1 class="truncate text-[15px] font-semibold text-dls-text">{title()}</h1>
             <span class="hidden truncate text-[13px] text-dls-secondary lg:inline">
@@ -1165,11 +1167,11 @@ export default function DashboardView(props: DashboardViewProps) {
               type="button"
               class="hidden items-center gap-2 rounded-md px-2.5 py-1.5 text-[13px] font-medium text-gray-10 transition-colors hover:bg-gray-2/70 hover:text-dls-text sm:flex"
               onClick={toggleRightSidebar}
-              title="Menu"
-              aria-label="Menu"
+              title={translate("dashboard_page.menu")}
+              aria-label={translate("dashboard_page.menu")}
             >
               <Menu size={15} />
-              <span>Menu</span>
+              <span>{translate("dashboard_page.menu")}</span>
               <span class="ml-1 rounded border border-dls-border px-1 text-[10px] text-gray-9">⌘K</span>
             </button>
             <div class="hidden h-4 w-px bg-dls-border sm:block" />
@@ -1177,8 +1179,8 @@ export default function DashboardView(props: DashboardViewProps) {
               type="button"
               class="flex h-9 w-9 items-center justify-center rounded-md text-gray-10 transition-colors hover:bg-gray-2/70 hover:text-dls-text"
               onClick={props.toggleSettings}
-              title="More"
-              aria-label="More"
+              title={translate("dashboard_page.more")}
+              aria-label={translate("dashboard_page.more")}
             >
               <MoreHorizontal size={16} />
             </button>
@@ -1437,7 +1439,7 @@ export default function DashboardView(props: DashboardViewProps) {
                     onClick={props.repairOpencodeCache}
                     disabled={props.cacheRepairBusy || !props.developerMode}
                   >
-                    {props.cacheRepairBusy ? "Repairing cache" : "Repair cache"}
+                    {props.cacheRepairBusy ? translate("dashboard_page.repairing_cache") : translate("dashboard_page.repair_cache")}
                   </Button>
                   <Button
                     variant="outline"
@@ -1445,7 +1447,7 @@ export default function DashboardView(props: DashboardViewProps) {
                     onClick={props.stopHost}
                     disabled={props.busy}
                   >
-                    Retry
+                    {translate("dashboard_page.retry")}
                   </Button>
                   <Show when={props.cacheRepairResult}>
                     <span class="text-xs text-red-12/80">
@@ -1531,7 +1533,7 @@ export default function DashboardView(props: DashboardViewProps) {
               onClick={() => props.setTab("scheduled")}
             >
               <History size={18} />
-              Automations
+              {translate("dashboard_page.tab_automations")}
             </button>
             <button
               class={`flex flex-col items-center gap-1 text-xs ${
@@ -1540,7 +1542,7 @@ export default function DashboardView(props: DashboardViewProps) {
               onClick={() => props.setTab("skills")}
             >
               <Zap size={18} />
-              Skills
+              {translate("dashboard_page.tab_skills")}
             </button>
             <button
               class={`flex flex-col items-center gap-1 text-xs ${
@@ -1549,7 +1551,7 @@ export default function DashboardView(props: DashboardViewProps) {
               onClick={() => props.setTab("mcp")}
             >
               <Box size={18} />
-              Extensions
+              {translate("dashboard_page.tab_extensions")}
             </button>
             <button
               class={`flex flex-col items-center gap-1 text-xs ${
@@ -1558,7 +1560,7 @@ export default function DashboardView(props: DashboardViewProps) {
               onClick={() => props.setTab("identities")}
             >
               <MessageCircle size={18} />
-              IDs
+              {translate("dashboard_page.tab_ids")}
             </button>
             <Show when={props.developerMode}>
               <button
@@ -1568,7 +1570,7 @@ export default function DashboardView(props: DashboardViewProps) {
                 onClick={() => props.setTab("config")}
               >
                 <SlidersHorizontal size={18} />
-                Advanced
+                {translate("dashboard_page.tab_advanced")}
               </button>
             </Show>
           </div>
@@ -1587,8 +1589,8 @@ export default function DashboardView(props: DashboardViewProps) {
             type="button"
             class="flex h-10 w-10 items-center justify-center rounded-[16px] text-dls-secondary transition-colors hover:bg-dls-surface hover:text-dls-text"
             onClick={toggleRightSidebar}
-            title={rightSidebarExpanded() ? "Collapse sidebar" : "Expand sidebar"}
-            aria-label={rightSidebarExpanded() ? "Collapse sidebar" : "Expand sidebar"}
+            title={rightSidebarExpanded() ? translate("dashboard_page.collapse_sidebar") : translate("dashboard_page.expand_sidebar")}
+            aria-label={rightSidebarExpanded() ? translate("dashboard_page.collapse_sidebar") : translate("dashboard_page.expand_sidebar")}
           >
             <Show when={rightSidebarExpanded()} fallback={<ChevronLeft size={18} />}>
               <ChevronRight size={18} />
@@ -1596,11 +1598,11 @@ export default function DashboardView(props: DashboardViewProps) {
           </button>
         </div>
         <div class="space-y-1 pt-1">
-          {navItem("scheduled", "Automations", <History size={18} />)}
-          {navItem("skills", "Skills", <Zap size={18} />)}
-          {navItem("mcp", "Extensions", <Box size={18} />)}
-          {navItem("identities", "Messaging", <MessageCircle size={18} />)}
-          <Show when={props.developerMode}>{navItem("config", "Advanced", <SlidersHorizontal size={18} />)}</Show>
+          {navItem("scheduled", translate("dashboard_page.tab_automations"), <History size={18} />)}
+          {navItem("skills", translate("dashboard_page.tab_skills"), <Zap size={18} />)}
+          {navItem("mcp", translate("dashboard_page.tab_extensions"), <Box size={18} />)}
+          {navItem("identities", translate("dashboard_page.tab_messaging"), <MessageCircle size={18} />)}
+          <Show when={props.developerMode}>{navItem("config", translate("dashboard_page.tab_advanced"), <SlidersHorizontal size={18} />)}</Show>
         </div>
       </aside>
       </div>

@@ -898,6 +898,249 @@ export default {
   "settings.updates_not_supported": "此环境不支持更新。",
   "settings.updates_desktop_only": "更新仅在桌面应用中可用。",
 
+  // 设置页面 (settings.tsx) — 标签、分区和标签
+  "settings.tab_general": "通用",
+  "settings.tab_model": "模型",
+  "settings.tab_advanced": "高级",
+  "settings.tab_debug": "调试",
+
+  // 工具栏更新
+  "settings.toolbar_update_available": "有可用更新",
+  "settings.toolbar_ready_to_install": "准备安装",
+  "settings.toolbar_downloading": "下载中",
+  "settings.toolbar_checking": "检查更新中",
+  "settings.toolbar_check_failed": "更新检查失败",
+  "settings.toolbar_up_to_date": "已是最新",
+  "settings.toolbar_action_download": "下载",
+  "settings.toolbar_action_install": "安装",
+  "settings.toolbar_action_retry": "重试",
+  "settings.toolbar_action_check": "检查",
+
+  // 消息
+  "settings.messaging_title": "消息",
+  "settings.messaging_hint": "在「身份」标签页中管理 Telegram/Slack 身份和绑定。",
+
+  // 提供商
+  "settings.providers_title": "提供商",
+  "settings.providers_hint": "连接模型和工具的服务。",
+  "settings.provider_unavailable": "不可用",
+  "settings.provider_not_connected": "未连接",
+  "settings.provider_connected_suffix": "已连接",
+  "settings.provider_available_suffix": "可用",
+  "settings.provider_connect_to_load": "连接 OpenCode 以加载提供商。",
+  "settings.loading_providers": "加载提供商中...",
+  "settings.connect_provider": "连接提供商",
+  "settings.disconnecting": "断开中...",
+  "settings.disconnect_confirm": "断开 {provider}？这将删除已存储的凭据。",
+  "settings.disconnected_provider": "已断开 {provider}。",
+  "settings.failed_disconnect_provider": "断开提供商失败",
+  "settings.failed_open_providers": "打开提供商失败",
+  "settings.api_keys_stored_locally": "API 密钥由 OpenCode 本地存储。在「模型」标签页中设置默认模型。",
+
+  // 状态标签
+  "settings.status_connected": "已连接",
+  "settings.status_limited": "受限",
+  "settings.status_not_connected": "未连接",
+  "settings.status_connecting": "连接中",
+  "settings.status_connection_failed": "连接失败",
+  "settings.status_unavailable": "不可用",
+  "settings.status_running": "运行中",
+  "settings.status_offline": "离线",
+  "settings.status_idle": "空闲",
+  "settings.status_failed": "失败",
+  "settings.status_loading": "加载中",
+  "settings.status_error": "错误",
+  "settings.status_ready": "就绪",
+
+  // 连接
+  "settings.reconnecting": "重新连接中...",
+  "settings.reconnect_server": "重新连接服务器",
+  "settings.reconnect_failed": "重新连接失败。请检查服务器 URL/令牌后重试。",
+  "settings.reconnected_server": "已重新连接 OpenWork 服务器。",
+  "settings.failed_reconnect_server": "重新连接 OpenWork 服务器失败。",
+  "settings.restarting": "重启中...",
+  "settings.restart_local_server": "重启本地服务器",
+  "settings.restart_failed": "重启失败。请查看日志后重试。",
+  "settings.restarted_local_server": "已重启本地服务器。",
+  "settings.failed_restart_local_server": "重启本地服务器失败。",
+  "settings.stop_local_server": "停止本地服务器",
+  "settings.disconnect_server": "断开服务器",
+
+  // 模型标签页
+  "settings.auto_compact_label": "自动上下文压缩",
+  "settings.auto_compact_hint": "运行完成后自动压缩上下文。",
+
+  // 运行时
+  "settings.runtime_title": "运行时",
+  "settings.runtime_hint": "本地引擎和 OpenWork 服务器的状态。",
+  "settings.opencode_engine_title": "OpenCode 引擎",
+  "settings.opencode_engine_hint": "代理、工具和模型提供商的本地运行时。",
+  "settings.openwork_server_title": "OpenWork 服务器",
+  "settings.openwork_server_hint": "应用同步、工作区和远程访问的会话控制平面。",
+
+  // 开发者模式
+  "settings.developer_mode_title": "开发者模式",
+  "settings.developer_mode_hint": "启用调试工具、诊断信息和开发者标签页。",
+  "settings.developer_panel_enabled": "开发者面板已启用。",
+  "settings.developer_panel_enable_hint": "启用此项以访问开发者面板。",
+  "settings.nuking_dev_config": "正在清除 OpenCode 开发配置...",
+  "settings.nuke_dev_config": "清除 OpenCode 开发配置",
+  "settings.nuke_dev_config_description": "删除隔离的 OpenCode 开发状态，然后退出 OpenWork。",
+  "settings.nuke_dev_config_confirm": "删除隔离的 OpenCode 开发配置和认证/数据状态，然后退出 OpenWork？此操作仅影响开发模式状态。",
+  "settings.nuke_dev_config_success": "已删除 OpenCode 开发状态。OpenWork 正在关闭...",
+  "settings.nuke_dev_config_failed": "清除 OpenCode 开发配置失败。",
+
+  // 打开分享链接
+  "settings.open_share_link_title": "打开分享链接",
+  "settings.open_share_link_hint": "粘贴现有的 openwork:// 分享链接，并通过开发应用路由。",
+  "settings.open_share_link_action": "打开分享链接",
+  "settings.hide": "隐藏",
+  "settings.opening": "打开中...",
+  "settings.open_link": "打开链接",
+
+  // 更新
+  "settings.background_checks": "后台检查",
+  "settings.background_checks_hint": "OpenWork 在启动时始终检查。每天还会安静地检查一次。",
+  "settings.auto_update": "自动更新",
+  "settings.auto_update_hint": "自动下载更新（会提示重启）",
+
+  // 外观（高级）
+  "settings.window_appearance_hint": "自定义窗口外观。",
+  "settings.hide_titlebar": "隐藏标题栏",
+  "settings.hide_titlebar_hint": "隐藏窗口标题栏。适用于 Linux 上的平铺窗口管理器（Hyprland、i3、sway）。",
+
+  // 反馈
+  "settings.feedback_badge": "我们会阅读每条消息",
+  "settings.feedback_title": "帮助塑造 OpenWork",
+  "settings.feedback_description": "告诉我们哪些体验好，哪些需要改进。反馈直达团队，帮助我们优先处理接下来的功能。",
+  "settings.send_feedback": "发送反馈",
+  "settings.join_discord": "加入 Discord",
+  "settings.report_issue": "报告问题",
+
+  // 启动
+  "settings.startup_local": "启动本地服务器",
+  "settings.startup_server": "连接到服务器",
+  "settings.startup_not_set": "未设置",
+
+  // 引擎
+  "settings.engine_title": "引擎",
+  "settings.engine_hint": "选择 OpenCode 在本地的运行方式。",
+  "settings.engine_remote_notice": "启动偏好当前为远程模式。引擎设置已保存，将在下次本地运行时生效。",
+  "settings.engine_bundled": "内置（推荐）",
+  "settings.engine_system_path": "系统安装 (PATH)",
+  "settings.engine_custom_binary": "自定义二进制文件",
+  "settings.engine_source_hint": "内置引擎最可靠。仅在您自行管理 OpenCode 时使用系统安装。",
+  "settings.custom_binary_label": "自定义 OpenCode 二进制文件",
+  "settings.custom_binary_hint": "将 OpenWork 指向本地 OpenCode 构建（如您的 fork）。下次引擎启动或重载时生效。",
+  "settings.engine_runtime_label": "引擎运行时",
+  "settings.engine_runtime_hint": "下次引擎启动或重载时生效。",
+  "settings.no_binary_selected": "未选择二进制文件。",
+  "settings.select_opencode_binary": "选择 OpenCode 二进制文件",
+  "settings.no_custom_path": "未设置自定义路径",
+  "settings.choose": "选择",
+  "settings.clear": "清除",
+  "settings.stop": "停止",
+  "settings.restart": "重启",
+
+  // 重置和恢复
+  "settings.reset_recovery_title": "重置和恢复",
+  "settings.reset_recovery_hint": "清除数据或重新启动设置流程。",
+
+  // 调试标签页
+  "settings.debug_report_title": "运行时调试报告",
+  "settings.debug_report_hint": "可读的诊断快照，支持一键导出。",
+  "settings.copy_json": "复制 JSON",
+  "settings.export": "导出",
+  "settings.label_desktop_app": "桌面应用",
+  "settings.label_commit": "提交",
+  "settings.label_orchestrator": "编排器",
+  "settings.label_openwork_server": "OpenWork 服务器",
+
+  // 沙盒探测
+  "settings.sandbox_probe_title": "沙盒探测",
+  "settings.sandbox_probe_hint": "运行临时 Docker 沙盒启动检查并捕获检查/日志输出。",
+  "settings.sandbox_requires_desktop": "沙盒探测需要桌面应用",
+  "settings.stop_runs_before_probe": "探测前请停止活跃运行",
+  "settings.running_probe": "正在探测...",
+  "settings.run_sandbox_probe": "运行沙盒探测",
+  "settings.sandbox_probe_success": "沙盒探测成功。导出调试报告以获取支持。",
+  "settings.sandbox_probe_errors": "沙盒探测完成，但有错误。",
+  "settings.sandbox_probe_failed": "沙盒探测失败。",
+  "settings.sandbox_probe_export_hint": "使用上方运行时调试报告中的「导出」保存此探测输出和日志。",
+
+  // 工作区配置
+  "settings.workspace_config_title": "工作区配置",
+  "settings.workspace_config_hint": "显示或重置此应用工作区的 `.opencode/openwork.json` 默认值。",
+  "settings.no_active_workspace": "没有活跃的本地工作区。",
+  "settings.reveal_requires_desktop": "显示配置需要桌面应用",
+  "settings.reveal_config": "显示配置",
+  "settings.resetting": "重置中...",
+  "settings.reset_config_defaults": "重置配置默认值",
+  "settings.stop_runs_before_reset": "重置配置前请停止活跃运行",
+  "settings.select_workspace_before_reveal": "显示配置前请先选择本地工作区。",
+  "settings.revealed_workspace_config": "已显示工作区配置。",
+  "settings.failed_reveal_config": "显示工作区配置失败。",
+  "settings.failed_reset_config": "重置应用配置失败。",
+
+  // 剪贴板/导出
+  "settings.clipboard_unavailable": "此环境中剪贴板不可用。",
+  "settings.copied_runtime_report": "已复制运行时报告 JSON。",
+  "settings.failed_copy_report": "复制运行时报告失败。",
+  "settings.export_unavailable": "此环境中导出不可用。",
+  "settings.exported_runtime_report": "已导出运行时报告 JSON。",
+  "settings.failed_export_report": "导出运行时报告失败。",
+
+  // 调试日志
+  "settings.available_in_desktop": "在桌面应用中可用。",
+  "settings.no_stdout_yet": "尚未捕获 stdout。",
+  "settings.no_stderr_yet": "尚未捕获 stderr。",
+  "settings.logs_on_host": "日志在主机上可用。",
+  "settings.binary_unavailable": "二进制文件不可用",
+  "settings.sidecar_config_unavailable": "Sidecar 配置不可用",
+  "settings.no_worker_path": "没有可用的工作区路径",
+
+  // Docker
+  "settings.docker_containers_title": "OpenWork Docker 容器",
+  "settings.docker_containers_hint": "强制删除 OpenWork 启动的 Docker 容器（沙盒 + 本地开发栈）。",
+  "settings.docker_requires_desktop": "Docker 清理需要桌面应用",
+  "settings.stop_runs_before_cleanup": "清理前请停止活跃运行",
+  "settings.removing_containers": "正在删除容器...",
+  "settings.delete_containers": "删除容器",
+
+  // 开发工具
+  "settings.devtools_title": "开发工具",
+  "settings.devtools_hint": "Sidecar 健康状态、功能和审计记录。",
+  "settings.service_restarts_title": "服务重启",
+  "settings.service_restarts_hint": "无需离开此页面即可重启特定主机服务。",
+  "settings.restart_orchestrator": "重启编排器",
+  "settings.restart_opencode": "重启 OpenCode",
+  "settings.restart_openwork_server": "重启 OpenWork 服务器",
+  "settings.restart_opencode_router": "重启 OpenCodeRouter",
+
+  // 版本
+  "settings.versions_title": "版本",
+  "settings.versions_hint": "Sidecar + 桌面构建信息。",
+  "settings.local_execution_sidecar": "本地执行 sidecar。",
+  "settings.orchestrator_daemon_title": "编排器守护进程",
+  "settings.orchestrator_daemon_hint": "工作区编排层。",
+  "settings.sdk_diagnostics_hint": "UI 连接诊断。",
+  "settings.config_approvals_sidecar": "配置和审批 sidecar。",
+  "settings.opencode_router_title": "OpenCodeRouter sidecar",
+  "settings.messaging_bridge_hint": "消息桥接服务。",
+
+  // 诊断
+  "settings.server_diagnostics_title": "OpenWork 服务器诊断",
+  "settings.diagnostics_unavailable": "诊断信息不可用。",
+  "settings.server_capabilities_title": "OpenWork 服务器功能",
+  "settings.worker_unresolved": "工作区未解析",
+  "settings.capabilities_unavailable": "功能不可用。请使用客户端令牌连接。",
+  "settings.cap_read": "读取",
+  "settings.cap_write": "写入",
+  "settings.cap_no_access": "无访问权限",
+  "settings.workspace_debug_events": "工作区调试事件",
+  "settings.audit_log_title": "审计日志",
+  "settings.no_audit_entries": "暂无审计记录。",
+
   // ==================== Reload ====================
   "reload.toast_title": "需要重新加载",
   "reload.toast_description": "你需要重新加载工作区才能使这些更改生效。",
@@ -1787,4 +2030,44 @@ export default {
   "minimap.user": "用户",
   "minimap.agent": "助手",
   "minimap.message": "消息",
+
+  // ==================== Dashboard Page ====================
+  "dashboard_page.tab_automations": "自动化",
+  "dashboard_page.tab_skills": "Skills",
+  "dashboard_page.tab_extensions": "扩展",
+  "dashboard_page.tab_messaging": "消息",
+  "dashboard_page.tab_advanced": "高级",
+  "dashboard_page.tab_settings": "设置",
+  "dashboard_page.tab_ids": "IDs",
+  "dashboard_page.worker_fallback": "工作区",
+  "dashboard_page.workspace_kind_sandbox": "沙箱",
+  "dashboard_page.workspace_kind_remote": "远程",
+  "dashboard_page.workspace_kind_local": "本地",
+  "dashboard_page.update_ready": "更新就绪",
+  "dashboard_page.install_update": "安装更新",
+  "dashboard_page.downloading": "下载中",
+  "dashboard_page.downloading_percent": "下载中 {percent}%",
+  "dashboard_page.update_available": "有可用更新",
+  "dashboard_page.update_ready_stop": "更新就绪 {version}。停止活跃任务以重启。",
+  "dashboard_page.update_restart": "重启以应用更新 {version}",
+  "dashboard_page.downloading_update": "正在下载更新 {version}",
+  "dashboard_page.update_available_version": "有可用更新 {version}",
+  "dashboard_page.resize_workspace_column": "调整工作区列宽",
+  "dashboard_page.remote_worker_badge": "远程工作区",
+  "dashboard_page.worker_badge": "工作区",
+  "dashboard_page.menu": "菜单",
+  "dashboard_page.more": "更多",
+  "dashboard_page.repairing_cache": "正在修复缓存",
+  "dashboard_page.repair_cache": "修复缓存",
+  "dashboard_page.retry": "重试",
+  "dashboard_page.collapse_sidebar": "收起侧边栏",
+  "dashboard_page.expand_sidebar": "展开侧边栏",
+
+  // ==================== Create Workspace Modal ====================
+  "create_workspace.sandbox_setup": "沙箱设置",
+  "create_workspace.hide_logs": "隐藏日志",
+  "create_workspace.show_logs": "显示日志",
+  "create_workspace.live_logs": "实时日志",
+  "create_workspace.docker_debug_details": "Docker 调试详情",
+  "create_workspace.creating": "创建中...",
 } as const;
