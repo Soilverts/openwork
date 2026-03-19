@@ -7,6 +7,7 @@ import { compareProviders } from "../utils/providers";
 
 import Button from "./button";
 import TextInput from "./text-input";
+import { t } from "../../i18n";
 
 type ProviderAuthMethod = { type: "oauth" | "api"; label: string };
 type ProviderAuthEntry = {
@@ -283,7 +284,7 @@ export default function ProviderAuthModal(props: ProviderAuthModalProps) {
     try {
       return await props.onSubmitOAuth(providerId, methodIndex, trimmedCode || undefined);
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to complete OAuth";
+      const message = error instanceof Error ? error.message : t("provider_auth.failed_complete_oauth");
       setLocalError(message);
       throw error instanceof Error ? error : new Error(message);
     }
@@ -341,7 +342,7 @@ export default function ProviderAuthModal(props: ProviderAuthModalProps) {
 
       setView("oauth-auto");
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to start OAuth";
+      const message = error instanceof Error ? error.message : t("provider_auth.failed_start_oauth");
       setLocalError(message);
     }
   };
@@ -369,7 +370,7 @@ export default function ProviderAuthModal(props: ProviderAuthModalProps) {
       return;
     }
 
-    setLocalError(`No authentication methods available for ${entry.name}.`);
+    setLocalError(t("provider_auth.no_auth_methods").replace("{name}", entry.name));
   };
 
   const handleMethodSelect = (method: ProviderAuthMethod["type"]) => {
@@ -391,7 +392,7 @@ export default function ProviderAuthModal(props: ProviderAuthModalProps) {
 
     const trimmed = apiKeyInput().trim();
     if (!trimmed) {
-      setLocalError("API key is required.");
+      setLocalError(t("provider_auth.api_key_required"));
       return;
     }
 
@@ -399,7 +400,7 @@ export default function ProviderAuthModal(props: ProviderAuthModalProps) {
     try {
       await props.onSubmitApiKey(entry.id, trimmed);
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to save API key";
+      const message = error instanceof Error ? error.message : t("provider_auth.failed_save_api_key");
       setLocalError(message);
     }
   };
@@ -411,7 +412,7 @@ export default function ProviderAuthModal(props: ProviderAuthModalProps) {
 
     const trimmed = oauthCodeInput().trim();
     if (!trimmed) {
-      setLocalError("Authorization code is required.");
+      setLocalError(t("provider_auth.auth_code_required"));
       return;
     }
 
@@ -442,10 +443,10 @@ export default function ProviderAuthModal(props: ProviderAuthModalProps) {
 
   const submittingLabel = () => {
     if (!props.submitting) return null;
-    if (resolvedView() === "api") return "Saving API key...";
-    if (resolvedView() === "oauth-code") return "Verifying authorization code...";
-    if (resolvedView() === "oauth-auto") return "Waiting for OAuth confirmation...";
-    return "Opening authentication...";
+    if (resolvedView() === "api") return t("provider_auth.saving_api_key");
+    if (resolvedView() === "oauth-code") return t("provider_auth.verifying_auth_code");
+    if (resolvedView() === "oauth-auto") return t("provider_auth.waiting_oauth");
+    return t("provider_auth.opening_auth");
   };
 
   const stepEntryIndex = (delta: number) => {
@@ -492,14 +493,14 @@ export default function ProviderAuthModal(props: ProviderAuthModalProps) {
         <div class="bg-gray-2 border border-gray-6/70 w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden max-h-[calc(100vh-2rem)] flex flex-col">
           <div class="px-6 pt-6 pb-4 border-b border-gray-6/50 flex items-start justify-between gap-4">
             <div>
-              <h3 class="text-lg font-semibold text-gray-12">Connect providers</h3>
-              <p class="text-sm text-gray-11 mt-1">Sign in to services you want OpenWork to use.</p>
+              <h3 class="text-lg font-semibold text-gray-12">{t("provider_auth.connect_providers")}</h3>
+              <p class="text-sm text-gray-11 mt-1">{t("provider_auth.sign_in_desc")}</p>
             </div>
             <Button
               variant="ghost"
               class="!p-2 rounded-full"
               onClick={handleClose}
-              aria-label="Close"
+              aria-label={t("provider_auth.close")}
             >
               <X size={16} />
             </Button>
@@ -512,7 +513,7 @@ export default function ProviderAuthModal(props: ProviderAuthModalProps) {
                 fallback={
                   <Show when={props.loading}>
                     <div class="rounded-xl border border-gray-6 bg-gray-1/60 px-4 py-3 text-sm text-gray-10 animate-pulse">
-                      Loading providers...
+                      {t("provider_auth.loading_providers")}
                     </div>
                   </Show>
                 }
@@ -529,9 +530,9 @@ export default function ProviderAuthModal(props: ProviderAuthModalProps) {
                   <div class="space-y-3" onKeyDown={handleListKeyDown}>
                     <TextInput
                       ref={searchInputEl}
-                      label="Search"
+                      label={t("provider_auth.search")}
                       type="text"
-                      placeholder="Filter providers by name or ID"
+                      placeholder={t("provider_auth.filter_placeholder")}
                       value={searchQuery()}
                       onInput={(event) => {
                         setSearchQuery(event.currentTarget.value);
@@ -547,7 +548,7 @@ export default function ProviderAuthModal(props: ProviderAuthModalProps) {
                       when={filteredEntries().length}
                       fallback={
                         <div class="text-sm text-gray-10">
-                          {entries().length ? "No providers match your search." : "No providers available."}
+                          {entries().length ? t("provider_auth.no_match") : t("provider_auth.no_providers")}
                         </div>
                       }
                     >
@@ -574,11 +575,11 @@ export default function ProviderAuthModal(props: ProviderAuthModalProps) {
                                 <div class="flex items-center justify-end gap-2 shrink-0 min-w-[108px]">
                                   <Show
                                     when={entry.connected}
-                                    fallback={<span class="text-xs text-gray-9">Connect</span>}
+                                    fallback={<span class="text-xs text-gray-9">{t("provider_auth.connect")}</span>}
                                   >
                                     <div class="flex items-center gap-1 text-[11px] text-green-11 bg-green-7/10 border border-green-7/20 px-2 py-1 rounded-full">
                                       <CheckCircle2 size={12} />
-                                      Connected
+                                      {t("provider_auth.connected")}
                                     </div>
                                   </Show>
                                 </div>
@@ -604,7 +605,7 @@ export default function ProviderAuthModal(props: ProviderAuthModalProps) {
                       </For>
                     </Show>
 
-                    <div class="text-[11px] text-gray-9">Arrow keys to navigate, Enter to select.</div>
+                    <div class="text-[11px] text-gray-9">{t("provider_auth.keyboard_hint")}</div>
                   </div>
                 </Show>
 
@@ -613,10 +614,10 @@ export default function ProviderAuthModal(props: ProviderAuthModalProps) {
                     <div class="flex items-center justify-between gap-4">
                       <div>
                         <div class="text-sm font-medium text-gray-12">{selectedEntry()!.name}</div>
-                        <div class="text-xs text-gray-10 mt-1">Choose how you'd like to connect.</div>
+                        <div class="text-xs text-gray-10 mt-1">{t("provider_auth.choose_method")}</div>
                       </div>
                       <Button variant="ghost" onClick={handleBack} disabled={actionDisabled()}>
-                        Back
+                        {t("provider_auth.back")}
                       </Button>
                     </div>
                     <div class="grid gap-2">
@@ -626,7 +627,7 @@ export default function ProviderAuthModal(props: ProviderAuthModalProps) {
                           onClick={() => void handleMethodSelect("oauth")}
                           disabled={actionDisabled()}
                         >
-                          Continue with OAuth
+                          {t("provider_auth.continue_oauth")}
                         </Button>
                       </Show>
                       <Show when={hasMethod(selectedEntry(), "api")}>
@@ -635,7 +636,7 @@ export default function ProviderAuthModal(props: ProviderAuthModalProps) {
                           onClick={() => handleMethodSelect("api")}
                           disabled={actionDisabled()}
                         >
-                          Use API key
+                          {t("provider_auth.use_api_key")}
                         </Button>
                       </Show>
                     </div>
@@ -647,14 +648,14 @@ export default function ProviderAuthModal(props: ProviderAuthModalProps) {
                     <div class="flex items-center justify-between gap-4">
                       <div>
                         <div class="text-sm font-medium text-gray-12">{selectedEntry()!.name}</div>
-                        <div class="text-xs text-gray-10 mt-1">Paste your API key to connect.</div>
+                        <div class="text-xs text-gray-10 mt-1">{t("provider_auth.paste_api_key")}</div>
                       </div>
                       <Button variant="ghost" onClick={handleBack} disabled={actionDisabled()}>
-                        Back
+                        {t("provider_auth.back")}
                       </Button>
                     </div>
                     <TextInput
-                      label="API key"
+                      label={t("provider_auth.api_key")}
                       type="password"
                       placeholder="sk-..."
                       value={apiKeyInput()}
@@ -669,19 +670,19 @@ export default function ProviderAuthModal(props: ProviderAuthModalProps) {
                     />
                     <Show when={selectedEntry()!.env.length > 0}>
                       <div class="text-[11px] text-gray-9">
-                        Env vars: <span class="font-mono">{selectedEntry()!.env.join(", ")}</span>
+                        {t("provider_auth.env_vars")}: <span class="font-mono">{selectedEntry()!.env.join(", ")}</span>
                       </div>
                     </Show>
                     <div class="flex items-center justify-between gap-3">
                       <div class="text-[11px] text-gray-9">
-                        Keys are stored locally by OpenCode.
+                        {t("provider_auth.keys_stored_locally")}
                       </div>
                       <Button
                         variant="secondary"
                         onClick={handleApiSubmit}
                         disabled={actionDisabled() || !apiKeyInput().trim()}
                       >
-                        {props.submitting ? "Saving..." : "Save key"}
+                        {props.submitting ? t("provider_auth.saving") : t("provider_auth.save_key")}
                       </Button>
                     </div>
                   </div>
@@ -692,14 +693,14 @@ export default function ProviderAuthModal(props: ProviderAuthModalProps) {
                     <div class="flex items-center justify-between gap-4">
                       <div>
                         <div class="text-sm font-medium text-gray-12">{selectedEntry()!.name}</div>
-                        <div class="text-xs text-gray-10 mt-1">Finish OAuth by pasting the authorization code.</div>
+                        <div class="text-xs text-gray-10 mt-1">{t("provider_auth.finish_oauth")}</div>
                       </div>
                       <Button variant="ghost" onClick={handleBack} disabled={actionDisabled()}>
-                        Back
+                        {t("provider_auth.back")}
                       </Button>
                     </div>
                     <div class="text-xs text-gray-9">
-                      Complete sign-in in your browser, then paste the code here.
+                      {t("provider_auth.complete_sign_in_browser")}
                     </div>
                     <Show when={oauthInstructions()}>
                       <div class="rounded-lg border border-gray-6/60 bg-gray-1/60 px-3 py-2 text-[11px] text-gray-9 font-mono break-all">
@@ -707,9 +708,9 @@ export default function ProviderAuthModal(props: ProviderAuthModalProps) {
                       </div>
                     </Show>
                     <TextInput
-                      label="Authorization code"
+                      label={t("provider_auth.authorization_code")}
                       type="text"
-                      placeholder="Paste code"
+                      placeholder={t("provider_auth.paste_code")}
                       value={oauthCodeInput()}
                       onInput={(event) => {
                         setOauthCodeInput(event.currentTarget.value);
@@ -734,14 +735,14 @@ export default function ProviderAuthModal(props: ProviderAuthModalProps) {
                         }}
                         disabled={actionDisabled()}
                       >
-                        Open browser again
+                        {t("provider_auth.open_browser_again")}
                       </Button>
                       <Button
                         variant="secondary"
                         onClick={() => void handleOauthCodeSubmit()}
                         disabled={actionDisabled() || !oauthCodeInput().trim()}
                       >
-                        {props.submitting ? "Verifying..." : "Complete connection"}
+                        {props.submitting ? t("provider_auth.verifying") : t("provider_auth.complete_connection")}
                       </Button>
                     </div>
                   </div>
@@ -752,19 +753,19 @@ export default function ProviderAuthModal(props: ProviderAuthModalProps) {
                     <div class="flex items-center justify-between gap-4">
                       <div>
                         <div class="text-sm font-medium text-gray-12">{selectedEntry()!.name}</div>
-                        <div class="text-xs text-gray-10 mt-1">Waiting for browser confirmation.</div>
+                        <div class="text-xs text-gray-10 mt-1">{t("provider_auth.waiting_browser")}</div>
                       </div>
                       <Button variant="ghost" onClick={handleBack} disabled={actionDisabled()}>
-                        Back
+                        {t("provider_auth.back")}
                       </Button>
                     </div>
-                    <div class="text-xs text-gray-9">Sign in in the browser tab we just opened. We will complete the connection automatically.</div>
+                    <div class="text-xs text-gray-9">{t("provider_auth.sign_in_browser")}</div>
                     <Show when={oauthDisplayCode()}>
-                      <TextInput label="Confirmation code" value={oauthDisplayCode()} readOnly class="font-mono" />
+                      <TextInput label={t("provider_auth.confirmation_code")} value={oauthDisplayCode()} readOnly class="font-mono" />
                     </Show>
                     <div class="flex items-center gap-2 text-xs text-gray-9">
                       <Loader2 size={14} class={props.submitting || pollingBusy() || oauthAutoBusy() ? "animate-spin" : ""} />
-                      <span>Checking connection status automatically...</span>
+                      <span>{t("provider_auth.checking_connection")}</span>
                     </div>
                     <div class="flex items-center justify-between gap-3">
                       <Button
@@ -775,9 +776,9 @@ export default function ProviderAuthModal(props: ProviderAuthModalProps) {
                         }}
                         disabled={actionDisabled()}
                       >
-                        Open browser again
+                        {t("provider_auth.open_browser_again")}
                       </Button>
-                      <div class="text-[11px] text-gray-9 text-right">This window will close once the provider is connected.</div>
+                      <div class="text-[11px] text-gray-9 text-right">{t("provider_auth.window_will_close")}</div>
                     </div>
                   </div>
                 </Show>
@@ -790,11 +791,10 @@ export default function ProviderAuthModal(props: ProviderAuthModalProps) {
               <Show when={props.submitting}>{submittingLabel()}</Show>
             </div>
             <div class="text-xs text-gray-9">
-              OAuth opens in your browser. API keys are stored locally by OpenCode (not in your repo). Use{" "}
-              <span class="font-mono">/models</span> to pick a default.
+              {t("provider_auth.footer_hint")}
             </div>
             <Button variant="ghost" onClick={handleClose} disabled={actionDisabled()}>
-              Close
+              {t("provider_auth.close")}
             </Button>
           </div>
         </div>

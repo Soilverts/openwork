@@ -1,6 +1,7 @@
 import { For, Show, createEffect, createMemo, createSignal, onCleanup } from "solid-js";
 
 import { Boxes, ChevronDown, ChevronRight, Plus, Sparkles, X } from "lucide-solid";
+import { t } from "../../i18n";
 
 type ExistingWorkerOption = {
   id: string;
@@ -65,7 +66,7 @@ export default function SharedBundleImportModal(props: {
                 onClick={props.onClose}
                 disabled={busy()}
                 class="rounded-full p-1 text-gray-10 transition hover:bg-gray-4 hover:text-gray-12 disabled:cursor-not-allowed disabled:opacity-50"
-                aria-label="Close"
+                aria-label={t("bundle_import.close")}
               >
                 <X size={18} />
               </button>
@@ -82,7 +83,7 @@ export default function SharedBundleImportModal(props: {
                 </For>
                 <Show when={hiddenItemCount() > 0}>
                   <span class="rounded-full border border-gray-6 bg-gray-3 px-3 py-1 text-xs font-medium text-gray-11">
-                    +{hiddenItemCount()} more
+                    +{hiddenItemCount()} {t("bundle_import.more")}
                   </span>
                 </Show>
               </div>
@@ -105,8 +106,8 @@ export default function SharedBundleImportModal(props: {
                   <Plus size={18} />
                 </div>
                 <div>
-                  <div class="text-sm font-semibold text-gray-12">Create New Worker</div>
-                  <div class="mt-1 text-sm text-gray-10">Open the existing new worker flow, then import this bundle into it.</div>
+                  <div class="text-sm font-semibold text-gray-12">{t("bundle_import.create_new_worker")}</div>
+                  <div class="mt-1 text-sm text-gray-10">{t("bundle_import.create_new_worker_desc")}</div>
                 </div>
               </div>
               <Sparkles size={18} class="text-indigo-11" />
@@ -121,8 +122,8 @@ export default function SharedBundleImportModal(props: {
                 aria-expanded={showWorkers()}
               >
                 <div>
-                  <div class="text-sm font-semibold text-gray-12">Add to existing worker</div>
-                  <div class="mt-1 text-sm text-gray-10">Pick an existing worker and import the shared skills there.</div>
+                  <div class="text-sm font-semibold text-gray-12">{t("bundle_import.add_to_existing")}</div>
+                  <div class="mt-1 text-sm text-gray-10">{t("bundle_import.add_to_existing_desc")}</div>
                 </div>
                 <Show when={showWorkers()} fallback={<ChevronRight size={18} class="text-gray-10" />}>
                   <ChevronDown size={18} class="text-gray-10" />
@@ -133,7 +134,7 @@ export default function SharedBundleImportModal(props: {
                 <div class="space-y-3 border-t border-gray-6 px-4 py-4">
                   <Show
                     when={props.workers.length > 0}
-                    fallback={<div class="rounded-xl border border-dashed border-gray-6 px-4 py-5 text-sm text-gray-10">No configured workers are available yet. Create a new worker to import this bundle.</div>}
+                    fallback={<div class="rounded-xl border border-dashed border-gray-6 px-4 py-5 text-sm text-gray-10">{t("bundle_import.no_workers")}</div>}
                   >
                     <For each={props.workers}>
                       {(worker) => {
@@ -155,7 +156,7 @@ export default function SharedBundleImportModal(props: {
                                   </span>
                                   <Show when={worker.current}>
                                     <span class="rounded-full border border-emerald-7/40 bg-emerald-9/10 px-2 py-0.5 text-[11px] font-medium uppercase tracking-wide text-emerald-11">
-                                      Current
+                                      {t("bundle_import.current")}
                                     </span>
                                   </Show>
                                 </div>
