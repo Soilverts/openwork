@@ -377,10 +377,10 @@ export default function WorkspaceSessionList(props: Props) {
                   <div
                     role="button"
                     tabIndex={0}
-                    class={`w-full flex items-center justify-between rounded-[18px] border px-3.5 py-2.5 text-left transition-[background-color,border-color,box-shadow] ${
+                    class={`w-full flex items-center justify-between rounded-[18px] border px-3.5 py-2.5 text-left transition-all duration-200 ease-out active:scale-[0.98] ${
                       props.activeWorkspaceId === workspace().id
-                        ? "border-dls-border bg-dls-surface shadow-[var(--dls-card-shadow)]"
-                        : "border-transparent text-gray-12 hover:bg-gray-2/70"
+                        ? "border-dls-border bg-dls-surface shadow-[var(--dls-card-shadow)] scale-100"
+                        : "border-transparent text-gray-12 hover:bg-gray-2/70 hover:scale-[1.01]"
                     } ${isConnecting() ? "opacity-75" : ""}`}
                     onClick={() => {
                       expandWorkspace(workspace().id);
@@ -394,22 +394,29 @@ export default function WorkspaceSessionList(props: Props) {
                       void Promise.resolve(props.onActivateWorkspace(workspace().id));
                     }}
                   >
-                    <div class="flex min-w-0 items-center gap-3.5">
+                    <div class="flex min-w-0 items-center gap-3">
                       <div
-                        class={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[11px] font-bold ${
-                          props.activeWorkspaceId === workspace().id ? "ring-2 ring-offset-1 ring-offset-dls-surface" : ""
+                        class={`flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-[10px] font-bold transition-shadow duration-200 ${
+                          props.activeWorkspaceId === workspace().id ? "ring-2 ring-offset-1 ring-offset-dls-surface shadow-sm" : ""
                         }`}
                         style={{
                           "background-color": workspaceSwatch(workspace().id || workspaceLabel(workspace())).bg,
                           color: workspaceSwatch(workspace().id || workspaceLabel(workspace())).text,
-                          ...(props.activeWorkspaceId === workspace().id ? { "ring-color": workspaceSwatch(workspace().id || workspaceLabel(workspace())).bg } : {}),
                         }}
                       >
                         {workspaceInitial(workspace())}
                       </div>
-                      <div class="min-w-0 flex items-baseline gap-3">
-                        <div class="min-w-0 flex-1 truncate text-[14px] font-normal text-dls-text">{workspaceLabel(workspace())}</div>
-                        <div class={`shrink-0 whitespace-nowrap text-[12px] ${statusTone()}`}>{statusLabel()}</div>
+                      <div class="min-w-0 flex-1">
+                        <div class={`truncate text-[13px] leading-tight ${
+                          props.activeWorkspaceId === workspace().id
+                            ? "font-semibold text-dls-text"
+                            : "font-medium text-gray-11"
+                        }`}>
+                          {workspaceLabel(workspace())}
+                        </div>
+                        <Show when={statusLabel()}>
+                          <div class={`text-[11px] leading-tight mt-0.5 ${statusTone()}`}>{statusLabel()}</div>
+                        </Show>
                       </div>
                     </div>
 
