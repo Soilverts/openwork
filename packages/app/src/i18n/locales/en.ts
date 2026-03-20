@@ -1703,6 +1703,19 @@ export default {
   "workspace_session_list.reveal_in_explorer": "Reveal in Explorer",
   "workspace_session_list.reveal_in_finder": "Reveal in Finder",
 
+  // Workspace list
+  "workspace_list.sandbox": "Sandbox",
+  "workspace_list.remote": "Remote",
+  "workspace_list.local": "Local",
+  "workspace_list.connecting": "Connecting",
+  "workspace_list.session_count": "{count} sessions",
+  "workspace_list.edit_name": "Edit name",
+  "workspace_list.share": "Share...",
+  "workspace_list.recover": "Recover",
+  "workspace_list.test_connection": "Test connection",
+  "workspace_list.edit_connection": "Edit connection",
+  "workspace_list.remove": "Remove workspace",
+
   // ==================== App (app.tsx) ====================
   "app.failed_read_attachment": "Failed to read attachment: {name}",
   "app.import_skill_one": "Import 1 skill",

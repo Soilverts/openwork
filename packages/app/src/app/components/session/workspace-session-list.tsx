@@ -90,13 +90,22 @@ const workspaceKindLabel = (workspace: WorkspaceInfo) =>
     ? workspace.sandboxBackend === "docker" ||
       Boolean(workspace.sandboxRunId?.trim()) ||
       Boolean(workspace.sandboxContainerName?.trim())
-      ? "Sandbox"
-      : "Remote"
-    : "Local";
+      ? t("workspace_list.sandbox")
+      : t("workspace_list.remote")
+    : t("workspace_list.local");
 
-const WORKSPACE_SWATCHES = ["#2563eb", "#5a67d8", "#f97316", "#10b981"];
+const WORKSPACE_SWATCHES = [
+  { bg: "#2563eb", text: "#ffffff" },
+  { bg: "#5a67d8", text: "#ffffff" },
+  { bg: "#f97316", text: "#ffffff" },
+  { bg: "#10b981", text: "#ffffff" },
+  { bg: "#ec4899", text: "#ffffff" },
+  { bg: "#8b5cf6", text: "#ffffff" },
+  { bg: "#06b6d4", text: "#ffffff" },
+  { bg: "#f59e0b", text: "#ffffff" },
+];
 
-const workspaceSwatchColor = (seed: string) => {
+const workspaceSwatch = (seed: string) => {
   const value = seed.trim() || "worker";
   let hash = 0;
   for (let index = 0; index < value.length; index += 1) {
@@ -104,6 +113,11 @@ const workspaceSwatchColor = (seed: string) => {
     hash |= 0;
   }
   return WORKSPACE_SWATCHES[Math.abs(hash) % WORKSPACE_SWATCHES.length];
+};
+
+const workspaceInitial = (workspace: WorkspaceInfo) => {
+  const name = workspaceLabel(workspace);
+  return name.charAt(0).toUpperCase();
 };
 
 export default function WorkspaceSessionList(props: Props) {
@@ -340,10 +354,16 @@ export default function WorkspaceSessionList(props: Props) {
               workspace().workspaceType === "remote" && connectionState().status === "error";
             const isMenuOpen = () => workspaceMenuId() === workspace().id;
             const taskLoadError = () => getWorkspaceTaskLoadErrorDisplay(workspace(), group.error);
+            const sessionCount = () => group.sessions?.length ?? 0;
             const statusLabel = () => {
               if (group.status === "error") return taskLoadError().label;
-              if (isConnectionActionBusy()) return "Connecting";
-              if (props.activeWorkspaceId === workspace().id) return "Active";
+              if (isConnectionActionBusy()) return t("workspace_list.connecting");
+              if (props.activeWorkspaceId === workspace().id) {
+                const count = sessionCount();
+                return count > 0
+                  ? t("workspace_list.session_count").replace("{count}", String(count))
+                  : workspaceKindLabel(workspace());
+              }
               return workspaceKindLabel(workspace());
             };
             const statusTone = () => {
@@ -378,9 +398,17 @@ export default function WorkspaceSessionList(props: Props) {
                   >
                     <div class="flex min-w-0 items-center gap-3.5">
                       <div
-                        class="flex h-6.5 w-6.5 shrink-0 items-center justify-center rounded-full"
-                        style={{ "background-color": workspaceSwatchColor(workspace().id || workspaceLabel(workspace())) }}
-                      />
+                        class={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[11px] font-bold ${
+                          props.activeWorkspaceId === workspace().id ? "ring-2 ring-offset-1 ring-offset-dls-surface" : ""
+                        }`}
+                        style={{
+                          "background-color": workspaceSwatch(workspace().id || workspaceLabel(workspace())).bg,
+                          color: workspaceSwatch(workspace().id || workspaceLabel(workspace())).text,
+                          ...(props.activeWorkspaceId === workspace().id ? { "ring-color": workspaceSwatch(workspace().id || workspaceLabel(workspace())).bg } : {}),
+                        }}
+                      >
+                        {workspaceInitial(workspace())}
+                      </div>
                       <div class="min-w-0 flex items-baseline gap-3">
                         <div class="min-w-0 flex-1 truncate text-[14px] font-normal text-dls-text">{workspaceLabel(workspace())}</div>
                         <div class={`shrink-0 whitespace-nowrap text-[12px] ${statusTone()}`}>{statusLabel()}</div>
@@ -454,7 +482,7 @@ export default function WorkspaceSessionList(props: Props) {
                           setWorkspaceMenuId(null);
                         }}
                       >
-                        Edit name
+                        {t("workspace_list.edit_name")}
                       </button>
                       <button
                         type="button"
@@ -464,7 +492,7 @@ export default function WorkspaceSessionList(props: Props) {
                           setWorkspaceMenuId(null);
                         }}
                       >
-                        Share...
+                        {t("workspace_list.share")}
                       </button>
                       <Show when={workspace().workspaceType === "local"}>
                         <button
@@ -489,7 +517,7 @@ export default function WorkspaceSessionList(props: Props) {
                             }}
                             disabled={isConnectionActionBusy()}
                           >
-                            Recover
+                            {t("workspace_list.recover")}
                           </button>
                         </Show>
                         <button
@@ -501,7 +529,7 @@ export default function WorkspaceSessionList(props: Props) {
                           }}
                           disabled={isConnectionActionBusy()}
                         >
-                          Test connection
+                          {t("workspace_list.test_connection")}
                         </button>
                         <button
                           type="button"
@@ -512,7 +540,7 @@ export default function WorkspaceSessionList(props: Props) {
                           }}
                           disabled={isConnectionActionBusy()}
                         >
-                          Edit connection
+                          {t("workspace_list.edit_connection")}
                         </button>
                       </Show>
                       <button
@@ -523,7 +551,7 @@ export default function WorkspaceSessionList(props: Props) {
                           setWorkspaceMenuId(null);
                         }}
                       >
-                        Remove workspace
+                        {t("workspace_list.remove")}
                       </button>
                     </div>
                   </Show>

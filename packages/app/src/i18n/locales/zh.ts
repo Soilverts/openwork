@@ -1640,6 +1640,19 @@ export default {
   "workspace_session_list.reveal_in_explorer": "在资源管理器中显示",
   "workspace_session_list.reveal_in_finder": "在访达中显示",
 
+  // Workspace list
+  "workspace_list.sandbox": "沙箱",
+  "workspace_list.remote": "远程",
+  "workspace_list.local": "本地",
+  "workspace_list.connecting": "连接中",
+  "workspace_list.session_count": "{count} 个会话",
+  "workspace_list.edit_name": "编辑名称",
+  "workspace_list.share": "共享...",
+  "workspace_list.recover": "恢复",
+  "workspace_list.test_connection": "测试连接",
+  "workspace_list.edit_connection": "编辑连接",
+  "workspace_list.remove": "移除工作区",
+
   // ==================== App (app.tsx) ====================
   "app.failed_read_attachment": "读取附件失败: {name}",
   "app.import_skill_one": "导入 1 个 skill",
