@@ -7,26 +7,39 @@
   color-scheme: light;
 
   /* Abel Design System — Core tokens (see DESIGN.md) */
-  --abel-primary: #0D7C66;
-  --abel-primary-hover: #0A6553;
-  --abel-primary-light: #E8F5F1;
-  --abel-secondary: #F5A623;
-  --abel-secondary-light: #FEF7E8;
-  --abel-bg: #FAFAF8;
+  --abel-primary: #0D9488;
+  --abel-primary-hover: #0F766E;
+  --abel-primary-light: #F0FDFA;
+  --abel-secondary: #F97316;
+  --abel-secondary-hover: #EA580C;
+  --abel-secondary-light: #FFF7ED;
+  --abel-bg: #FFFFFF;
   --abel-bg-elevated: #FFFFFF;
-  --abel-bg-sunken: #F5F5F3;
-  --abel-ink: #1A1A1A;
-  --abel-ink-secondary: #5C5C58;
-  --abel-ink-tertiary: #8A8A85;
-  --abel-border: #E8E8E5;
-  --abel-border-strong: #BDBDB8;
-  --abel-success: #2E7D32;
-  --abel-warning: #E6A817;
-  --abel-error: #C62828;
-  --abel-info: #1565C0;
-  --abel-shadow-sm: 0 1px 2px rgba(26, 26, 26, 0.06);
-  --abel-shadow-md: 0 4px 12px rgba(26, 26, 26, 0.08);
-  --abel-shadow-lg: 0 12px 32px rgba(26, 26, 26, 0.12);
+  --abel-bg-sunken: #F8FAFC;
+  --abel-ink: #0F172A;
+  --abel-ink-secondary: #64748B;
+  --abel-ink-tertiary: #94A3B8;
+  --abel-border: #E2E8F0;
+  --abel-border-strong: #CBD5E1;
+  --abel-success: #16A34A;
+  --abel-warning: #D97706;
+  --abel-error: #DC2626;
+  --abel-info: #2563EB;
+  --abel-success-bg: #F0FDF4;
+  --abel-warning-bg: #FFFBEB;
+  --abel-error-bg: #FEF2F2;
+  --abel-info-bg: #EFF6FF;
+
+  /* Motion tokens */
+  --abel-duration-micro: 100ms;
+  --abel-duration-short: 150ms;
+  --abel-duration-medium: 250ms;
+  --abel-duration-long: 400ms;
+  --abel-easing: ease-out;
+
+  --abel-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+  --abel-shadow-md: 0 4px 12px rgba(15, 23, 42, 0.07);
+  --abel-shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.10);
   --abel-radius-sm: 6px;
   --abel-radius-md: 10px;
   --abel-radius-lg: 14px;
@@ -44,13 +57,13 @@
   --dls-border: var(--abel-border);
   --dls-accent: var(--abel-primary);
   --dls-accent-hover: var(--abel-primary-hover);
-  --dls-accent-rgb: 13 124 102;
+  --dls-accent-rgb: 13 148 136;
   --dls-text-primary: var(--abel-ink);
   --dls-text-secondary: var(--abel-ink-secondary);
   --dls-hover: var(--abel-bg-sunken);
   --dls-active: var(--abel-primary-light);
   --dls-radius: var(--abel-radius-lg);
-  --dls-radius-lg: 24px;
+  --dls-radius-lg: var(--abel-radius-lg);
   --dls-shell-shadow: var(--abel-shadow-lg);
   --dls-card-shadow: var(--abel-shadow-md);
 }
@@ -59,29 +72,31 @@
   color-scheme: dark;
 
   /* Abel dark mode tokens (prepared for v2, see DESIGN.md) */
-  --abel-bg: #141413;
-  --abel-bg-elevated: #1E1E1C;
-  --abel-bg-sunken: #0F0F0E;
-  --abel-ink: #EDEDEB;
-  --abel-ink-secondary: #A8A8A3;
-  --abel-ink-tertiary: #6E6E69;
-  --abel-border: #2E2E2B;
-  --abel-border-strong: #4A4A46;
-  --abel-primary-light: #0D2924;
-  --abel-secondary-light: #2C2213;
-  --abel-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
-  --abel-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
-  --abel-shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.4);
+  --abel-bg: #0F172A;
+  --abel-bg-elevated: #1E293B;
+  --abel-bg-sunken: #0B1120;
+  --abel-ink: #F1F5F9;
+  --abel-ink-secondary: #94A3B8;
+  --abel-ink-tertiary: #64748B;
+  --abel-border: #1E293B;
+  --abel-border-strong: #334155;
+  --abel-primary: #2DD4BF;
+  --abel-primary-hover: #5EEAD4;
+  --abel-primary-light: #042F2E;
+  --abel-secondary-light: #1C1105;
+  --abel-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --abel-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --abel-shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.5);
 
   /* DLS overrides for dark */
   --dls-surface: var(--abel-bg-elevated);
   --dls-sidebar: var(--abel-bg-sunken);
   --dls-app-bg: var(--abel-bg);
   --dls-border: var(--abel-border);
-  --dls-accent-rgb: 13 124 102;
+  --dls-accent-rgb: 45 212 191;
   --dls-text-primary: var(--abel-ink);
   --dls-text-secondary: var(--abel-ink-secondary);
-  --dls-hover: #1f1f1d;
+  --dls-hover: #1E293B;
   --dls-active: var(--abel-primary-light);
   --dls-shell-shadow: var(--abel-shadow-lg);
   --dls-card-shadow: var(--abel-shadow-md);
@@ -93,7 +108,7 @@ body {
 }
 
 html {
-  font-size: var(--openwork-font-size, 16px);
+  font-size: var(--abel-font-size, 16px);
 }
 
 body {
@@ -147,22 +162,22 @@ select:disabled {
 
 @keyframes command-highlight {
   0% {
-    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.6);
-    border-color: rgba(99, 102, 241, 0.8);
+    box-shadow: 0 0 0 0 rgba(13, 148, 136, 0.6);
+    border-color: rgba(13, 148, 136, 0.8);
   }
   50% {
-    box-shadow: 0 0 0 8px rgba(99, 102, 241, 0);
-    border-color: rgba(99, 102, 241, 0.4);
+    box-shadow: 0 0 0 8px rgba(13, 148, 136, 0);
+    border-color: rgba(13, 148, 136, 0.4);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+    box-shadow: 0 0 0 0 rgba(13, 148, 136, 0);
     border-color: rgba(255, 255, 255, 0.08);
   }
 }
 
 .command-just-saved {
   animation: command-highlight 2s ease-out;
-  border-color: rgba(99, 102, 241, 0.8);
+  border-color: rgba(13, 148, 136, 0.8);
 }
 
 @keyframes progress-shimmer {
@@ -176,4 +191,16 @@ select:disabled {
 
 @utility animate-progress-shimmer {
   animation: progress-shimmer 2s infinite linear;
+}
+
+/* Reduced motion: disable non-essential animations (DESIGN.md requirement) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

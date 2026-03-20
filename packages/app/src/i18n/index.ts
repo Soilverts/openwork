@@ -1,19 +1,19 @@
 import { createSignal, createRoot } from "solid-js";
 import en from "./locales/en";
 import zh from "./locales/zh";
-import vi from "./locales/vi";
+// import vi from "./locales/vi";
 import { LANGUAGE_PREF_KEY } from "../app/constants";
 
 /**
  * Supported languages
  */
-export type Language = "en" | "zh" | "vi";
+export type Language = "en" | "zh";
 export type Locale = Language;
 
 /**
  * All supported languages - single source of truth
  */
-export const LANGUAGES: Language[] = ["en", "zh", "vi"];
+export const LANGUAGES: Language[] = ["en", "zh"];
 
 /**
  * Language options for UI - single source of truth
@@ -21,7 +21,6 @@ export const LANGUAGES: Language[] = ["en", "zh", "vi"];
 export const LANGUAGE_OPTIONS = [
   { value: "en" as Language, label: "English", nativeName: "English" },
   { value: "zh" as Language, label: "简体中文", nativeName: "简体中文" },
-  { value: "vi" as Language, label: "Vietnamese", nativeName: "Tiếng Việt" },
 ] as const;
 
 /**
@@ -30,7 +29,6 @@ export const LANGUAGE_OPTIONS = [
 const TRANSLATIONS: Record<Language, Record<string, string>> = {
   en,
   zh,
-  vi,
 };
 
 /**

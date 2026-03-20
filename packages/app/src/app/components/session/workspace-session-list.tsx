@@ -659,7 +659,7 @@ export default function WorkspaceSessionList(props: Props) {
           onClick={() => setAddWorkspaceMenuOpen((prev) => !prev)}
         >
           <Plus size={14} />
-          Add a worker
+          {t("sidebar.add_workspace")}
         </button>
 
         <Show when={addWorkspaceMenuOpen()}>
@@ -673,7 +673,7 @@ export default function WorkspaceSessionList(props: Props) {
               }}
             >
               <Plus size={12} />
-              New worker
+              {t("sidebar.new_worker")}
             </button>
             <button
               type="button"
@@ -684,7 +684,7 @@ export default function WorkspaceSessionList(props: Props) {
               }}
             >
               <Plus size={12} />
-              Connect remote
+              {t("sidebar.connect_remote")}
             </button>
             <button
               type="button"
@@ -696,7 +696,7 @@ export default function WorkspaceSessionList(props: Props) {
               }}
             >
               <Plus size={12} />
-              Import config
+              {t("sidebar.import_config")}
             </button>
           </div>
         </Show>

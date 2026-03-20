@@ -642,7 +642,7 @@ export default function SkillsView(props: SkillsViewProps) {
           class={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors border ${
             props.busy
               ? "border-dls-border bg-dls-hover text-dls-secondary"
-              : "border-dls-border bg-dls-surface text-dls-text hover:bg-dls-active"
+              : "border-dls-border bg-dls-surface text-dls-text hover:bg-slate-3"
           }`}
           title="Install a skill from a link"
         >
@@ -718,7 +718,7 @@ export default function SkillsView(props: SkillsViewProps) {
                   <div class="flex items-center gap-1">
                     <button
                       type="button"
-                      class="p-1.5 text-dls-secondary hover:text-dls-text hover:bg-dls-active rounded-md transition-colors"
+                      class="p-1.5 text-dls-secondary hover:text-dls-text hover:bg-slate-3 rounded-md transition-colors"
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
@@ -731,7 +731,7 @@ export default function SkillsView(props: SkillsViewProps) {
                     </button>
                     <button
                       type="button"
-                      class="p-1.5 text-dls-secondary hover:text-dls-text hover:bg-dls-active rounded-md transition-colors"
+                      class="p-1.5 text-dls-secondary hover:text-dls-text hover:bg-slate-3 rounded-md transition-colors"
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
@@ -779,7 +779,7 @@ export default function SkillsView(props: SkillsViewProps) {
               class={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs font-medium transition-colors ${
                 props.busy
                   ? "border-dls-border bg-dls-hover text-dls-secondary"
-                  : "border-dls-border bg-dls-surface text-dls-text hover:bg-dls-active"
+                  : "border-dls-border bg-dls-surface text-dls-text hover:bg-slate-3"
               }`}
               title="Add custom GitHub repo"
             >
@@ -906,7 +906,7 @@ export default function SkillsView(props: SkillsViewProps) {
                     class={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs font-medium transition-colors ${
                       props.busy || installingHubSkill() === skill.name
                         ? "border-dls-border bg-dls-hover text-dls-secondary"
-                        : "border-dls-border bg-dls-surface text-dls-text hover:bg-dls-active"
+                        : "border-dls-border bg-dls-surface text-dls-text hover:bg-slate-3"
                     }`}
                     onClick={(e) => {
                       e.preventDefault();
@@ -1035,7 +1035,7 @@ export default function SkillsView(props: SkillsViewProps) {
                 </button>
                 <button
                   type="button"
-                  class="px-3 py-1.5 text-xs font-medium rounded-lg bg-dls-hover text-dls-text hover:bg-dls-active transition-colors"
+                  class="px-3 py-1.5 text-xs font-medium rounded-lg bg-dls-hover text-dls-text hover:bg-slate-3 transition-colors"
                   onClick={closeSkill}
                 >
                   Close

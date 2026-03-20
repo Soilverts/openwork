@@ -13,6 +13,7 @@ import {
 import type { WorkspaceInfo } from "../lib/tauri";
 import Button from "../components/button";
 import AbelLogo from "../components/openwork-logo";
+import { t } from "../../i18n";
 import WorkspaceChip from "../components/workspace-chip";
 
 type ProtoView = "onboarding" | "dashboard" | "session";

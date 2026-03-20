@@ -8,11 +8,11 @@
 - **Languages:** Chinese (primary), English
 
 ## Aesthetic Direction
-- **Direction:** Industrial/Refined — function-first with human warmth
-- **Decoration level:** Intentional — subtle warmth through surface tints and gentle depth, no frosted glass
-- **Mood:** Professional precision tool that doesn't feel intimidating. Trustworthy enough for real enterprise work, warm enough that non-technical users feel comfortable. More "reliable colleague" than "cold machine."
-- **Reference sites:** Cursor (warm neutrals, light-mode-first), Linear (enterprise restraint), Raycast (productive density)
-- **What Abel is NOT:** A developer tool (no terminal aesthetic), a consumer toy (no playful bouncing), a generic SaaS template (no frosted glass + violet gradients)
+- **Direction:** Clean/Precise — function-first with sharp modern finish
+- **Decoration level:** Intentional — clean surfaces with subtle depth through shadows, no frosted glass or warm tints
+- **Mood:** Sharp, trustworthy precision tool. Clean enough to feel modern, approachable enough for non-technical users. More "polished instrument" than "cold machine" or "warm den."
+- **Reference sites:** Cursor (clean layouts, light-mode-first), Linear (enterprise restraint), Raycast (productive density)
+- **What Abel is NOT:** A developer tool (no terminal aesthetic), a consumer toy (no playful bouncing), a generic SaaS template (no frosted glass + violet gradients), an aged/warm-tinted document app (no yellowed surfaces)
 
 ## Typography
 - **Display/Hero:** Satoshi — geometric sans with warmth. Distinctive at headline sizes, sets Abel apart from Inter/system-font defaults. Weight range: 600-900 for headlines.
@@ -36,49 +36,49 @@
 | `text-4xl` | 40px | 700-900 | Hero headlines |
 
 ## Color
-- **Approach:** Restrained with warm accent — color is meaningful, not decorative
-- **Rationale:** Deep teal distinguishes Abel from the sea of blue SaaS tools. Teal signals innovation + stability, with positive cultural resonance in the Chinese market (growth, balance). Warm amber provides energy without the aggression of red or orange.
+- **Approach:** Restrained with clean accent — color is meaningful, not decorative
+- **Rationale:** Vivid teal distinguishes Abel from the sea of blue SaaS tools. Teal signals innovation + stability, with positive cultural resonance in the Chinese market (growth, balance). Clean orange secondary provides energy as a deliberate accent. Cool-neutral slate grays ensure no warm-cool clash or muddy undertones.
 
 ### Core Palette
 
 | Token | Hex | Usage |
 |-------|-----|-------|
-| `--abel-primary` | `#0D7C66` | Primary actions, active states, brand moments |
-| `--abel-primary-hover` | `#0A6553` | Primary hover state |
-| `--abel-primary-light` | `#E8F5F1` | Primary tint for backgrounds, badges |
-| `--abel-secondary` | `#F5A623` | Highlights, notifications, secondary accents |
-| `--abel-secondary-hover` | `#E09515` | Secondary hover state |
-| `--abel-secondary-light` | `#FEF7E8` | Secondary tint for backgrounds |
+| `--abel-primary` | `#0D9488` | Primary actions, active states, brand moments |
+| `--abel-primary-hover` | `#0F766E` | Primary hover state |
+| `--abel-primary-light` | `#F0FDFA` | Primary tint for backgrounds, badges |
+| `--abel-secondary` | `#F97316` | Highlights, notifications, secondary accents |
+| `--abel-secondary-hover` | `#EA580C` | Secondary hover state |
+| `--abel-secondary-light` | `#FFF7ED` | Secondary tint for backgrounds |
 
-### Neutrals (Warm Gray)
+### Neutrals (Cool Slate)
 
 | Token | Hex | Usage |
 |-------|-----|-------|
-| `--abel-bg` | `#FAFAF8` | Page background (warm off-white) |
+| `--abel-bg` | `#FFFFFF` | Page background (pure white) |
 | `--abel-bg-elevated` | `#FFFFFF` | Cards, modals, elevated surfaces |
-| `--abel-bg-sunken` | `#F5F5F3` | Sidebar, recessed areas, code blocks |
-| `--abel-ink` | `#1A1A1A` | Primary text (soft black) |
-| `--abel-ink-secondary` | `#5C5C58` | Secondary text, descriptions |
-| `--abel-ink-tertiary` | `#8A8A85` | Placeholder, timestamps, metadata |
-| `--abel-border` | `#E8E8E5` | Default borders |
-| `--abel-border-strong` | `#BDBDB8` | Emphasized borders, dividers |
+| `--abel-bg-sunken` | `#F8FAFC` | Sidebar, recessed areas, code blocks |
+| `--abel-ink` | `#0F172A` | Primary text (deep blue-black) |
+| `--abel-ink-secondary` | `#64748B` | Secondary text, descriptions |
+| `--abel-ink-tertiary` | `#94A3B8` | Placeholder, timestamps, metadata |
+| `--abel-border` | `#E2E8F0` | Default borders |
+| `--abel-border-strong` | `#CBD5E1` | Emphasized borders, dividers |
 
 ### Semantic
 
 | Token | Hex | Background | Usage |
 |-------|-----|-----------|-------|
-| Success | `#2E7D32` | `#E8F5E9` | Connected, completed, healthy |
-| Warning | `#E6A817` | `#FFF8E1` | Usage limits, degraded state |
-| Error | `#C62828` | `#FFEBEE` | Failed, disconnected, invalid |
-| Info | `#1565C0` | `#E3F2FD` | Tips, new features, informational |
+| Success | `#16A34A` | `#F0FDF4` | Connected, completed, healthy |
+| Warning | `#D97706` | `#FFFBEB` | Usage limits, degraded state |
+| Error | `#DC2626` | `#FEF2F2` | Failed, disconnected, invalid |
+| Info | `#2563EB` | `#EFF6FF` | Tips, new features, informational |
 
 ### Shadows
 
 | Token | Value | Usage |
 |-------|-------|-------|
-| `--abel-shadow-sm` | `0 1px 2px rgba(26,26,26,0.06)` | Subtle depth for small elements |
-| `--abel-shadow-md` | `0 4px 12px rgba(26,26,26,0.08)` | Cards, dropdowns |
-| `--abel-shadow-lg` | `0 12px 32px rgba(26,26,26,0.12)` | Modals, floating panels |
+| `--abel-shadow-sm` | `0 1px 2px rgba(15,23,42,0.05)` | Subtle depth for small elements |
+| `--abel-shadow-md` | `0 4px 12px rgba(15,23,42,0.07)` | Cards, dropdowns |
+| `--abel-shadow-lg` | `0 12px 32px rgba(15,23,42,0.10)` | Modals, floating panels |
 
 ### Dark Mode Strategy
 - **v1:** Light theme only, with dark-ready CSS variable infrastructure
@@ -87,14 +87,14 @@
 
 | Token | Dark Value |
 |-------|-----------|
-| `--abel-bg` | `#141413` |
-| `--abel-bg-elevated` | `#1E1E1C` |
-| `--abel-bg-sunken` | `#0F0F0E` |
-| `--abel-ink` | `#EDEDEB` |
-| `--abel-ink-secondary` | `#A8A8A3` |
-| `--abel-ink-tertiary` | `#6E6E69` |
-| `--abel-border` | `#2E2E2B` |
-| `--abel-border-strong` | `#4A4A46` |
+| `--abel-bg` | `#0F172A` |
+| `--abel-bg-elevated` | `#1E293B` |
+| `--abel-bg-sunken` | `#0B1120` |
+| `--abel-ink` | `#F1F5F9` |
+| `--abel-ink-secondary` | `#94A3B8` |
+| `--abel-ink-tertiary` | `#64748B` |
+| `--abel-border` | `#1E293B` |
+| `--abel-border-strong` | `#334155` |
 
 ## Spacing
 - **Base unit:** 8px
@@ -133,7 +133,7 @@
 | `--abel-radius-full` | 9999px | Buttons (pill), badges, toggles |
 
 ## Motion
-- **Approach:** Minimal-functional — only transitions that aid comprehension. Enterprise users want speed, not choreography.
+- **Approach:** Intentional-functional — minimal transitions that aid comprehension, plus subtle entrance animations for polish. Enterprise users want speed, but the app should feel alive.
 - **Principle:** Motion should support orientation, not decorate. If you can't explain what the animation communicates, remove it.
 
 | Token | Duration | Easing | Usage |
@@ -141,8 +141,9 @@
 | `micro` | 100ms | `ease-out` | Toggle, checkbox, focus ring |
 | `short` | 150ms | `ease-out` | Button hover, input focus, tooltip |
 | `medium` | 250ms | `ease-out` | Panel open/close, dropdown, sidebar |
-| `long` | 400ms | `ease-in-out` | Page transitions (rare) |
+| `long` | 400ms | `ease-in-out` | Page transitions, entrance animations |
 
+- **Entrance transitions:** Panels and modals should fade in + slight translateY (8px) for polish
 - **Reduced motion:** Respect `prefers-reduced-motion` — disable all non-essential animation
 - **Loading states:** Skeleton screens with subtle pulse animation (opacity 0.4-0.7, 1.5s cycle)
 
@@ -159,9 +160,12 @@
 | Date | Decision | Rationale |
 |------|----------|-----------|
 | 2026-03-20 | Initial design system created | Created by /design-consultation based on competitive research (Cursor, Warp, Raycast, Linear) and enterprise positioning |
-| 2026-03-20 | Deep teal primary (#0D7C66) | Differentiates from blue SaaS monotony; positive cultural resonance in Chinese market |
 | 2026-03-20 | Satoshi for display font | Geometric warmth that Inter lacks; signals intentional design |
 | 2026-03-20 | Bundle Noto Sans SC | Cross-platform CJK consistency (macOS vs Windows rendering differs) |
-| 2026-03-20 | Warm off-white (#FAFAF8) background | Subtly warmer than cold grays; welcoming for non-technical users |
 | 2026-03-20 | Light-only v1 with dark-ready infrastructure | Full dark mode is v2; CSS variable structure supports future addition |
-| 2026-03-20 | Minimal-functional motion | Enterprise users penalize slow UIs; speed over choreography |
+| 2026-03-20 | Palette overhaul: warm → clean slate | Old warm neutrals (#FAFAF8, brown-gray ink) clashed with cool teal primary, creating "dirty" feeling. Moved to pure white + slate neutrals for coherent cool palette |
+| 2026-03-20 | Primary shifted #0D7C66 → #0D9488 | Brighter, more saturated teal reads as technology rather than forest/earth |
+| 2026-03-20 | Secondary shifted #F5A623 → #F97316 | Clean orange replaces muddy amber; warmer accent without yellowing the palette |
+| 2026-03-20 | Shadows use slate base rgba(15,23,42) | Consistent with cool-neutral palette; avoids warm-tinted shadows |
+| 2026-03-20 | Dark mode values updated to slate scale | Deep navy (#0F172A) base instead of warm dark (#141413) for palette coherence |
+| 2026-03-20 | Motion: minimal → intentional-functional | Added entrance transitions (fade + translateY) for polish; kept speed-first principle |

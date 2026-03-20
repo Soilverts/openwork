@@ -5,7 +5,7 @@ import { ArrowUp, AtSign, Check, ChevronDown, File as FileIcon, Paperclip, Squar
 
 import type { ComposerAttachment, ComposerDraft, ComposerPart, PromptMode, SlashCommandOption } from "../../types";
 import { perfNow, recordPerfLog } from "../../lib/perf-log";
-import { t } from "../../../i18n";
+import { t, currentLocale } from "../../../i18n";
 
 type MentionOption = {
   id: string;
@@ -1950,7 +1950,7 @@ export default function Composer(props: ComposerProps) {
                           </Show>
                         </div>
                       </div>
-                      <div class="flex items-center gap-3 text-gray-10 sm:justify-end">
+                      <div class="flex shrink-0 items-center gap-3 text-gray-10 sm:justify-end">
                         <Show
                           when={props.isStreaming}
                           fallback={
@@ -1958,14 +1958,18 @@ export default function Composer(props: ComposerProps) {
                               type="button"
                               disabled={!hasDraftContent()}
                               onClick={sendDraft}
-                              class={`inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-[13px] font-medium transition-colors ${!hasDraftContent()
+                              class={`inline-flex items-center justify-center rounded-full text-[13px] font-medium transition-colors shrink-0 ${
+                                currentLocale() === "en" ? "gap-2 px-4 py-2.5" : "h-9 w-9 p-0"
+                              } ${!hasDraftContent()
                                 ? "bg-gray-4 text-gray-10"
                                 : "bg-dls-accent text-white hover:bg-[var(--dls-accent-hover)]"
                                 }`}
                               title={t("composer.run_task")}
                             >
                               <ArrowUp size={16} />
-                              <span>{t("composer.run_task")}</span>
+                              <Show when={currentLocale() === "en"}>
+                                <span>{t("composer.run_task")}</span>
+                              </Show>
                             </button>
                           }
                         >

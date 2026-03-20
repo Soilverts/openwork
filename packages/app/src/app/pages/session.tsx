@@ -4366,7 +4366,7 @@ export default function SessionView(props: SessionViewProps) {
                         <Show when={!hasOpenAIProviderConnected()}>
                           <button
                             type="button"
-                            class="rounded-2xl border border-dls-border bg-dls-hover p-4 transition-all hover:bg-dls-active hover:border-gray-7"
+                            class="rounded-2xl border border-dls-border bg-dls-hover p-4 transition-all hover:bg-slate-3 hover:border-abel-border-strong hover:shadow-[var(--abel-shadow-sm)]"
                             onClick={openProviderAuth}
                           >
                             <div class="text-sm font-semibold text-dls-text">
@@ -4379,7 +4379,7 @@ export default function SessionView(props: SessionViewProps) {
                         </Show>
                         <button
                           type="button"
-                          class="rounded-2xl border border-dls-border bg-dls-hover p-4 transition-all hover:bg-dls-active hover:border-gray-7"
+                          class="rounded-2xl border border-dls-border bg-dls-hover p-4 transition-all hover:bg-slate-3 hover:border-abel-border-strong hover:shadow-[var(--abel-shadow-sm)]"
                           onClick={() => {
                             void handleBrowserAutomationQuickstart();
                           }}
@@ -4403,7 +4403,7 @@ export default function SessionView(props: SessionViewProps) {
                     <div class="mb-4 flex justify-center">
                       <button
                         type="button"
-                        class="rounded-full border border-dls-border bg-dls-hover/70 px-3 py-1 text-xs text-dls-secondary transition-colors hover:bg-dls-active hover:text-dls-text"
+                        class="rounded-full border border-dls-border bg-dls-hover/70 px-3 py-1 text-xs text-dls-secondary transition-colors hover:bg-slate-3 hover:text-dls-text"
                         onClick={() => {
                           void revealEarlierMessages();
                         }}
@@ -4731,6 +4731,7 @@ export default function SessionView(props: SessionViewProps) {
                   props.setView("dashboard");
                 },
               )}
+              {/* Abel: messaging hidden for now
               {rightSidebarNavButton(
                 t("session.nav_messaging"),
                 <MessageCircle size={18} />,
@@ -4740,6 +4741,7 @@ export default function SessionView(props: SessionViewProps) {
                   props.setView("dashboard");
                 },
               )}
+              */}
               <Show when={props.developerMode}>
                 {rightSidebarNavButton(
                   t("session.nav_advanced"),
@@ -4841,8 +4843,8 @@ export default function SessionView(props: SessionViewProps) {
                         type="button"
                         class={`w-full text-left rounded-xl px-3 py-2.5 transition-colors ${
                           idx() === commandPaletteActiveIndex()
-                            ? "bg-dls-active text-dls-text"
-                            : "text-dls-text hover:bg-dls-hover"
+                            ? "bg-slate-3 text-abel-ink font-medium"
+                            : "text-dls-secondary hover:bg-slate-3 hover:text-abel-ink"
                         }`}
                         onMouseEnter={() => setCommandPaletteActiveIndex(idx())}
                         onClick={item.action}

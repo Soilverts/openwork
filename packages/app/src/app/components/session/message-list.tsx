@@ -1092,8 +1092,8 @@ export default function MessageList(props: MessageListProps) {
           class={`${
             block.isUser
               ? isNestedVariant()
-                ? "relative max-w-[92%] rounded-[20px] border border-dls-border bg-dls-sidebar px-4 py-3 text-[14px] leading-relaxed text-dls-text"
-                : "relative max-w-[85%] rounded-[24px] border border-dls-border bg-dls-sidebar px-6 py-4 text-[15px] leading-relaxed text-dls-text"
+                ? "relative max-w-[92%] rounded-[20px] bg-dls-accent px-4 py-3 text-[14px] leading-relaxed text-white"
+                : "relative max-w-[85%] rounded-[24px] bg-dls-accent px-6 py-4 text-[15px] leading-relaxed text-white"
               : isNestedVariant()
                 ? "w-full relative text-[14px] leading-[1.65] text-dls-text antialiased group"
                 : "w-full relative max-w-[760px] text-[15px] leading-[1.72] text-dls-text antialiased group"
