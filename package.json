@@ -35,9 +35,14 @@
     "release:prepare:dry": "node scripts/release/prepare.mjs --dry-run",
     "release:ship": "node scripts/release/ship.mjs",
     "release:ship:watch": "node scripts/release/ship.mjs --watch",
-    "tauri": "pnpm --filter @different-ai/abel exec tauri"
+    "tauri": "pnpm --filter @different-ai/abel exec tauri",
+    "test:i18n": "node scripts/test-i18n-keys.mjs",
+    "test:solid-singleton": "node scripts/check-solid-singleton.mjs"
   },
   "pnpm": {
+    "overrides": {
+      "solid-js": "1.9.10"
+    },
     "onlyBuiltDependencies": [
       "@whiskeysockets/baileys",
       "better-sqlite3",

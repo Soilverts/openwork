@@ -66,6 +66,26 @@ fn copy_dir_recursive(src: &Path, dst: &Path) -> Result<(), String> {
         let src_path = entry.path();
         let dst_path = dst.join(entry.file_name());
 
+        // Preserve symlinks instead of dereferencing them.
+        // This is critical for Node.js npm/npx which use symlinks like:
+        //   bin/npx -> ../lib/node_modules/npm/bin/npx-cli.js
+        // If dereferenced, the copied file's require('../lib/cli.js') resolves
+        // from the wrong directory, breaking npx entirely.
+        #[cfg(unix)]
+        {
+            let metadata = fs::symlink_metadata(&src_path)
+                .map_err(|e| format!("symlink_metadata {}: {e}", src_path.display()))?;
+
+            if metadata.file_type().is_symlink() {
+                let target = fs::read_link(&src_path)
+                    .map_err(|e| format!("read_link {}: {e}", src_path.display()))?;
+                // Use std::os::unix::fs::symlink to create a symlink at dst
+                std::os::unix::fs::symlink(&target, &dst_path)
+                    .map_err(|e| format!("symlink {} -> {}: {e}", dst_path.display(), target.display()))?;
+                continue;
+            }
+        }
+
         if src_path.is_dir() {
             copy_dir_recursive(&src_path, &dst_path)?;
         } else {
@@ -177,6 +197,13 @@ pub fn ensure_bundled_tools(app: &AppHandle) -> Result<(), String> {
         adhoc_codesign_dir(&tmp_dir.join("git"));
     }
 
+    // Fix npm/npx symlinks — Tauri's resource bundler dereferences symlinks,
+    // so bin/npx is a copy of npx-cli.js instead of a symlink. This breaks
+    // require('../lib/cli.js') resolution because the file is now at bin/npx
+    // instead of lib/node_modules/npm/bin/npx-cli.js.
+    #[cfg(unix)]
+    fix_npm_symlinks(&tmp_dir);
+
     // Create npm config for writable prefix
     setup_npm_config(&tmp_dir)?;
 
@@ -189,6 +216,51 @@ pub fn ensure_bundled_tools(app: &AppHandle) -> Result<(), String> {
 
     eprintln!("[abel] Bundled tools ready.");
     Ok(())
+}
+
+/// Fix npm/npx bin shims that were dereferenced by Tauri's resource bundler.
+///
+/// In a normal Node.js distribution:
+///   bin/npx -> ../lib/node_modules/npm/bin/npx-cli.js
+///   bin/npm -> ../lib/node_modules/npm/bin/npm-cli.js
+///
+/// After Tauri bundles them as resources, these become regular files containing
+/// the content of npx-cli.js / npm-cli.js. But those scripts use
+/// `require('../lib/cli.js')` which resolves relative to the script's location.
+/// When the file is at `bin/npx`, it looks for `lib/cli.js` (doesn't exist).
+/// When it's a symlink to `lib/node_modules/npm/bin/npx-cli.js`, it correctly
+/// finds `lib/node_modules/npm/lib/cli.js`.
+#[cfg(unix)]
+fn fix_npm_symlinks(data_dir: &Path) {
+    let bin_dir = data_dir.join("node").join("bin");
+    let npm_bin = data_dir.join("node").join("lib").join("node_modules").join("npm").join("bin");
+
+    let links: &[(&str, &str)] = &[
+        ("npx", "npx-cli.js"),
+        ("npm", "npm-cli.js"),
+    ];
+
+    for (name, target_file) in links {
+        let link_path = bin_dir.join(name);
+        let target = npm_bin.join(target_file);
+
+        // Only fix if the target exists and the link is currently a regular file
+        if !target.exists() {
+            continue;
+        }
+        if let Ok(meta) = fs::symlink_metadata(&link_path) {
+            if meta.file_type().is_symlink() {
+                continue; // Already a symlink, nothing to fix
+            }
+        }
+
+        // Remove the dereferenced copy and create a proper symlink
+        let relative_target = format!("../lib/node_modules/npm/bin/{}", target_file);
+        let _ = fs::remove_file(&link_path);
+        if let Err(e) = std::os::unix::fs::symlink(&relative_target, &link_path) {
+            eprintln!("[abel] Warning: could not fix {} symlink: {e}", name);
+        }
+    }
 }
 
 /// Create .npmrc so npm install -g uses a writable prefix.
@@ -257,6 +329,136 @@ pub fn bundled_tool_paths(app: &AppHandle) -> Vec<PathBuf> {
     }
 
     paths
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::fs;
+
+    #[test]
+    fn test_needs_extraction_both_missing() {
+        let tmp = std::env::temp_dir().join("abel-test-needs-extraction-missing");
+        let resource_dir = tmp.join("resource");
+        let data_dir = tmp.join("data");
+        // Neither dir exists — should need extraction
+        assert!(needs_extraction(&resource_dir, &data_dir));
+        let _ = fs::remove_dir_all(&tmp);
+    }
+
+    #[test]
+    fn test_needs_extraction_matching_versions() {
+        let tmp = std::env::temp_dir().join("abel-test-needs-extraction-match");
+        let resource_dir = tmp.join("resource");
+        let data_dir = tmp.join("data");
+
+        fs::create_dir_all(&resource_dir).unwrap();
+        fs::create_dir_all(&data_dir).unwrap();
+
+        let content = r#"{"node":"22.16.0","target":"aarch64-apple-darwin"}"#;
+        fs::write(resource_dir.join(VERSIONS_FILE), content).unwrap();
+        fs::write(data_dir.join(VERSIONS_FILE), content).unwrap();
+
+        assert!(!needs_extraction(&resource_dir, &data_dir));
+        let _ = fs::remove_dir_all(&tmp);
+    }
+
+    #[test]
+    fn test_needs_extraction_different_versions() {
+        let tmp = std::env::temp_dir().join("abel-test-needs-extraction-diff");
+        let resource_dir = tmp.join("resource");
+        let data_dir = tmp.join("data");
+
+        fs::create_dir_all(&resource_dir).unwrap();
+        fs::create_dir_all(&data_dir).unwrap();
+
+        fs::write(resource_dir.join(VERSIONS_FILE), r#"{"node":"22.17.0"}"#).unwrap();
+        fs::write(data_dir.join(VERSIONS_FILE), r#"{"node":"22.16.0"}"#).unwrap();
+
+        assert!(needs_extraction(&resource_dir, &data_dir));
+        let _ = fs::remove_dir_all(&tmp);
+    }
+
+    #[test]
+    fn test_needs_extraction_data_not_extracted() {
+        let tmp = std::env::temp_dir().join("abel-test-needs-extraction-nodata");
+        let resource_dir = tmp.join("resource");
+        let data_dir = tmp.join("data");
+
+        fs::create_dir_all(&resource_dir).unwrap();
+        fs::write(resource_dir.join(VERSIONS_FILE), r#"{"node":"22.16.0"}"#).unwrap();
+        // data_dir doesn't exist
+
+        assert!(needs_extraction(&resource_dir, &data_dir));
+        let _ = fs::remove_dir_all(&tmp);
+    }
+
+    #[test]
+    fn test_copy_dir_recursive() {
+        let tmp = std::env::temp_dir().join("abel-test-copy-recursive");
+        let src = tmp.join("src");
+        let dst = tmp.join("dst");
+
+        fs::create_dir_all(src.join("subdir")).unwrap();
+        fs::write(src.join("file1.txt"), "hello").unwrap();
+        fs::write(src.join("subdir").join("file2.txt"), "world").unwrap();
+
+        copy_dir_recursive(&src, &dst).unwrap();
+
+        assert!(dst.join("file1.txt").exists());
+        assert!(dst.join("subdir").join("file2.txt").exists());
+        assert_eq!(fs::read_to_string(dst.join("file1.txt")).unwrap(), "hello");
+        assert_eq!(
+            fs::read_to_string(dst.join("subdir").join("file2.txt")).unwrap(),
+            "world"
+        );
+        let _ = fs::remove_dir_all(&tmp);
+    }
+
+    #[test]
+    fn test_copy_dir_recursive_nonexistent_src() {
+        let tmp = std::env::temp_dir().join("abel-test-copy-nosrc");
+        let result = copy_dir_recursive(&tmp.join("nonexistent"), &tmp.join("dst"));
+        assert!(result.is_ok()); // Non-dir src returns Ok
+    }
+
+    #[test]
+    fn test_setup_npm_config() {
+        let tmp = std::env::temp_dir().join("abel-test-npm-config");
+        fs::create_dir_all(tmp.join("node")).unwrap();
+
+        setup_npm_config(&tmp).unwrap();
+
+        assert!(tmp.join("node-global").is_dir());
+        assert!(tmp.join("npm-cache").is_dir());
+        assert!(tmp.join("node").join(".npmrc").exists());
+
+        let npmrc = fs::read_to_string(tmp.join("node").join(".npmrc")).unwrap();
+        assert!(npmrc.contains("prefix="));
+        assert!(npmrc.contains("cache="));
+        let _ = fs::remove_dir_all(&tmp);
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn test_copy_dir_preserves_executable_permission() {
+        use std::os::unix::fs::PermissionsExt;
+
+        let tmp = std::env::temp_dir().join("abel-test-copy-perms");
+        let src = tmp.join("src");
+        let dst = tmp.join("dst");
+
+        fs::create_dir_all(&src).unwrap();
+        let bin_path = src.join("script.sh");
+        fs::write(&bin_path, "#!/bin/sh\necho hi").unwrap();
+        fs::set_permissions(&bin_path, std::fs::Permissions::from_mode(0o755)).unwrap();
+
+        copy_dir_recursive(&src, &dst).unwrap();
+
+        let dst_perms = fs::metadata(dst.join("script.sh")).unwrap().permissions();
+        assert_ne!(dst_perms.mode() & 0o111, 0, "Executable bit should be preserved");
+        let _ = fs::remove_dir_all(&tmp);
+    }
 }
 
 /// Returns environment variable overrides for npm config.

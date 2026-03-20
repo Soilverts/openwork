@@ -863,7 +863,7 @@ export default function McpAuthModal(props: McpAuthModalProps) {
                     2
                   </div>
                   <div>
-                    <p class="text-sm font-medium text-gray-12">Authorize OpenWork</p>
+                    <p class="text-sm font-medium text-gray-12">Authorize Abel</p>
                     <p class="text-xs text-gray-10 mt-1">
                         {translate("mcp.auth.step2_description")}
                     </p>

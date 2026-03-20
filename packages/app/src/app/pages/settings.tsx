@@ -1210,53 +1210,7 @@ export default function SettingsView(props: SettingsViewProps) {
               </div>
             </div>
 
-            <div class="relative overflow-hidden rounded-2xl border border-blue-7/30 bg-gradient-to-br from-blue-3/35 via-gray-1/75 to-cyan-3/30 p-5">
-              <div class="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-blue-6/20 blur-2xl" />
-              <div class="pointer-events-none absolute -bottom-12 left-6 h-24 w-24 rounded-full bg-cyan-6/20 blur-2xl" />
-
-              <div class="relative space-y-4">
-                <div class="space-y-2">
-                  <div class="inline-flex items-center gap-1.5 rounded-full border border-blue-7/35 bg-blue-4/25 px-2.5 py-1 text-[11px] font-medium text-blue-11">
-                    <LifeBuoy size={12} />
-                    {translate("settings.feedback_badge")}
-                  </div>
-                  <div class="text-sm font-semibold text-gray-12">{translate("settings.feedback_title")}</div>
-                  <div class="max-w-[58ch] text-xs text-gray-10">
-                    {translate("settings.feedback_description")}
-                  </div>
-                </div>
-
-                <div class="flex flex-wrap items-center gap-2">
-                  <Button
-                    variant="secondary"
-                    class="h-9 rounded-xl bg-blue-10 px-4 text-xs font-semibold text-white hover:bg-blue-11"
-                    onClick={() => openExternalLink(FEEDBACK_EMAIL_URL)}
-                  >
-                    <MessageCircle size={14} />
-                    {translate("settings.send_feedback")}
-                    <ArrowUpRight size={13} />
-                  </Button>
-
-                  <button
-                    type="button"
-                    class="inline-flex h-9 items-center gap-1.5 rounded-xl border border-blue-7/35 bg-gray-1/70 px-3 text-xs font-medium text-gray-11 transition-colors hover:border-blue-7/50 hover:text-gray-12 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-7/30"
-                    onClick={() => openExternalLink(DISCORD_INVITE_URL)}
-                  >
-                    {translate("settings.join_discord")}
-                    <ArrowUpRight size={13} />
-                  </button>
-
-                  <button
-                    type="button"
-                    class="inline-flex h-9 items-center gap-1.5 rounded-xl border border-gray-7/60 bg-gray-1/70 px-3 text-xs font-medium text-gray-10 transition-colors hover:border-gray-7/80 hover:text-gray-12 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-7/40"
-                    onClick={() => openExternalLink(BUG_REPORT_URL)}
-                  >
-                    {translate("settings.report_issue")}
-                    <ArrowUpRight size={13} />
-                  </button>
-                </div>
-              </div>
-            </div>
+            {/* Feedback section removed for Abel branding */}
           </div>
         </Match>
 
@@ -2032,7 +1986,7 @@ export default function SettingsView(props: SettingsViewProps) {
                             onClick={() => props.setEngineRuntime("openwork-orchestrator")}
                             disabled={props.busy}
                           >
-                            OpenWork Orchestrator
+                            Abel Orchestrator
                           </Button>
                         </div>
                         <div class="text-[11px] text-gray-7">{translate("settings.engine_runtime_hint")}</div>

@@ -456,15 +456,15 @@ export function createWorkspaceStore(options: {
     } catch (error) {
       if (error instanceof OpenworkServerError && (error.status === 401 || error.status === 403)) {
         if (!trimmedToken) {
-          throw new Error("Access token required for OpenWork server.");
+          throw new Error("Access token required for Abel server.");
         }
-        throw new Error("OpenWork server rejected the access token.");
+        throw new Error("Abel server rejected the access token.");
       }
       return { kind: "fallback" as const };
     }
 
     if (!trimmedToken) {
-      throw new Error("Access token required for OpenWork server.");
+      throw new Error("Access token required for Abel server.");
     }
 
     const response = await client.listWorkspaces();
@@ -483,7 +483,7 @@ export function createWorkspaceStore(options: {
       ? (items.find((item) => item?.id && selectById(item as any)) as OpenworkWorkspaceInfo | undefined)
       : undefined;
     if (requestedWorkspaceId && !workspaceById) {
-      throw new Error("OpenWork worker not found on that host.");
+      throw new Error("Abel worker not found on that host.");
     }
 
     const workspaceByHint = hint
@@ -492,11 +492,11 @@ export function createWorkspaceStore(options: {
 
     const workspace = (workspaceById ?? workspaceByHint ?? items[0]) as OpenworkWorkspaceInfo | undefined;
     if (!workspace?.id) {
-      throw new Error("OpenWork server did not return a worker.");
+      throw new Error("Abel server did not return a worker.");
     }
     const opencodeUpstreamBaseUrl = workspace.opencode?.baseUrl?.trim() ?? workspace.baseUrl?.trim() ?? "";
     if (!opencodeUpstreamBaseUrl) {
-      throw new Error("OpenWork server did not provide an OpenCode URL.");
+      throw new Error("Abel server did not provide an OpenCode URL.");
     }
 
     const workspaceScopedBaseUrl =
@@ -571,7 +571,7 @@ export function createWorkspaceStore(options: {
       if (!hostUrl) {
         updateWorkspaceConnectionState(id, {
           status: "error",
-          message: "OpenWork server URL is required.",
+          message: "Abel server URL is required.",
         });
         return false;
       }
@@ -756,10 +756,10 @@ export function createWorkspaceStore(options: {
         if (remoteType === "openwork") {
           const hostUrl = next.openworkHostUrl?.trim() ?? "";
           if (!hostUrl) {
-            options.setError("OpenWork server URL is required.");
+            options.setError("Abel server URL is required.");
             updateWorkspaceConnectionState(id, {
               status: "error",
-              message: "OpenWork server URL is required.",
+              message: "Abel server URL is required.",
             });
             return false;
           }
@@ -860,7 +860,7 @@ export function createWorkspaceStore(options: {
               // ignore
             }
           } else {
-            // In web mode, we still need to persist the resolved OpenWork connection
+            // In web mode, we still need to persist the resolved Abel connection
             // details onto the workspace entry so that the sidebar can list sessions
             // for multiple remotes at once (without relying on global server settings).
             const resolvedToken = token.trim();
@@ -1582,7 +1582,7 @@ export function createWorkspaceStore(options: {
       setSandboxStep("workspace", { status: "active", detail: name });
       pushSandboxCreateLog(`Worker: ${resolvedFolder}`);
 
-      // Ensure the workspace folder has baseline OpenWork/OpenCode files.
+      // Ensure the workspace folder has baseline Abel/OpenCode files.
       const created = await workspaceCreate({ folderPath: resolvedFolder, name, preset });
       setWorkspaces(created.workspaces);
       syncActiveWorkspaceId(created.activeId);
@@ -2352,7 +2352,7 @@ export function createWorkspaceStore(options: {
       const outputPath = await saveFile({
         title: "Export worker config",
         defaultPath,
-        filters: [{ name: "OpenWork Worker", extensions: ["openwork-workspace", "zip"] }],
+        filters: [{ name: "Abel Worker", extensions: ["openwork-workspace", "zip"] }],
       });
 
       if (!outputPath) {
@@ -2384,7 +2384,7 @@ export function createWorkspaceStore(options: {
     try {
       const selection = await pickFile({
         title: "Import worker config",
-        filters: [{ name: "OpenWork Worker", extensions: ["openwork-workspace", "zip"] }],
+        filters: [{ name: "Abel Worker", extensions: ["openwork-workspace", "zip"] }],
       });
       const filePath =
         typeof selection === "string" ? selection : Array.isArray(selection) ? selection[0] : null;

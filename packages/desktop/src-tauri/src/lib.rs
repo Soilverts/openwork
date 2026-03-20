@@ -108,7 +108,25 @@ pub fn run() {
         .setup(|app| {
             set_dev_app_name();
             if let Err(e) = bundled_tools::ensure_bundled_tools(app.handle()) {
-                eprintln!("[abel] Warning: bundled tools setup failed: {e}");
+                eprintln!("[abel] Error: bundled tools setup failed: {e}");
+                // Show user-facing error dialog so the user knows why child processes
+                // will fail, instead of silently launching a broken app.
+                let msg = format!(
+                    "Abel could not set up required tools.\n\n\
+                     Error: {}\n\n\
+                     Please ensure you have enough disk space and restart Abel.\n\
+                     If this persists, try deleting the Abel data folder and restarting.",
+                    e
+                );
+                if let Some(window) = app.get_webview_window("main") {
+                    use tauri_plugin_dialog::DialogExt;
+                    window.dialog()
+                        .message(&msg)
+                        .title("Abel Setup Error")
+                        .blocking_show();
+                } else {
+                    eprintln!("[abel] {msg}");
+                }
             }
             Ok(())
         })

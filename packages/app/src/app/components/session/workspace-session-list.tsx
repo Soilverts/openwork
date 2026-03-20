@@ -131,22 +131,17 @@ export default function WorkspaceSessionList(props: Props) {
   let addWorkspaceMenuRef: HTMLDivElement | undefined;
   let sessionMenuRef: HTMLDivElement | undefined;
 
-  const isWorkspaceExpanded = (workspaceId: string) => expandedWorkspaceIds().has(workspaceId);
-
-  const expandWorkspace = (workspaceId: string) => {
-    const id = workspaceId.trim();
-    if (!id) return;
-    setExpandedWorkspaceIds((prev) => {
-      if (prev.has(id)) return prev;
-      const next = new Set(prev);
-      next.add(id);
-      return next;
-    });
+  const isWorkspaceExpanded = (workspaceId: string) => {
+    // Active workspace is always expanded; others only if manually toggled
+    if (workspaceId === props.activeWorkspaceId) return true;
+    return expandedWorkspaceIds().has(workspaceId);
   };
 
   const toggleWorkspaceExpanded = (workspaceId: string) => {
     const id = workspaceId.trim();
     if (!id) return;
+    // Active workspace is always expanded — toggle is a no-op
+    if (id === props.activeWorkspaceId) return;
     setExpandedWorkspaceIds((prev) => {
       const next = new Set(prev);
       if (next.has(id)) {
@@ -158,12 +153,16 @@ export default function WorkspaceSessionList(props: Props) {
     });
   };
 
-  onMount(() => {
-    expandWorkspace(props.activeWorkspaceId);
-  });
-
+  // When active workspace changes, collapse previously expanded non-active workspaces
   createEffect(() => {
-    expandWorkspace(props.activeWorkspaceId);
+    const activeId = props.activeWorkspaceId;
+    setExpandedWorkspaceIds((prev) => {
+      if (prev.size === 0) return prev;
+      const next = new Set<string>();
+      // Only keep entries that are NOT the old active (they were manually expanded)
+      // Actually, collapse all non-active on workspace switch for clean UX
+      return next;
+    });
   });
 
   const previewCount = (workspaceId: string) => {
@@ -177,7 +176,7 @@ export default function WorkspaceSessionList(props: Props) {
     flattenSessionRows(sessions, previewCount(workspaceId));
 
   const showMoreSessions = (workspaceId: string, totalRoots: number) => {
-    expandWorkspace(workspaceId);
+    // workspace auto-expands when active
     setPreviewCountByWorkspaceId((current) => {
       const next = { ...current };
       const existing = next[workspaceId] ?? MAX_SESSIONS_PREVIEW;
@@ -384,14 +383,14 @@ export default function WorkspaceSessionList(props: Props) {
                         : "border-transparent hover:bg-gray-2/70 px-3.5 py-2"
                     } ${isConnecting() ? "opacity-75" : ""}`}
                     onClick={() => {
-                      expandWorkspace(workspace().id);
+                      // workspace auto-expands when activated
                       void Promise.resolve(props.onActivateWorkspace(workspace().id));
                     }}
                     onKeyDown={(event) => {
                       if (event.key !== "Enter" && event.key !== " ") return;
                       if (event.isComposing || event.keyCode === 229) return;
                       event.preventDefault();
-                      expandWorkspace(workspace().id);
+                      // workspace auto-expands when activated
                       void Promise.resolve(props.onActivateWorkspace(workspace().id));
                     }}
                   >

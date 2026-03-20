@@ -115,9 +115,11 @@ function extractTarGz(archivePath, destDir) {
 function extractZip(archivePath, destDir) {
   mkdirSync(destDir, { recursive: true });
   if (isWindows || platform() === "win32") {
+    const escapedArchive = archivePath.replace(/'/g, "''");
+    const escapedDest = destDir.replace(/'/g, "''");
     const result = spawnSync("powershell", [
       "-NoProfile", "-Command",
-      `Expand-Archive -Path '${archivePath}' -DestinationPath '${destDir}' -Force`,
+      `Expand-Archive -Path '${escapedArchive}' -DestinationPath '${escapedDest}' -Force`,
     ], { stdio: "inherit" });
     if (result.status !== 0) {
       throw new Error(`PowerShell Expand-Archive failed with status ${result.status}`);
@@ -144,6 +146,64 @@ function flattenSingleSubdir(dir) {
       }
       rmSync(subdir, { recursive: true, force: true });
     }
+  }
+}
+
+// --- Checksum verification ---
+
+async function fetchShasums(version) {
+  const url = `https://nodejs.org/dist/v${version}/SHASUMS256.txt`;
+  process.stdout.write(`[bundled-tools]   Fetching checksums from ${url}\n`);
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 30_000);
+  const response = await fetch(url, {
+    signal: controller.signal,
+    headers: { "User-Agent": "abel-bundled-tools" },
+  });
+  clearTimeout(timeout);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch SHASUMS256.txt: HTTP ${response.status}`);
+  }
+  return await response.text();
+}
+
+function parseExpectedHash(shasumsText, filename) {
+  for (const line of shasumsText.split("\n")) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+    const [hash, name] = trimmed.split(/\s+/);
+    if (name === filename) return hash;
+  }
+  return null;
+}
+
+function computeFileHash(filePath) {
+  const data = readFileSync(filePath);
+  return createHash("sha256").update(data).digest("hex");
+}
+
+async function verifyNodeChecksum(filePath, downloadUrl) {
+  const filename = downloadUrl.split("/").pop();
+  try {
+    const shasumsText = await fetchShasums(NODE_VERSION);
+    const expectedHash = parseExpectedHash(shasumsText, filename);
+    if (!expectedHash) {
+      process.stderr.write(`[bundled-tools]   WARNING: No checksum found for ${filename} in SHASUMS256.txt\n`);
+      return;
+    }
+    const actualHash = computeFileHash(filePath);
+    if (actualHash !== expectedHash) {
+      throw new Error(
+        `Checksum mismatch for ${filename}!\n` +
+        `  Expected: ${expectedHash}\n` +
+        `  Actual:   ${actualHash}\n` +
+        `  This may indicate a corrupted download or supply-chain attack.`
+      );
+    }
+    process.stdout.write(`[bundled-tools]   Checksum verified: ${actualHash.slice(0, 16)}...\n`);
+  } catch (err) {
+    if (err.message.includes("Checksum mismatch")) throw err;
+    process.stderr.write(`[bundled-tools]   WARNING: Could not verify checksum: ${err.message}\n`);
   }
 }
 
@@ -208,6 +268,7 @@ async function prepareNode() {
   const tmpPath = join(tmpdir(), `abel-node${ext}`);
 
   await download(url, tmpPath);
+  await verifyNodeChecksum(tmpPath, url);
 
   // Clean existing
   if (existsSync(nodeDir)) {

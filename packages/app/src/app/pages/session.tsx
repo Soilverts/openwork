@@ -1210,7 +1210,7 @@ export default function SessionView(props: SessionViewProps) {
       const client = props.openworkServerClient;
       const workspaceId = props.openworkServerWorkspaceId?.trim() ?? "";
       if (!client || !workspaceId) {
-        throw new Error("Connect to OpenWork server to sync remote files.");
+        throw new Error("Connect to Abel server to sync remote files.");
       }
 
       const existing = remoteFileSyncSession();
@@ -1261,7 +1261,7 @@ export default function SessionView(props: SessionViewProps) {
     path: string,
   ) => {
     const client = props.openworkServerClient;
-    if (!client) throw new Error("OpenWork server client unavailable");
+    if (!client) throw new Error("Abel server client unavailable");
 
     const result = await client.readFileBatch(session.id, [path]);
     const item = result.items[0];
@@ -1441,7 +1441,7 @@ export default function SessionView(props: SessionViewProps) {
     const session = await ensureRemoteFileSyncSession();
     const client = props.openworkServerClient;
     if (!client) {
-      throw new Error("Connect to OpenWork server to sync remote files.");
+      throw new Error("Connect to Abel server to sync remote files.");
     }
 
     const candidates = toRemoteArtifactCandidates(file);
@@ -3266,7 +3266,7 @@ export default function SessionView(props: SessionViewProps) {
       const baseUrl = props.openworkServerHostInfo?.baseUrl?.trim() ?? "";
       const token = props.openworkServerHostInfo?.clientToken?.trim() ?? "";
       if (!baseUrl || !token) {
-        throw new Error("Local OpenWork host is not ready yet.");
+        throw new Error("Local Abel host is not ready yet.");
       }
       const client = createOpenworkServerClient({ baseUrl, token });
 
@@ -3284,7 +3284,7 @@ export default function SessionView(props: SessionViewProps) {
 
       if (!workspaceId) {
         throw new Error(
-          "Could not resolve this worker on the local OpenWork host.",
+          "Could not resolve this worker on the local Abel host.",
         );
       }
 
@@ -3293,7 +3293,7 @@ export default function SessionView(props: SessionViewProps) {
 
     if (ws.remoteType !== "openwork") {
       throw new Error(
-        "Share service links are available for OpenWork workers.",
+        "Share service links are available for Abel workers.",
       );
     }
 
@@ -3303,7 +3303,7 @@ export default function SessionView(props: SessionViewProps) {
       props.openworkServerSettings.token?.trim() ||
       "";
     if (!hostUrl || !token) {
-      throw new Error("OpenWork host URL and token are required.");
+      throw new Error("Abel host URL and token are required.");
     }
 
     const client = createOpenworkServerClient({ baseUrl: hostUrl, token });
@@ -3338,7 +3338,7 @@ export default function SessionView(props: SessionViewProps) {
     }
 
     if (!workspaceId) {
-      throw new Error("Could not resolve this worker on the OpenWork host.");
+      throw new Error("Could not resolve this worker on the Abel host.");
     }
 
     return { client, workspaceId, workspace: ws };
@@ -3359,7 +3359,7 @@ export default function SessionView(props: SessionViewProps) {
         type: "workspace-profile",
         name: `${workspaceLabel(workspace)} profile`,
         description:
-          "Full OpenWork workspace profile with config, MCP setup, commands, and skills.",
+          "Full Abel workspace profile with config, MCP setup, commands, and skills.",
         workspace: exported,
       };
 
@@ -3405,7 +3405,7 @@ export default function SessionView(props: SessionViewProps) {
         schemaVersion: 1,
         type: "skills-set",
         name: `${workspaceLabel(workspace)} skills`,
-        description: "Complete skills set from an OpenWork workspace.",
+        description: "Complete skills set from an Abel workspace.",
         skills: skills.map((skill) => ({
           name: skill.name,
           description: skill.description,
@@ -3459,7 +3459,7 @@ export default function SessionView(props: SessionViewProps) {
   const handleBrowserAutomationQuickstart = () => {
     const text =
       BROWSER_AUTOMATION_QUICKSTART_PROMPT ||
-      "Try Chrome DevTools MCP now. If it is unavailable, explain how to connect Control Chrome in OpenWork and ask me to retry.";
+      "Try Chrome DevTools MCP now. If it is unavailable, explain how to connect Control Chrome in Abel and ask me to retry.";
     handleSendPrompt({
       mode: "prompt",
       text,

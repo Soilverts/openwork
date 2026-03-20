@@ -5,38 +5,86 @@
 
 :root {
   color-scheme: light;
-  --dls-surface: #ffffff;
-  --dls-sidebar: #f9fafb;
-  --dls-app-bg: #ffffff;
-  --dls-border: #f3f4f6;
-  --dls-accent: #011627;
-  --dls-accent-hover: #000000;
-  --dls-accent-rgb: 1 22 39;
-  --dls-text-primary: #111827;
-  --dls-text-secondary: #6b7280;
-  --dls-hover: #f3f4f6;
-  --dls-active: #eef2f7;
-  --dls-radius: 16px;
+
+  /* Abel Design System — Core tokens (see DESIGN.md) */
+  --abel-primary: #0D7C66;
+  --abel-primary-hover: #0A6553;
+  --abel-primary-light: #E8F5F1;
+  --abel-secondary: #F5A623;
+  --abel-secondary-light: #FEF7E8;
+  --abel-bg: #FAFAF8;
+  --abel-bg-elevated: #FFFFFF;
+  --abel-bg-sunken: #F5F5F3;
+  --abel-ink: #1A1A1A;
+  --abel-ink-secondary: #5C5C58;
+  --abel-ink-tertiary: #8A8A85;
+  --abel-border: #E8E8E5;
+  --abel-border-strong: #BDBDB8;
+  --abel-success: #2E7D32;
+  --abel-warning: #E6A817;
+  --abel-error: #C62828;
+  --abel-info: #1565C0;
+  --abel-shadow-sm: 0 1px 2px rgba(26, 26, 26, 0.06);
+  --abel-shadow-md: 0 4px 12px rgba(26, 26, 26, 0.08);
+  --abel-shadow-lg: 0 12px 32px rgba(26, 26, 26, 0.12);
+  --abel-radius-sm: 6px;
+  --abel-radius-md: 10px;
+  --abel-radius-lg: 14px;
+  --abel-radius-full: 9999px;
+
+  /* Typography */
+  --abel-font-display: "Satoshi", "DM Sans", "Noto Sans SC", sans-serif;
+  --abel-font-body: "DM Sans", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --abel-font-code: "JetBrains Mono", ui-monospace, monospace;
+
+  /* Map Abel tokens → upstream DLS variables (used by all existing components) */
+  --dls-surface: var(--abel-bg-elevated);
+  --dls-sidebar: var(--abel-bg-sunken);
+  --dls-app-bg: var(--abel-bg);
+  --dls-border: var(--abel-border);
+  --dls-accent: var(--abel-primary);
+  --dls-accent-hover: var(--abel-primary-hover);
+  --dls-accent-rgb: 13 124 102;
+  --dls-text-primary: var(--abel-ink);
+  --dls-text-secondary: var(--abel-ink-secondary);
+  --dls-hover: var(--abel-bg-sunken);
+  --dls-active: var(--abel-primary-light);
+  --dls-radius: var(--abel-radius-lg);
   --dls-radius-lg: 24px;
-  --dls-shell-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
-  --dls-card-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+  --dls-shell-shadow: var(--abel-shadow-lg);
+  --dls-card-shadow: var(--abel-shadow-md);
 }
 
 [data-theme="dark"] {
   color-scheme: dark;
-  --dls-surface: #121212;
-  --dls-sidebar: #1a1a1a;
-  --dls-app-bg: #161616;
-  --dls-border: #262626;
-  --dls-accent: #3b82f6;
-  --dls-accent-hover: #2563eb;
-  --dls-accent-rgb: 59 130 246;
-  --dls-text-primary: #ededed;
-  --dls-text-secondary: #9ca3af;
-  --dls-hover: #1f1f1f;
-  --dls-active: #2d2d2d;
-  --dls-shell-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
-  --dls-card-shadow: 0 14px 36px rgba(0, 0, 0, 0.24);
+
+  /* Abel dark mode tokens (prepared for v2, see DESIGN.md) */
+  --abel-bg: #141413;
+  --abel-bg-elevated: #1E1E1C;
+  --abel-bg-sunken: #0F0F0E;
+  --abel-ink: #EDEDEB;
+  --abel-ink-secondary: #A8A8A3;
+  --abel-ink-tertiary: #6E6E69;
+  --abel-border: #2E2E2B;
+  --abel-border-strong: #4A4A46;
+  --abel-primary-light: #0D2924;
+  --abel-secondary-light: #2C2213;
+  --abel-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --abel-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --abel-shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.4);
+
+  /* DLS overrides for dark */
+  --dls-surface: var(--abel-bg-elevated);
+  --dls-sidebar: var(--abel-bg-sunken);
+  --dls-app-bg: var(--abel-bg);
+  --dls-border: var(--abel-border);
+  --dls-accent-rgb: 13 124 102;
+  --dls-text-primary: var(--abel-ink);
+  --dls-text-secondary: var(--abel-ink-secondary);
+  --dls-hover: #1f1f1d;
+  --dls-active: var(--abel-primary-light);
+  --dls-shell-shadow: var(--abel-shadow-lg);
+  --dls-card-shadow: var(--abel-shadow-md);
 }
 
 html,
@@ -50,26 +98,11 @@ html {
 
 body {
   margin: 0;
-  font-family:
-    "IBM Plex Sans",
-    Geist,
-    "Avenir Next",
-    Inter,
-    ui-sans-serif,
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    "Helvetica Neue",
-    Arial,
-    "Noto Sans",
-    "Apple Color Emoji",
-    "Segoe UI Emoji";
+  font-family: var(--abel-font-body);
   font-size: 0.875rem;
-  line-height: 1.5;
+  line-height: 1.6;
   color: var(--dls-text-primary);
-  background-color: var(--dls-surface);
+  background-color: var(--abel-bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
