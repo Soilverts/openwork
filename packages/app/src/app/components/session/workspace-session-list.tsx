@@ -356,6 +356,7 @@ export default function WorkspaceSessionList(props: Props) {
             const taskLoadError = () => getWorkspaceTaskLoadErrorDisplay(workspace(), group.error);
             const sessionCount = () => group.sessions?.length ?? 0;
             const isRemoteOrSandbox = () => workspace().workspaceType === "remote";
+            const isActive = () => props.activeWorkspaceId === workspace().id;
             const statusLabel = () => {
               if (group.status === "error") return taskLoadError().label;
               if (isConnectionActionBusy()) return t("workspace_list.connecting");
