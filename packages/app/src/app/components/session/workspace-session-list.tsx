@@ -394,10 +394,10 @@ export default function WorkspaceSessionList(props: Props) {
                       void Promise.resolve(props.onActivateWorkspace(workspace().id));
                     }}
                   >
-                    <div class="flex min-w-0 items-center gap-3">
+                    <div class="flex min-w-0 items-center gap-2.5">
                       <div
-                        class={`flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-[10px] font-bold transition-shadow duration-200 ${
-                          props.activeWorkspaceId === workspace().id ? "ring-2 ring-offset-1 ring-offset-dls-surface shadow-sm" : ""
+                        class={`flex h-5.5 w-5.5 shrink-0 items-center justify-center rounded-md text-[10px] font-bold transition-all duration-200 ${
+                          props.activeWorkspaceId === workspace().id ? "ring-1.5 ring-offset-1 ring-offset-dls-surface" : ""
                         }`}
                         style={{
                           "background-color": workspaceSwatch(workspace().id || workspaceLabel(workspace())).bg,
@@ -406,18 +406,21 @@ export default function WorkspaceSessionList(props: Props) {
                       >
                         {workspaceInitial(workspace())}
                       </div>
-                      <div class="min-w-0 flex-1">
-                        <div class={`truncate text-[13px] leading-tight ${
-                          props.activeWorkspaceId === workspace().id
-                            ? "font-semibold text-dls-text"
-                            : "font-medium text-gray-11"
-                        }`}>
-                          {workspaceLabel(workspace())}
-                        </div>
-                        <Show when={statusLabel()}>
-                          <div class={`text-[11px] leading-tight mt-0.5 ${statusTone()}`}>{statusLabel()}</div>
-                        </Show>
-                      </div>
+                      <span class={`min-w-0 flex-1 truncate text-[13px] ${
+                        props.activeWorkspaceId === workspace().id
+                          ? "font-semibold text-dls-text"
+                          : "font-normal text-gray-11"
+                      }`}>
+                        {workspaceLabel(workspace())}
+                      </span>
+                      <Show when={sessionCount() > 0 && !isConnectionActionBusy() && group.status !== "error"}>
+                        <span class="shrink-0 min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-gray-4 text-[10px] font-medium text-gray-11 px-1">
+                          {sessionCount()}
+                        </span>
+                      </Show>
+                      <Show when={group.status === "error"}>
+                        <span class="shrink-0 w-1.5 h-1.5 rounded-full bg-red-9" />
+                      </Show>
                     </div>
 
                     <div class="ml-4 flex shrink-0 items-center gap-1.5">
