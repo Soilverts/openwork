@@ -355,16 +355,14 @@ export default function WorkspaceSessionList(props: Props) {
             const isMenuOpen = () => workspaceMenuId() === workspace().id;
             const taskLoadError = () => getWorkspaceTaskLoadErrorDisplay(workspace(), group.error);
             const sessionCount = () => group.sessions?.length ?? 0;
+            const isRemoteOrSandbox = () => workspace().workspaceType === "remote";
             const statusLabel = () => {
               if (group.status === "error") return taskLoadError().label;
               if (isConnectionActionBusy()) return t("workspace_list.connecting");
-              if (props.activeWorkspaceId === workspace().id) {
-                const count = sessionCount();
-                return count > 0
-                  ? t("workspace_list.session_count").replace("{count}", String(count))
-                  : workspaceKindLabel(workspace());
-              }
-              return workspaceKindLabel(workspace());
+              const count = sessionCount();
+              if (count > 0) return t("workspace_list.session_count").replace("{count}", String(count));
+              if (isRemoteOrSandbox()) return workspaceKindLabel(workspace());
+              return "";
             };
             const statusTone = () => {
               if (group.status === "error") {
