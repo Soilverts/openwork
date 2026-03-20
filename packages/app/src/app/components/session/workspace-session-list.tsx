@@ -377,10 +377,10 @@ export default function WorkspaceSessionList(props: Props) {
                   <div
                     role="button"
                     tabIndex={0}
-                    class={`w-full flex items-center justify-between rounded-[18px] border px-3.5 py-2.5 text-left transition-all duration-200 ease-out active:scale-[0.98] ${
-                      props.activeWorkspaceId === workspace().id
-                        ? "border-dls-border bg-dls-surface shadow-[var(--dls-card-shadow)] scale-100"
-                        : "border-transparent text-gray-12 hover:bg-gray-2/70 hover:scale-[1.01]"
+                    class={`w-full rounded-[18px] border text-left cursor-pointer transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] active:scale-[0.98] ${
+                      isActive()
+                        ? "border-dls-border bg-dls-surface shadow-[var(--dls-card-shadow)] px-3.5 py-3"
+                        : "border-transparent hover:bg-gray-2/70 px-3.5 py-2"
                     } ${isConnecting() ? "opacity-75" : ""}`}
                     onClick={() => {
                       expandWorkspace(workspace().id);
@@ -394,10 +394,13 @@ export default function WorkspaceSessionList(props: Props) {
                       void Promise.resolve(props.onActivateWorkspace(workspace().id));
                     }}
                   >
-                    <div class="flex min-w-0 items-center gap-2.5">
+                    {/* Row 1: Avatar + Name */}
+                    <div class="flex items-center gap-2.5">
                       <div
-                        class={`flex h-5.5 w-5.5 shrink-0 items-center justify-center rounded-md text-[10px] font-bold transition-all duration-200 ${
-                          props.activeWorkspaceId === workspace().id ? "ring-1.5 ring-offset-1 ring-offset-dls-surface" : ""
+                        class={`shrink-0 flex items-center justify-center rounded-md font-bold transition-all duration-300 ${
+                          isActive()
+                            ? "h-7 w-7 text-[12px] ring-1.5 ring-offset-1 ring-offset-dls-surface shadow-sm"
+                            : "h-5 w-5 text-[9px]"
                         }`}
                         style={{
                           "background-color": workspaceSwatch(workspace().id || workspaceLabel(workspace())).bg,
@@ -406,72 +409,85 @@ export default function WorkspaceSessionList(props: Props) {
                       >
                         {workspaceInitial(workspace())}
                       </div>
-                      <span class={`min-w-0 flex-1 truncate text-[13px] ${
-                        props.activeWorkspaceId === workspace().id
-                          ? "font-semibold text-dls-text"
-                          : "font-normal text-gray-11"
+                      <span class={`min-w-0 flex-1 truncate transition-all duration-300 ${
+                        isActive()
+                          ? "text-[14px] font-semibold text-dls-text"
+                          : "text-[13px] font-normal text-gray-11"
                       }`}>
                         {workspaceLabel(workspace())}
                       </span>
-                      <Show when={sessionCount() > 0 && !isConnectionActionBusy() && group.status !== "error"}>
+                      {/* Collapsed: show badge */}
+                      <Show when={!isActive() && sessionCount() > 0}>
                         <span class="shrink-0 min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-gray-4 text-[10px] font-medium text-gray-11 px-1">
                           {sessionCount()}
                         </span>
                       </Show>
-                      <Show when={group.status === "error"}>
+                      <Show when={!isActive() && group.status === "error"}>
                         <span class="shrink-0 w-1.5 h-1.5 rounded-full bg-red-9" />
+                      </Show>
+                      <Show when={isConnecting()}>
+                        <Loader2 size={14} class="shrink-0 animate-spin text-gray-9" />
                       </Show>
                     </div>
 
-                    <div class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
-                      <Show when={group.status === "loading" || isConnecting()}>
-                        <Loader2 size={14} class="animate-spin text-gray-9" />
-                      </Show>
-
-                      <div class="flex items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100 bg-dls-surface/90 backdrop-blur-sm rounded-md px-0.5">
-                        <button
-                          type="button"
-                          class="rounded-md p-1 text-gray-9 hover:bg-gray-3/80 hover:text-gray-11"
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            props.onCreateTaskInWorkspace(workspace().id);
-                          }}
-                          disabled={props.newTaskDisabled}
-                          aria-label={t("workspace_list.new_task")}
-                        >
-                          <Plus size={14} />
-                        </button>
-
-                        <button
-                          type="button"
-                          class="rounded-md p-1 text-gray-9 hover:bg-gray-3/80 hover:text-gray-11"
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            setWorkspaceMenuId((current) =>
-                              current === workspace().id ? null : workspace().id,
-                            );
-                          }}
-                          aria-label={t("workspace_list.options")}
-                        >
-                          <MoreHorizontal size={14} />
-                        </button>
-
-                        <button
-                          type="button"
-                          class="rounded-md p-1 text-gray-9 hover:bg-gray-3/80 hover:text-gray-11"
-                          aria-label={isWorkspaceExpanded(workspace().id) ? t("workspace_list.collapse") : t("workspace_list.expand")}
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            toggleWorkspaceExpanded(workspace().id);
-                          }}
-                        >
-                          <Show
-                            when={isWorkspaceExpanded(workspace().id)}
-                            fallback={<ChevronRight size={14} />}
-                          >
-                            <ChevronDown size={14} />
+                    {/* Row 2: Meta + Actions (active only, animated) */}
+                    <div
+                      class={`overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+                        isActive() ? "max-h-10 opacity-100 mt-1.5" : "max-h-0 opacity-0 mt-0"
+                      }`}
+                    >
+                      <div class="flex items-center justify-between pl-[38px]">
+                        <div class="flex items-center gap-2 text-[11px] text-gray-9">
+                          <Show when={sessionCount() > 0}>
+                            <span>{t("workspace_list.session_count").replace("{count}", String(sessionCount()))}</span>
                           </Show>
-                        </button>
+                          <Show when={group.status === "error"}>
+                            <span class="text-red-11">{taskLoadError().label}</span>
+                          </Show>
+                        </div>
+                        <div class="flex items-center gap-0.5">
+                          <button
+                            type="button"
+                            class="rounded-md p-1 text-gray-9 hover:bg-gray-3/80 hover:text-gray-11"
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              props.onCreateTaskInWorkspace(workspace().id);
+                            }}
+                            disabled={props.newTaskDisabled}
+                            aria-label={t("workspace_list.new_task")}
+                          >
+                            <Plus size={13} />
+                          </button>
+                          <button
+                            type="button"
+                            class="rounded-md p-1 text-gray-9 hover:bg-gray-3/80 hover:text-gray-11"
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              setWorkspaceMenuId((current) =>
+                                current === workspace().id ? null : workspace().id,
+                              );
+                            }}
+                            aria-label={t("workspace_list.options")}
+                          >
+                            <MoreHorizontal size={13} />
+                          </button>
+                          <button
+                            type="button"
+                            class="rounded-md p-1 text-gray-9 hover:bg-gray-3/80 hover:text-gray-11"
+                            aria-label={isWorkspaceExpanded(workspace().id) ? t("workspace_list.collapse") : t("workspace_list.expand")}
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              toggleWorkspaceExpanded(workspace().id);
+                            }}
+                          >
+                            <Show
+                              when={isWorkspaceExpanded(workspace().id)}
+                              fallback={<ChevronRight size={13} />}
+                            >
+                              <ChevronDown size={13} />
+                            </Show>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
