@@ -144,6 +144,7 @@ export interface SkillItem {
   description: string;
   scope: "project" | "global";
   trigger?: string;
+  category?: string;
 }
 
 export interface HubSkillItem {

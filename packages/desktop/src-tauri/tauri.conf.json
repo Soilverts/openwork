@@ -4,8 +4,8 @@
   "version": "0.1.0",
   "identifier": "com.abel.app",
   "build": {
-    "beforeDevCommand": "node ./scripts/tauri-before-dev.mjs",
-    "beforeBuildCommand": "node ./scripts/prepare-bundled-tools.mjs && pnpm -C ../.. --filter @different-ai/abel run prepare:sidecar && pnpm -w build:abel",
+    "beforeDevCommand": "node ./scripts/prepare-abel-skills.mjs && node ./scripts/tauri-before-dev.mjs",
+    "beforeBuildCommand": "node ./scripts/prepare-bundled-tools.mjs && node ./scripts/prepare-abel-skills.mjs && pnpm -C ../.. --filter @different-ai/abel run prepare:sidecar && pnpm -w build:abel",
     "devUrl": "http://localhost:5174",
     "frontendDist": "../../abel-app/dist"
   },
@@ -25,7 +25,8 @@
   "bundle": {
     "createUpdaterArtifacts": true,
     "resources": {
-      "bundled-tools": "bundled-tools/"
+      "bundled-tools": "bundled-tools/",
+      "abel-skills.zip": "abel-skills.zip"
     },
     "macOS": {
       "entitlements": "./entitlements.plist"

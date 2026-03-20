@@ -54,6 +54,7 @@ async function parseSkillEntry(
   skillPath: string,
   entryName: string,
   scope: "project" | "global",
+  category?: string,
 ): Promise<SkillItem | null> {
   const content = await readFile(skillPath, "utf8");
   const { data, body } = parseFrontmatter(content);
@@ -78,6 +79,7 @@ async function parseSkillEntry(
     path: skillPath,
     scope,
     trigger: trigger.trim() || undefined,
+    ...(category ? { category } : {}),
   };
 }
 
@@ -108,7 +110,7 @@ async function listSkillsInDir(dir: string, scope: "project" | "global"): Promis
         if (!subEntry.isDirectory()) continue;
         const subSkillPath = join(domainDir, subEntry.name, "SKILL.md");
         if (!(await exists(subSkillPath))) continue;
-        const item = await parseSkillEntry(subSkillPath, subEntry.name, scope);
+        const item = await parseSkillEntry(subSkillPath, subEntry.name, scope, entry.name);
         if (item) items.push(item);
       }
     }

@@ -188,6 +188,7 @@ export type SkillCard = {
   path: string;
   description?: string;
   trigger?: string;
+  category?: string;
 };
 
 export type HubSkillRepo = {

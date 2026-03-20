@@ -651,6 +651,7 @@ export type LocalSkillCard = {
   path: string;
   description?: string;
   trigger?: string;
+  category?: string;
 };
 
 export type LocalSkillContent = {

@@ -399,13 +399,125 @@ fn seed_commands(commands_dir: &PathBuf, preset: &str) -> Result<(), String> {
     Ok(())
 }
 
-pub fn ensure_workspace_files(workspace_path: &str, preset: &str) -> Result<(), String> {
+const ABEL_SKILLS_MARKER: &str = ".abel-skills-seeded";
+
+fn seed_abel_skills(skill_root: &PathBuf, resource_dir: Option<&Path>) -> Result<(), String> {
+    let marker_path = skill_root.join(ABEL_SKILLS_MARKER);
+
+    let zip_path = if let Some(res) = resource_dir {
+        let candidate = res.join("abel-skills.zip");
+        if candidate.is_file() {
+            candidate
+        } else {
+            let alt = res.join("resources").join("abel-skills.zip");
+            if alt.is_file() {
+                alt
+            } else {
+                return Ok(());
+            }
+        }
+    } else {
+        return Ok(());
+    };
+
+    // Use file size + length as a lightweight version fingerprint
+    let zip_data = fs::read(&zip_path)
+        .map_err(|e| format!("Failed to read {}: {e}", zip_path.display()))?;
+    let zip_fingerprint = format!("{}", zip_data.len());
+
+    // Check marker: if already seeded with same version, skip
+    if marker_path.is_file() {
+        if let Ok(marker_content) = fs::read_to_string(&marker_path) {
+            if marker_content.trim() == zip_fingerprint {
+                return Ok(());
+            }
+        }
+    }
+
+    let data = zip_data;
+    let cursor = Cursor::new(data);
+    let mut archive =
+        ZipArchive::new(cursor).map_err(|e| format!("Failed to open abel-skills.zip: {e}"))?;
+
+    let mut written = 0u32;
+    let mut skipped = 0u32;
+
+    for i in 0..archive.len() {
+        let mut entry = archive
+            .by_index(i)
+            .map_err(|e| format!("Failed to read archive entry: {e}"))?;
+
+        let raw_name = entry.name().to_string();
+
+        // Skip directories, .DS_Store, and __MACOSX
+        if raw_name.ends_with('/') {
+            continue;
+        }
+        if raw_name.contains("__MACOSX") || raw_name.ends_with(".DS_Store") {
+            continue;
+        }
+
+        // Strip leading "./" if present
+        let rel = raw_name.strip_prefix("./").unwrap_or(&raw_name);
+
+        // Security: reject path traversal (mirrors enterprise extractor pattern)
+        let entry_path = Path::new(rel);
+        if entry_path.components().any(|c| matches!(
+            c,
+            std::path::Component::ParentDir
+            | std::path::Component::RootDir
+            | std::path::Component::Prefix(_)
+        )) {
+            continue;
+        }
+
+        let dest_path = skill_root.join(rel);
+
+        // Never overwrite existing files (user may have edited them)
+        if dest_path.exists() {
+            skipped += 1;
+            continue;
+        }
+
+        if let Some(parent) = dest_path.parent() {
+            fs::create_dir_all(parent)
+                .map_err(|e| format!("Failed to create {}: {e}", parent.display()))?;
+        }
+
+        // Guard against oversized entries (10 MB limit per file)
+        const MAX_ENTRY_BYTES: u64 = 10 * 1024 * 1024;
+        if entry.size() > MAX_ENTRY_BYTES {
+            continue;
+        }
+
+        let mut buf = Vec::new();
+        entry
+            .read_to_end(&mut buf)
+            .map_err(|e| format!("Failed to read entry {}: {e}", raw_name))?;
+        fs::write(&dest_path, buf)
+            .map_err(|e| format!("Failed to write {}: {e}", dest_path.display()))?;
+        written += 1;
+    }
+
+    // Write marker with version fingerprint
+    fs::write(&marker_path, format!("{}\n", zip_fingerprint))
+        .map_err(|e| format!("Failed to write marker: {e}"))?;
+
+    Ok(())
+}
+
+pub fn ensure_workspace_files(
+    workspace_path: &str,
+    preset: &str,
+    resource_dir: Option<&Path>,
+) -> Result<(), String> {
     let root = PathBuf::from(workspace_path);
 
     let skill_root = root.join(".opencode").join("skills");
     fs::create_dir_all(&skill_root)
         .map_err(|e| format!("Failed to create .opencode/skills: {e}"))?;
     seed_workspace_guide(&skill_root)?;
+    seed_abel_skills(&skill_root, resource_dir)?;
     if preset == "starter" {
         seed_get_started_skill(&skill_root)?;
         spawn_enterprise_creator_skills_seed(root.clone(), skill_root.clone());

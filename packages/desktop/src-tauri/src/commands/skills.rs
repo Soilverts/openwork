@@ -136,7 +136,7 @@ fn validate_skill_name(name: &str) -> Result<String, String> {
 fn gather_skills(
     root: &Path,
     seen: &mut HashSet<String>,
-    out: &mut Vec<PathBuf>,
+    out: &mut Vec<(PathBuf, Option<String>)>,
 ) -> Result<(), String> {
     if !root.is_dir() {
         return Ok(());
@@ -158,13 +158,14 @@ fn gather_skills(
                 continue;
             };
             if seen.insert(name.to_string()) {
-                out.push(path);
+                out.push((path, None));
             }
         } else {
             // Domain/category folder: <root>/<domain>/<name>/SKILL.md – scan one level deeper.
             // This supports the convention where global skills are organised as
             //   skills/<domain>/<skill-name>/SKILL.md
             // in addition to the flat   skills/<skill-name>/SKILL.md  layout.
+            let category = path.file_name().and_then(|s| s.to_str()).map(|s| s.to_string());
             if let Ok(sub_entries) = fs::read_dir(&path) {
                 for sub_entry in sub_entries.flatten() {
                     let Ok(sub_ft) = sub_entry.file_type() else {
@@ -181,7 +182,7 @@ fn gather_skills(
                         continue;
                     };
                     if seen.insert(name.to_string()) {
-                        out.push(sub_path);
+                        out.push((sub_path, category.clone()));
                     }
                 }
             }
@@ -247,6 +248,7 @@ pub struct LocalSkillCard {
     pub path: String,
     pub description: Option<String>,
     pub trigger: Option<String>,
+    pub category: Option<String>,
 }
 
 #[derive(Debug, Serialize, Clone)]
@@ -409,14 +411,14 @@ pub fn list_local_skills(project_dir: String) -> Result<Vec<LocalSkillCard>, Str
     }
 
     let skill_roots = collect_skill_roots(project_dir)?;
-    let mut found: Vec<PathBuf> = Vec::new();
+    let mut found: Vec<(PathBuf, Option<String>)> = Vec::new();
     let mut seen = HashSet::new();
     for root in skill_roots {
         gather_skills(&root, &mut seen, &mut found)?;
     }
 
     let mut out = Vec::new();
-    for path in found {
+    for (path, category) in found {
         let Some(name) = path.file_name().and_then(|s| s.to_str()) else {
             continue;
         };
@@ -431,6 +433,7 @@ pub fn list_local_skills(project_dir: String) -> Result<Vec<LocalSkillCard>, Str
             path: path.to_string_lossy().to_string(),
             description,
             trigger,
+            category,
         });
     }
 

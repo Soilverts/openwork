@@ -1,2 +1,6 @@
 # Downloaded at build time by prepare-bundled-tools.mjs
 bundled-tools/
+
+# Generated at build time by prepare-abel-skills.mjs
+abel-skills.zip
+abel-skills-manifest.json

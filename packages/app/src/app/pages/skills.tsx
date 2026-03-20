@@ -25,7 +25,45 @@ const OPENWORK_DEFAULT_SKILL_NAMES = new Set([
   "command-creator",
   "agent-creator",
   "plugin-creator",
+  // data
+  "analyze", "build-dashboard", "create-viz", "data-context-extractor",
+  "data-visualization", "explore-data", "sql-queries", "statistical-analysis",
+  "validate-data", "write-query",
+  // documents
+  "doc-coauthoring", "docx", "internal-comms", "pdf", "pptx", "xlsx",
+  // human resources
+  "compensation-benchmarking", "employee-handbook", "interview-prep",
+  "org-planning", "people-analytics", "recruiting-pipeline",
+  // legal
+  "compliance-check", "legal-response", "legal-risk-assessment",
+  "review-contract", "signature-request",
+  // operation
+  "capacity-plan", "change-request", "compliance-tracking", "process-doc",
+  "process-optimization", "risk-assessment", "runbook", "status-report",
+  "vendor-review",
+  // sales
+  "account-research", "call-prep", "competitive-intelligence",
+  "create-an-asset", "daily-briefing", "draft-outreach",
 ]);
+
+const CATEGORY_ORDER = [
+  "data", "documents", "human resources", "legal", "operation", "sales",
+];
+
+const CATEGORY_I18N_KEYS: Record<string, string> = {
+  "data": "skills.category.data",
+  "documents": "skills.category.documents",
+  "human resources": "skills.category.human_resources",
+  "legal": "skills.category.legal",
+  "operation": "skills.category.operation",
+  "sales": "skills.category.sales",
+};
+
+type CategoryGroup = {
+  key: string;
+  label: string;
+  skills: SkillCard[];
+};
 
 export type SkillsViewProps = {
   workspaceName: string;
@@ -177,6 +215,41 @@ export default function SkillsView(props: SkillsViewProps) {
       );
     });
   });
+
+  const groupedSkills = createMemo((): CategoryGroup[] => {
+    const skills = filteredSkills();
+    const byCategory = new Map<string, SkillCard[]>();
+
+    for (const skill of skills) {
+      const cat = skill.category || "other";
+      byCategory.set(cat, [...(byCategory.get(cat) ?? []), skill]);
+    }
+
+    const groups: CategoryGroup[] = [];
+    for (const key of CATEGORY_ORDER) {
+      const items = byCategory.get(key);
+      if (items && items.length > 0) {
+        const i18nKey = CATEGORY_I18N_KEYS[key];
+        groups.push({ key, label: i18nKey ? translate(i18nKey) : key, skills: items });
+        byCategory.delete(key);
+      }
+    }
+
+    // Remaining uncategorized skills go into "Other"
+    const otherSkills: SkillCard[] = [];
+    for (const [, items] of byCategory) {
+      otherSkills.push(...items);
+    }
+    if (otherSkills.length > 0) {
+      groups.push({ key: "other", label: translate("skills.category.other"), skills: otherSkills });
+    }
+
+    return groups;
+  });
+
+  const hasCategories = createMemo(() =>
+    groupedSkills().some((g) => g.key !== "other")
+  );
 
   const installedNames = createMemo(() => new Set(props.skills.map((skill) => skill.name)));
 
@@ -553,10 +626,10 @@ export default function SkillsView(props: SkillsViewProps) {
       <div class="rounded-2xl border border-dls-border bg-dls-surface px-5 py-5 shadow-[0_8px_26px_rgba(17,24,39,0.05)]">
         <div class="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
           <div class="min-w-0 space-y-1">
-            <div class="text-[11px] font-semibold uppercase tracking-[0.18em] text-dls-secondary">Worker profile</div>
+            <div class="text-[11px] font-semibold uppercase tracking-[0.18em] text-dls-secondary">{translate("skills.worker_profile")}</div>
             <div class="text-xl font-semibold text-dls-text truncate">{workspaceLabel()}</div>
             <p class="text-sm text-dls-secondary">
-              Skills are the core abilities of this worker. Add from Hub or create new ones directly in chat.
+              {translate("skills.worker_description")}
             </p>
           </div>
           <button
@@ -570,29 +643,29 @@ export default function SkillsView(props: SkillsViewProps) {
             }`}
           >
             <Sparkles size={14} />
-            Create skill in chat
+            {translate("skills.create_in_chat")}
           </button>
         </div>
 
         <div class="mt-4 grid grid-cols-2 gap-3 md:grid-cols-4">
           <div class="rounded-lg border border-dls-border bg-dls-hover px-3 py-2.5">
-            <div class="text-[11px] text-dls-secondary">Installed</div>
+            <div class="text-[11px] text-dls-secondary">{translate("skills.stat_installed")}</div>
             <div class="mt-1 text-base font-semibold text-dls-text">{props.skills.length}</div>
           </div>
           <div class="rounded-lg border border-dls-border bg-dls-hover px-3 py-2.5">
-            <div class="text-[11px] text-dls-secondary">Hub available</div>
+            <div class="text-[11px] text-dls-secondary">{translate("skills.stat_hub_available")}</div>
             <div class="mt-1 text-base font-semibold text-dls-text">{availableHubSkills().length}</div>
           </div>
           <div class="rounded-lg border border-dls-border bg-dls-hover px-3 py-2.5">
-            <div class="text-[11px] text-dls-secondary">Skill creator</div>
+            <div class="text-[11px] text-dls-secondary">{translate("skills.stat_skill_creator")}</div>
             <div class="mt-1 text-base font-semibold text-dls-text">
-              {skillCreatorInstalled() ? "Installed" : "Not installed"}
+              {skillCreatorInstalled() ? translate("skills.stat_installed") : translate("skills.stat_not_installed")}
             </div>
           </div>
           <div class="rounded-lg border border-dls-border bg-dls-hover px-3 py-2.5">
-            <div class="text-[11px] text-dls-secondary">Mode</div>
+            <div class="text-[11px] text-dls-secondary">{translate("skills.stat_mode")}</div>
             <div class="mt-1 text-base font-semibold text-dls-text">
-              {props.canUseDesktopTools ? "Local" : "Server"}
+              {props.canUseDesktopTools ? translate("skills.stat_local") : translate("skills.stat_server")}
             </div>
           </div>
         </div>
@@ -633,7 +706,7 @@ export default function SkillsView(props: SkillsViewProps) {
           }`}
         >
           <Plus size={14} />
-          New skill
+          {translate("skills.new_skill")}
         </button>
         <button
           type="button"
@@ -647,7 +720,7 @@ export default function SkillsView(props: SkillsViewProps) {
           title="Install a skill from a link"
         >
           <Link2 size={14} />
-          Install from link
+          {translate("skills.install_from_link")}
         </button>
       </div>
 
@@ -666,9 +739,12 @@ export default function SkillsView(props: SkillsViewProps) {
         </div>
       </Show>
 
-      <div class="space-y-4">
+      <div class="space-y-6">
         <h3 class="text-[11px] font-bold text-dls-secondary uppercase tracking-widest">
           {translate("skills.installed")}
+          <span class="ml-2 text-dls-secondary font-normal normal-case tracking-normal">
+            {translate("skills.skills_count").replace("{count}", String(filteredSkills().length))}
+          </span>
         </h3>
         <Show
           when={filteredSkills().length}
@@ -678,99 +754,111 @@ export default function SkillsView(props: SkillsViewProps) {
             </div>
           }
         >
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <For each={filteredSkills()}>
-              {(skill) => (
-                <div
-                  role="button"
-                  tabindex="0"
-                  class="bg-dls-surface border border-dls-border rounded-xl p-4 flex items-start justify-between group hover:border-dls-border hover:bg-dls-hover transition-all text-left cursor-pointer"
-                  onClick={() => void openSkill(skill)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      if (e.isComposing || e.keyCode === 229) return;
-                      e.preventDefault();
-                      void openSkill(skill);
-                    }
-                  }}
-                >
-                  <div class="flex gap-4 min-w-0">
-                    <div class="w-10 h-10 rounded-lg flex items-center justify-center shadow-sm border border-dls-border bg-dls-surface">
-                      <Package size={20} class="text-dls-secondary" />
-                    </div>
-                    <div class="min-w-0">
-                      <div class="flex items-center gap-2 mb-0.5">
-                        <h4 class="text-sm font-semibold text-dls-text truncate">{skill.name}</h4>
-                        <Show when={isOpenworkInjectedSkill(skill)}>
-                          <span class="rounded-full border border-dls-border bg-dls-hover px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-dls-secondary">
-                            Abel
-                          </span>
-                        </Show>
+          <For each={groupedSkills()}>
+            {(group) => (
+              <div class="space-y-3">
+                <Show when={hasCategories()}>
+                  <div class="flex items-center gap-2">
+                    <h4 class="text-xs font-semibold text-dls-text">{group.label}</h4>
+                    <span class="text-[10px] text-dls-secondary">{group.skills.length}</span>
+                    <div class="flex-1 border-b border-dls-border/50" />
+                  </div>
+                </Show>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <For each={group.skills}>
+                    {(skill) => (
+                      <div
+                        role="button"
+                        tabindex="0"
+                        class="bg-dls-surface border border-dls-border rounded-xl p-4 flex items-start justify-between group hover:border-dls-border hover:bg-dls-hover transition-all text-left cursor-pointer"
+                        onClick={() => void openSkill(skill)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            if (e.isComposing || e.keyCode === 229) return;
+                            e.preventDefault();
+                            void openSkill(skill);
+                          }
+                        }}
+                      >
+                        <div class="flex gap-4 min-w-0">
+                          <div class="w-10 h-10 rounded-lg flex items-center justify-center shadow-sm border border-dls-border bg-dls-surface">
+                            <Package size={20} class="text-dls-secondary" />
+                          </div>
+                          <div class="min-w-0">
+                            <div class="flex items-center gap-2 mb-0.5">
+                              <h4 class="text-sm font-semibold text-dls-text truncate">{skill.name}</h4>
+                              <Show when={isOpenworkInjectedSkill(skill)}>
+                                <span class="rounded-full border border-dls-border bg-dls-hover px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-dls-secondary">
+                                  Abel
+                                </span>
+                              </Show>
+                            </div>
+                            <Show when={skill.description}>
+                              <p class="text-xs text-dls-secondary line-clamp-1">
+                                {skill.description}
+                              </p>
+                            </Show>
+                          </div>
+                        </div>
+                        <div class="flex items-center gap-1">
+                          <button
+                            type="button"
+                            class="p-1.5 text-dls-secondary hover:text-dls-text hover:bg-slate-3 rounded-md transition-colors"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              openShareLink(skill);
+                            }}
+                            disabled={props.busy}
+                            title="Share"
+                          >
+                            <Share2 size={14} />
+                          </button>
+                          <button
+                            type="button"
+                            class="p-1.5 text-dls-secondary hover:text-dls-text hover:bg-slate-3 rounded-md transition-colors"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              void openSkill(skill);
+                            }}
+                            disabled={props.busy}
+                            title="Edit"
+                          >
+                            <Edit2 size={14} />
+                          </button>
+                          <button
+                            type="button"
+                            class={`p-1.5 rounded-md transition-colors ${
+                              props.busy || !props.canUseDesktopTools
+                                ? "text-dls-secondary opacity-40"
+                                : "text-dls-secondary hover:text-red-11 hover:bg-red-3/10"
+                            }`}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              if (props.busy || !props.canUseDesktopTools) return;
+                              setUninstallTarget(skill);
+                            }}
+                            disabled={props.busy || !props.canUseDesktopTools}
+                            title={translate("skills.uninstall")}
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
                       </div>
-                      <Show when={skill.description}>
-                        <p class="text-xs text-dls-secondary line-clamp-1">
-                          {skill.description}
-                        </p>
-                      </Show>
-                      <div class="mt-1 text-[11px] font-mono text-dls-secondary truncate">{skill.path}</div>
-                    </div>
-                  </div>
-                  <div class="flex items-center gap-1">
-                    <button
-                      type="button"
-                      class="p-1.5 text-dls-secondary hover:text-dls-text hover:bg-slate-3 rounded-md transition-colors"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        openShareLink(skill);
-                      }}
-                      disabled={props.busy}
-                      title="Share"
-                    >
-                      <Share2 size={14} />
-                    </button>
-                    <button
-                      type="button"
-                      class="p-1.5 text-dls-secondary hover:text-dls-text hover:bg-slate-3 rounded-md transition-colors"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        void openSkill(skill);
-                      }}
-                      disabled={props.busy}
-                      title="Edit"
-                    >
-                      <Edit2 size={14} />
-                    </button>
-                    <button
-                      type="button"
-                      class={`p-1.5 rounded-md transition-colors ${
-                        props.busy || !props.canUseDesktopTools
-                          ? "text-dls-secondary opacity-40"
-                          : "text-dls-secondary hover:text-red-11 hover:bg-red-3/10"
-                      }`}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        if (props.busy || !props.canUseDesktopTools) return;
-                        setUninstallTarget(skill);
-                      }}
-                      disabled={props.busy || !props.canUseDesktopTools}
-                      title={translate("skills.uninstall")}
-                    >
-                      <Trash2 size={14} />
-                    </button>
-                  </div>
+                    )}
+                  </For>
                 </div>
-              )}
-            </For>
-          </div>
+              </div>
+            )}
+          </For>
         </Show>
       </div>
 
       <div class="space-y-4">
         <div class="flex items-center justify-between gap-3">
-          <h3 class="text-[11px] font-bold text-dls-secondary uppercase tracking-widest">Install skills</h3>
+          <h3 class="text-[11px] font-bold text-dls-secondary uppercase tracking-widest">{translate("skills.install_skills")}</h3>
           <div class="flex items-center gap-2">
             <button
               type="button"
@@ -784,7 +872,7 @@ export default function SkillsView(props: SkillsViewProps) {
               title="Add custom GitHub repo"
             >
               <Plus size={14} />
-              Add custom git repo
+              {translate("skills.add_custom_repo")}
             </button>
             <button
               type="button"
@@ -1169,7 +1257,7 @@ export default function SkillsView(props: SkillsViewProps) {
           <div class="bg-dls-surface border border-dls-border w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden">
             <div class="p-6 space-y-4">
               <div>
-                <h3 class="text-lg font-semibold text-dls-text">Install from link</h3>
+                <h3 class="text-lg font-semibold text-dls-text">{translate("skills.install_from_link")}</h3>
                 <p class="text-sm text-dls-secondary mt-1">Paste a skill bundle URL, preview it, then install.</p>
               </div>
 
