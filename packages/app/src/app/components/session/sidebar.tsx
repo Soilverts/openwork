@@ -52,6 +52,30 @@ export type SidebarProps = {
   newTaskDisabled: boolean;
 };
 
+const AVATAR_COLORS = [
+  { bg: "bg-indigo-4", text: "text-indigo-11", ring: "ring-indigo-7" },
+  { bg: "bg-violet-4", text: "text-violet-11", ring: "ring-violet-7" },
+  { bg: "bg-cyan-4", text: "text-cyan-11", ring: "ring-cyan-7" },
+  { bg: "bg-teal-4", text: "text-teal-11", ring: "ring-teal-7" },
+  { bg: "bg-amber-4", text: "text-amber-11", ring: "ring-amber-7" },
+  { bg: "bg-crimson-4", text: "text-crimson-11", ring: "ring-crimson-7" },
+  { bg: "bg-grass-4", text: "text-grass-11", ring: "ring-grass-7" },
+  { bg: "bg-orange-4", text: "text-orange-11", ring: "ring-orange-7" },
+];
+
+function avatarColorForId(id: string) {
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) {
+    hash = ((hash << 5) - hash + id.charCodeAt(i)) | 0;
+  }
+  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+}
+
+const simplePath = (fullPath: string) => {
+  const parts = fullPath.replace(/\\/g, "/").split("/").filter(Boolean);
+  return parts[parts.length - 1] || fullPath;
+};
+
 export default function SessionSidebar(props: SidebarProps) {
   const MAX_SESSIONS_PREVIEW = 8;
   const realTodos = createMemo(() => props.todos.filter((todo) => todo.content.trim()));
@@ -284,21 +308,21 @@ export default function SessionSidebar(props: SidebarProps) {
           disabled={props.newTaskDisabled}
         >
           <Plus size={16} />
-          New task
+          {t("sidebar.new_task")}
         </button>
       </div>
 
       <div class="flex-1 overflow-y-auto px-4 py-4 space-y-6">
         <div>
           <div class="flex items-center justify-between px-2 mb-2">
-            <div class="text-xs text-gray-10 font-semibold uppercase tracking-wider">Workspaces</div>
+            <div class="text-xs text-gray-10 font-semibold uppercase tracking-wider">{t("sidebar.workspaces")}</div>
           </div>
           <div class="space-y-4">
             <Show
               when={props.workspaceGroups.length > 0}
               fallback={
                 <div class="px-3 py-2 rounded-lg border border-dashed border-gray-6 text-xs text-gray-9">
-                  No workspaces in this session yet. Add one to get started.
+                  {t("sidebar.no_workspaces_hint")}
                 </div>
               }
             >
@@ -325,11 +349,10 @@ export default function SessionSidebar(props: SidebarProps) {
                     return pendingStatus === "connecting";
                   };
                   const allowActions = () => !hasPendingSwitch() || isConnecting() || isActive();
-                  const connectionDotClass = () => {
-                    if (connectionStatus() === "connected") return "bg-green-9";
-                    if (connectionStatus() === "connecting") return "bg-amber-9 animate-pulse";
-                    if (connectionStatus() === "error") return "bg-red-9";
-                    return "bg-gray-7";
+                  const avatarColor = () => avatarColorForId(group.workspace.id);
+                  const avatarInitial = () => {
+                    const label = workspaceLabel(group.workspace);
+                    return label.charAt(0).toUpperCase();
                   };
                   const collapsed = () => isWorkspaceCollapsed(group.workspace.id);
                   const dragOver = () => dragOverWorkspaceId() === group.workspace.id;
@@ -337,10 +360,16 @@ export default function SessionSidebar(props: SidebarProps) {
                   const visibleSessions = () =>
                     showingAll() ? sessions() : sessions().slice(0, MAX_SESSIONS_PREVIEW);
                   const hasMoreSessions = () => sessions().length > MAX_SESSIONS_PREVIEW;
+                  const sessionCountLabel = () =>
+                    t("sidebar.session_count").replace("{count}", String(sessions().length));
+                  const simplifiedPath = () => {
+                    const raw = pathLabel();
+                    return raw ? simplePath(raw) : "";
+                  };
 
                   return (
                     <div
-                      class={`space-y-2 rounded-lg border transition-colors overflow-hidden ${
+                      class={`group space-y-2 rounded-lg border transition-colors overflow-hidden ${
                         isActive()
                           ? "border-indigo-7/40 bg-indigo-2/20"
                           : "border-gray-6/40 bg-transparent"
@@ -368,34 +397,54 @@ export default function SessionSidebar(props: SidebarProps) {
                           <div class="flex items-start justify-between gap-2">
                             <div class="min-w-0 space-y-0.5">
                               <div class="flex items-center gap-2">
-                                <span class={`h-2 w-2 rounded-full ${connectionDotClass()}`} />
+                                {/* Workspace avatar */}
+                                <div class="relative shrink-0">
+                                  <span
+                                    class={`flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold ${avatarColor().bg} ${avatarColor().text} ${
+                                      isActive() ? `ring-2 ${avatarColor().ring} ring-offset-1 ring-offset-gray-1` : ""
+                                    }`}
+                                  >
+                                    <Show
+                                      when={!(isConnecting() || connectionStatus() === "connecting")}
+                                      fallback={
+                                        <Loader2 size={14} class="animate-spin" />
+                                      }
+                                    >
+                                      {avatarInitial()}
+                                    </Show>
+                                  </span>
+                                  {/* Error dot overlay */}
+                                  <Show when={connectionStatus() === "error"}>
+                                    <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-red-9 border-2 border-gray-1" />
+                                  </Show>
+                                </div>
                                 <span class="text-xs font-semibold truncate">
                                   {workspaceLabel(group.workspace)}
                                 </span>
                                 <Show when={group.workspace.workspaceType === "remote"}>
                                   <span class="text-[9px] uppercase tracking-wide px-1.5 py-0.5 rounded-full bg-gray-3 text-gray-11">
-                                    {isSandboxWorkspace() ? "Sandbox" : "Remote"}
+                                    {isSandboxWorkspace() ? t("sidebar.sandbox") : t("sidebar.remote")}
                                   </span>
                                 </Show>
                               </div>
-                              <Show when={pathLabel()}>
-                                <div class="text-[9px] text-gray-8/80 font-mono truncate">{pathLabel()}</div>
+                              <Show when={simplifiedPath()}>
+                                <div class="text-[9px] text-gray-8/80 font-mono truncate pl-9">{simplifiedPath()}</div>
                               </Show>
                               <Show when={detailLabel() && detailLabel() !== pathLabel()}>
-                                <div class="text-[9px] text-gray-7/80 truncate">{detailLabel()}</div>
+                                <div class="text-[9px] text-gray-7/80 truncate pl-9">{detailLabel()}</div>
                               </Show>
                             </div>
                             <div class="flex items-center gap-2 text-[10px] shrink-0">
                               <Show when={isConnecting() || connectionStatus() === "connecting"}>
-                                <Loader2 size={12} class="text-gray-10 animate-spin" />
+                                {/* Spinner only, no text for connecting */}
                               </Show>
                               <Show when={!isConnecting() && connectionStatus() !== "connecting"}>
                                 <Show when={connectionStatus() === "error"}>
-                                  <span class="text-red-11 font-medium">Needs attention</span>
+                                  <span class="text-red-11 font-medium">{t("sidebar.needs_attention")}</span>
                                 </Show>
                                 <Show when={connectionStatus() !== "error"}>
-                                  <Show when={isActive()} fallback={<span class="text-gray-9">Switch</span>}>
-                                    <span class="text-green-11 font-medium">Active</span>
+                                  <Show when={!isActive() && sessions().length > 0}>
+                                    <span class="text-gray-9">{sessionCountLabel()}</span>
                                   </Show>
                                 </Show>
                               </Show>
@@ -407,7 +456,7 @@ export default function SessionSidebar(props: SidebarProps) {
                             type="button"
                             class="p-1 rounded-md text-gray-9 hover:text-gray-12 hover:bg-gray-2"
                             onClick={() => toggleWorkspaceCollapse(group.workspace.id)}
-                            title={collapsed() ? "Expand" : "Collapse"}
+                            title={collapsed() ? t("sidebar.expand") : t("sidebar.collapse")}
                           >
                             <ChevronDown
                               size={14}
@@ -417,7 +466,7 @@ export default function SessionSidebar(props: SidebarProps) {
                           <button
                             type="button"
                             class="p-1 rounded-md text-gray-9 hover:text-gray-12 hover:bg-gray-2 cursor-grab"
-                            title="Drag to reorder"
+                            title={t("sidebar.drag_reorder")}
                             draggable
                             onDragStart={(event) => handleDragStart(event, group.workspace.id)}
                             onDragEnd={handleDragEnd}
@@ -433,7 +482,8 @@ export default function SessionSidebar(props: SidebarProps) {
                               {connectionMessage()}
                             </div>
                           </Show>
-                          <div class="flex flex-wrap gap-2 px-3 pb-1">
+                          {/* Action buttons: visible on hover only */}
+                          <div class="flex flex-wrap gap-2 px-3 pb-1 opacity-0 group-hover:opacity-100 transition-opacity">
                             <Show when={group.workspace.workspaceType === "remote"}>
                               <button
                                 type="button"
@@ -442,7 +492,7 @@ export default function SessionSidebar(props: SidebarProps) {
                                 disabled={isActivelyConnecting()}
                               >
                                 <Settings size={12} />
-                                Edit connection
+                                {t("sidebar.edit_connection")}
                               </button>
                               <button
                                 type="button"
@@ -451,7 +501,7 @@ export default function SessionSidebar(props: SidebarProps) {
                                 disabled={isActivelyConnecting()}
                               >
                                 <RefreshCcw size={12} class={connectionStatus() === "connecting" ? "animate-spin" : ""} />
-                                Test connection
+                                {t("sidebar.test_connection")}
                               </button>
                             </Show>
                             <Show when={group.workspace.sandboxContainerName?.trim() && props.onStopSandbox}>
@@ -462,7 +512,7 @@ export default function SessionSidebar(props: SidebarProps) {
                                 disabled={isActivelyConnecting()}
                               >
                                 <Square size={12} />
-                                Stop sandbox
+                                {t("sidebar.stop_sandbox")}
                               </button>
                             </Show>
                             <button
@@ -472,14 +522,14 @@ export default function SessionSidebar(props: SidebarProps) {
                               disabled={isActivelyConnecting()}
                             >
                               <Trash2 size={12} />
-                              Remove
+                              {t("sidebar.remove")}
                             </button>
                           </div>
                           <Show
                             when={sessions().length > 0}
                             fallback={
                               <div class="px-3 py-2 rounded-lg border border-dashed border-gray-6 text-xs text-gray-9">
-                                No sessions yet.
+                                {t("sidebar.no_sessions")}
                               </div>
                             }
                           >
@@ -536,8 +586,8 @@ export default function SessionSidebar(props: SidebarProps) {
                                 onClick={() => toggleShowAllSessions(group.workspace.id)}
                               >
                                 {showingAll()
-                                  ? "Show fewer"
-                                  : `Show ${sessions().length - MAX_SESSIONS_PREVIEW} more`}
+                                  ? t("sidebar.show_fewer")
+                                  : t("sidebar.show_more").replace("{count}", String(sessions().length - MAX_SESSIONS_PREVIEW))}
                               </button>
                             </Show>
                           </Show>
@@ -558,7 +608,7 @@ export default function SessionSidebar(props: SidebarProps) {
                 onDrop={(event) => handleDrop(event, null)}
               >
                 <Plus size={14} />
-                Add new workspace
+                {t("sidebar.add_workspace")}
               </button>
               <Show when={addWorkspaceMenuOpen()}>
                 <div class="mt-2 rounded-lg border border-gray-6 bg-gray-1 shadow-lg overflow-hidden">
@@ -571,7 +621,7 @@ export default function SessionSidebar(props: SidebarProps) {
                     }}
                   >
                     <Plus size={12} />
-                    New worker
+                    {t("sidebar.new_worker")}
                   </button>
                   <button
                     type="button"
@@ -582,7 +632,7 @@ export default function SessionSidebar(props: SidebarProps) {
                     }}
                   >
                     <Plus size={12} />
-                    Connect remote
+                    {t("sidebar.connect_remote")}
                   </button>
                   <button
                     type="button"
@@ -594,7 +644,7 @@ export default function SessionSidebar(props: SidebarProps) {
                     }}
                   >
                     <Plus size={12} />
-                    Import config
+                    {t("sidebar.import_config")}
                   </button>
                 </div>
               </Show>
@@ -609,7 +659,7 @@ export default function SessionSidebar(props: SidebarProps) {
                 class="w-full px-4 py-3 flex items-center justify-between text-sm text-gray-12 font-medium"
                 onClick={() => props.onToggleSection("progress")}
               >
-                <span>Progress</span>
+                <span>{t("sidebar.progress")}</span>
                 <ChevronDown
                   size={16}
                   class={`transition-transform text-gray-10 ${
@@ -668,7 +718,7 @@ export default function SessionSidebar(props: SidebarProps) {
                   closeContextMenu();
                 }}
               >
-                New task
+                {t("sidebar.new_task")}
               </button>
               <button
                 class="w-full text-left px-3 py-2 text-sm rounded-lg text-red-11 hover:bg-red-1/40 transition-colors"
@@ -678,7 +728,7 @@ export default function SessionSidebar(props: SidebarProps) {
                   closeContextMenu();
                 }}
               >
-                Delete session
+                {t("sidebar.delete_session")}
               </button>
             </div>
           </div>
