@@ -1652,6 +1652,10 @@ export default {
   "workspace_list.test_connection": "测试连接",
   "workspace_list.edit_connection": "编辑连接",
   "workspace_list.remove": "移除工作区",
+  "workspace_list.new_task": "新任务",
+  "workspace_list.options": "选项",
+  "workspace_list.collapse": "收起",
+  "workspace_list.expand": "展开",
 
   // ==================== App (app.tsx) ====================
   "app.failed_read_attachment": "读取附件失败: {name}",

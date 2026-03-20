@@ -1715,6 +1715,10 @@ export default {
   "workspace_list.test_connection": "Test connection",
   "workspace_list.edit_connection": "Edit connection",
   "workspace_list.remove": "Remove workspace",
+  "workspace_list.new_task": "New task",
+  "workspace_list.options": "Options",
+  "workspace_list.collapse": "Collapse",
+  "workspace_list.expand": "Expand",
 
   // ==================== App (app.tsx) ====================
   "app.failed_read_attachment": "Failed to read attachment: {name}",

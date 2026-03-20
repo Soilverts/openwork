@@ -423,12 +423,12 @@ export default function WorkspaceSessionList(props: Props) {
                       </Show>
                     </div>
 
-                    <div class="ml-4 flex shrink-0 items-center gap-1.5">
+                    <div class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
                       <Show when={group.status === "loading" || isConnecting()}>
                         <Loader2 size={14} class="animate-spin text-gray-9" />
                       </Show>
 
-                      <div class="flex items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
+                      <div class="flex items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100 bg-dls-surface/90 backdrop-blur-sm rounded-md px-0.5">
                         <button
                           type="button"
                           class="rounded-md p-1 text-gray-9 hover:bg-gray-3/80 hover:text-gray-11"
@@ -437,7 +437,7 @@ export default function WorkspaceSessionList(props: Props) {
                             props.onCreateTaskInWorkspace(workspace().id);
                           }}
                           disabled={props.newTaskDisabled}
-                          aria-label="New task"
+                          aria-label={t("workspace_list.new_task")}
                         >
                           <Plus size={14} />
                         </button>
@@ -451,28 +451,28 @@ export default function WorkspaceSessionList(props: Props) {
                               current === workspace().id ? null : workspace().id,
                             );
                           }}
-                          aria-label="Worker options"
+                          aria-label={t("workspace_list.options")}
                         >
                           <MoreHorizontal size={14} />
                         </button>
-                      </div>
 
-                      <button
-                        type="button"
-                        class="rounded-md p-1 text-gray-9 hover:bg-gray-3/80 hover:text-gray-11"
-                        aria-label={isWorkspaceExpanded(workspace().id) ? "Collapse" : "Expand"}
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          toggleWorkspaceExpanded(workspace().id);
-                        }}
-                      >
-                        <Show
-                          when={isWorkspaceExpanded(workspace().id)}
-                          fallback={<ChevronRight size={14} />}
+                        <button
+                          type="button"
+                          class="rounded-md p-1 text-gray-9 hover:bg-gray-3/80 hover:text-gray-11"
+                          aria-label={isWorkspaceExpanded(workspace().id) ? t("workspace_list.collapse") : t("workspace_list.expand")}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            toggleWorkspaceExpanded(workspace().id);
+                          }}
                         >
-                          <ChevronDown size={14} />
-                        </Show>
-                      </button>
+                          <Show
+                            when={isWorkspaceExpanded(workspace().id)}
+                            fallback={<ChevronRight size={14} />}
+                          >
+                            <ChevronDown size={14} />
+                          </Show>
+                        </button>
+                      </div>
                     </div>
                   </div>
 
