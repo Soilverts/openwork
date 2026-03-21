@@ -405,11 +405,11 @@ function createCustomRenderer(tone: "light" | "dark") {
   const renderer = new marked.Renderer();
   const codeBlockClass =
     tone === "dark"
-      ? "bg-gray-12/10 border-gray-11/20 text-gray-12"
+      ? "bg-white/10 border-white/20 text-white"
       : "bg-gray-1/80 border-gray-6/70 text-gray-12";
   const inlineCodeClass =
     tone === "dark"
-      ? "bg-gray-12/15 text-gray-12"
+      ? "bg-white/15 text-white"
       : "bg-gray-2/70 text-gray-12";
   
   const isSafeUrl = (url: string) => {
@@ -566,9 +566,9 @@ export default function PartView(props: Props) {
     return { title, detail, mime };
   };
 
-  const textClass = () => (tone() === "dark" ? "text-gray-12" : "text-gray-12");
-  const subtleTextClass = () => (tone() === "dark" ? "text-gray-12/70" : "text-gray-11");
-  const panelBgClass = () => (tone() === "dark" ? "bg-gray-2/10" : "bg-gray-2/30");
+  const textClass = () => (tone() === "dark" ? "text-white" : "text-gray-12");
+  const subtleTextClass = () => (tone() === "dark" ? "text-white/70" : "text-gray-11");
+  const panelBgClass = () => (tone() === "dark" ? "bg-white/10" : "bg-gray-2/30");
   const toolOnly = () => true;
   const showToolOutput = () => developerMode();
   const markdownSource = createMemo(() => {
