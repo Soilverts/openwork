@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Downloads portable Node.js and git for the target platform.
+ * Downloads portable Node.js, Python, and git for the target platform.
  * These tools are bundled into the Tauri app so end users don't need to install them.
  *
  * Usage:
@@ -11,6 +11,8 @@
  *   TAURI_ENV_TARGET_TRIPLE   - Target platform (e.g., aarch64-apple-darwin)
  *   ABEL_NODE_VERSION         - Override Node.js version
  *   ABEL_GIT_VERSION          - Override git version
+ *   ABEL_PYTHON_VERSION       - Override Python version
+ *   ABEL_PYTHON_RELEASE       - Override python-build-standalone release tag
  *   ABEL_SKIP_BUNDLED_TOOLS   - Set to "1" to skip this step entirely
  */
 
@@ -41,6 +43,8 @@ const force = hasFlag("--force");
 const NODE_VERSION = process.env.ABEL_NODE_VERSION || readArg("--node-version") || "22.16.0";
 const GIT_VERSION = process.env.ABEL_GIT_VERSION || readArg("--git-version") || "2.53.0";
 const MINGIT_TAG = process.env.ABEL_MINGIT_TAG || "2.53.0.2";
+const PYTHON_VERSION = process.env.ABEL_PYTHON_VERSION || readArg("--python-version") || "3.13.12";
+const PYTHON_RELEASE = process.env.ABEL_PYTHON_RELEASE || readArg("--python-release") || "20260320";
 
 const outDir = join(__dirname, "..", "src-tauri", "bundled-tools");
 
@@ -383,6 +387,125 @@ async function prepareGit() {
   process.stdout.write(`[bundled-tools] git ${GIT_VERSION} ready\n`);
 }
 
+// --- Python (python-build-standalone) ---
+
+function pythonDownloadUrl() {
+  // python-build-standalone provides portable, self-contained Python builds.
+  // https://github.com/indygreg/python-build-standalone
+  // The "install_only" variant is the smallest (~40-60MB compressed).
+  const base = `https://github.com/indygreg/python-build-standalone/releases/download/${PYTHON_RELEASE}`;
+  const v = PYTHON_VERSION;
+  const tag = PYTHON_RELEASE;
+
+  switch (resolvedTargetTriple) {
+    case "aarch64-apple-darwin":
+      return `${base}/cpython-${v}+${tag}-aarch64-apple-darwin-install_only.tar.gz`;
+    case "x86_64-apple-darwin":
+      return `${base}/cpython-${v}+${tag}-x86_64-apple-darwin-install_only.tar.gz`;
+    case "x86_64-unknown-linux-gnu":
+      return `${base}/cpython-${v}+${tag}-x86_64-unknown-linux-gnu-install_only.tar.gz`;
+    case "aarch64-unknown-linux-gnu":
+      return `${base}/cpython-${v}+${tag}-aarch64-unknown-linux-gnu-install_only.tar.gz`;
+    case "x86_64-pc-windows-msvc":
+      return `${base}/cpython-${v}+${tag}-x86_64-pc-windows-msvc-install_only.tar.gz`;
+    case "aarch64-pc-windows-msvc":
+      return `${base}/cpython-${v}+${tag}-aarch64-pc-windows-msvc-install_only.tar.gz`;
+    default:
+      throw new Error(`Unsupported target for Python: ${resolvedTargetTriple}`);
+  }
+}
+
+// Returns true if Python was successfully prepared, false on failure.
+async function preparePython() {
+  const pythonDir = join(outDir, "python");
+  const pythonBin = isWindows
+    ? join(pythonDir, "python.exe")
+    : join(pythonDir, "bin", "python3");
+
+  if (!needsUpdate("python", PYTHON_VERSION)) {
+    if (existsSync(pythonBin)) {
+      process.stdout.write(`[bundled-tools] Python ${PYTHON_VERSION} already prepared\n`);
+      return true;
+    }
+  }
+
+  process.stdout.write(`[bundled-tools] Preparing Python ${PYTHON_VERSION} (release ${PYTHON_RELEASE})...\n`);
+
+  const url = pythonDownloadUrl();
+  const tmpPath = join(tmpdir(), "abel-python.tar.gz");
+
+  try {
+    await download(url, tmpPath);
+  } catch (err) {
+    process.stderr.write(`[bundled-tools] WARNING: Failed to download portable Python: ${err.message}\n`);
+    process.stderr.write(`[bundled-tools] Office skills requiring Python will not work.\n`);
+    try { unlinkSync(tmpPath); } catch { /* ignore */ }
+    return false;
+  }
+
+  // Clean existing
+  if (existsSync(pythonDir)) {
+    rmSync(pythonDir, { recursive: true, force: true });
+  }
+  mkdirSync(pythonDir, { recursive: true });
+
+  // python-build-standalone extracts to a "python/" subdirectory
+  extractTarGz(tmpPath, pythonDir);
+
+  // Strip unnecessary files to reduce size
+  // Derive the python lib dir name (e.g., "python3.13") from the version
+  const pyMinor = `python${PYTHON_VERSION.split(".").slice(0, 2).join(".")}`;
+  const libDir = isWindows ? `Lib` : `lib/${pyMinor}`;
+  const stripDirs = [
+    "share",           // docs, man pages
+    "include",         // C headers (not needed for running scripts)
+    `${libDir}/test`,           // test suite (~30MB)
+    `${libDir}/tests`,
+    `${libDir}/idle_test`,
+    `${libDir}/idlelib`,        // IDLE GUI (not needed)
+    `${libDir}/tkinter`,        // Tk GUI (not needed)
+    `${libDir}/ensurepip/_bundled`, // pip wheel (we'll use pip directly)
+  ];
+  for (const dir of stripDirs) {
+    const target = join(pythonDir, dir);
+    if (existsSync(target)) {
+      rmSync(target, { recursive: true, force: true });
+    }
+  }
+
+  // Remove __pycache__ directories iteratively (avoids stack overflow on deep trees)
+  const queue = [pythonDir];
+  while (queue.length > 0) {
+    const dir = queue.pop();
+    let entries;
+    try { entries = readdirSync(dir); } catch { continue; }
+    for (const entry of entries) {
+      const fullPath = join(dir, entry);
+      try {
+        if (statSync(fullPath).isDirectory()) {
+          if (entry === "__pycache__") {
+            rmSync(fullPath, { recursive: true, force: true });
+          } else {
+            queue.push(fullPath);
+          }
+        }
+      } catch { /* skip broken symlinks */ }
+    }
+  }
+
+  // Verify binary exists after extraction
+  if (!existsSync(pythonBin)) {
+    process.stderr.write(`[bundled-tools] WARNING: Python binary not found at ${pythonBin} after extraction\n`);
+    process.stderr.write(`[bundled-tools] Office skills requiring Python will not work.\n`);
+    try { unlinkSync(tmpPath); } catch { /* ignore */ }
+    return false;
+  }
+
+  process.stdout.write(`[bundled-tools] Python ${PYTHON_VERSION} ready\n`);
+  try { unlinkSync(tmpPath); } catch { /* ignore */ }
+  return true;
+}
+
 // --- Main ---
 
 async function main() {
@@ -390,14 +513,18 @@ async function main() {
 
   await prepareNode();
   await prepareGit();
+  const pythonOk = await preparePython();
 
-  // Write version manifest
+  // Write version manifest — only include python if it was successfully prepared
   const versions = {
     node: NODE_VERSION,
     git: GIT_VERSION,
     target: resolvedTargetTriple,
     preparedAt: new Date().toISOString(),
   };
+  if (pythonOk) {
+    versions.python = PYTHON_VERSION;
+  }
   writeVersions(versions);
 
   process.stdout.write(`[bundled-tools] All tools ready in ${outDir}\n`);

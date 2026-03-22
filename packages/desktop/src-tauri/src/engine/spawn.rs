@@ -162,6 +162,11 @@ pub fn spawn_engine(
         command = command.env(key, value);
     }
 
+    // Inject Abel default AI provider API keys (MiniMax, Kimi/Moonshot)
+    for (key, value) in crate::abel_providers::provider_env_vars(app) {
+        command = command.env(key, value);
+    }
+
     if let Some(username) = opencode_username {
         if !username.trim().is_empty() {
             command = command.env("OPENCODE_SERVER_USERNAME", username);

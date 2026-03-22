@@ -24,12 +24,10 @@ const readCargoVersion = (path) => {
   return match ? match[1] : null;
 };
 
-const appVersion = readJson(resolve(root, "packages", "app", "package.json")).version ?? null;
+// Abel-owned packages — these must match the release tag.
+// Upstream packages (app, orchestrator, server, opencode-router) keep their
+// own version scheme and are NOT checked against the Abel release tag.
 const desktopVersion = readJson(resolve(root, "packages", "desktop", "package.json")).version ?? null;
-const orchestratorVersion =
-  readJson(resolve(root, "packages", "orchestrator", "package.json")).version ?? null;
-const serverVersion = readJson(resolve(root, "packages", "server", "package.json")).version ?? null;
-const opencodeRouterVersion = readJson(resolve(root, "packages", "opencode-router", "package.json")).version ?? null;
 const tauriVersion = readJson(resolve(root, "packages", "desktop", "src-tauri", "tauri.conf.json")).version ?? null;
 const cargoVersion = readCargoVersion(resolve(root, "packages", "desktop", "src-tauri", "Cargo.toml"));
 
@@ -44,20 +42,16 @@ const check = (label, actual) => {
   }
 };
 
-check("app", appVersion);
 check("desktop", desktopVersion);
-check("openwork-orchestrator", orchestratorVersion);
-check("openwork-server", serverVersion);
-check("opencode-router", opencodeRouterVersion);
 check("tauri", tauriVersion);
 check("cargo", cargoVersion);
 
 if (mismatches.length) {
-  console.error(`Release tag ${tag} does not match package versions:`);
+  console.error(`Release tag ${tag} does not match Abel package versions:`);
   for (const mismatch of mismatches) {
     console.error(`- ${mismatch}`);
   }
   process.exit(1);
 }
 
-console.log(`Release tag ${tag} matches app/desktop/openwork-orchestrator versions.`);
+console.log(`Release tag ${tag} matches Abel desktop/tauri/cargo versions.`);

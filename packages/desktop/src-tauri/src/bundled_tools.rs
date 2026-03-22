@@ -1,4 +1,4 @@
-//! Manages portable Node.js and git bundled inside the Abel app.
+//! Manages portable Node.js, Python, and git bundled inside the Abel app.
 //!
 //! At build time, `prepare-bundled-tools.mjs` downloads platform-specific
 //! Node.js and git distributions into `src-tauri/bundled-tools/`. Tauri's
@@ -139,12 +139,18 @@ fn adhoc_codesign_dir(dir: &Path) {
             }
         }
 
-        // Check if it's a Mach-O binary (starts with magic bytes)
-        if let Ok(bytes) = fs::read(&path) {
-            if bytes.len() < 4 {
+        // Check if it's a Mach-O binary (starts with magic bytes).
+        // Only read the first 4 bytes instead of the entire file.
+        {
+            use std::io::Read;
+            let Ok(mut file) = std::fs::File::open(&path) else {
+                continue;
+            };
+            let mut magic_bytes = [0u8; 4];
+            if file.read_exact(&mut magic_bytes).is_err() {
                 continue;
             }
-            let magic = u32::from_be_bytes([bytes[0], bytes[1], bytes[2], bytes[3]]);
+            let magic = u32::from_be_bytes(magic_bytes);
             let is_macho = matches!(
                 magic,
                 0xFEEDFACE | 0xFEEDFACF | 0xCAFEBABE | 0xCEFAEDFE | 0xCFFAEDFE
@@ -195,6 +201,7 @@ pub fn ensure_bundled_tools(app: &AppHandle) -> Result<(), String> {
         eprintln!("[abel] Codesigning bundled tools...");
         adhoc_codesign_dir(&tmp_dir.join("node"));
         adhoc_codesign_dir(&tmp_dir.join("git"));
+        adhoc_codesign_dir(&tmp_dir.join("python"));
     }
 
     // Fix npm/npx symlinks — Tauri's resource bundler dereferences symlinks,
@@ -316,6 +323,16 @@ pub fn bundled_tool_paths(app: &AppHandle) -> Vec<PathBuf> {
 
     if npm_global_bin.is_dir() {
         paths.push(npm_global_bin);
+    }
+
+    // Python bin
+    #[cfg(not(windows))]
+    let python_bin = data_dir.join("python").join("bin");
+    #[cfg(windows)]
+    let python_bin = data_dir.join("python");
+
+    if python_bin.is_dir() {
+        paths.push(python_bin);
     }
 
     // Git bin

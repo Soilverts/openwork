@@ -1,3 +1,4 @@
+mod abel_providers;
 mod bun_env;
 mod bundled_tools;
 mod commands;
@@ -128,6 +129,10 @@ pub fn run() {
                     eprintln!("[abel] {msg}");
                 }
             }
+
+            // Seed default AI provider API keys (MiniMax, Kimi/Moonshot)
+            abel_providers::ensure_provider_config(app.handle());
+
             Ok(())
         })
         .manage(EngineManager::default())
